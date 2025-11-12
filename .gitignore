@@ -1,0 +1,25 @@
+# Gradle
+.gradle/
+build/
+
+# Generated sources
+build/generated-src/
+**/generated/
+
+# IDE
+.idea/
+*.iml
+*.iws
+*.ipr
+
+# Compiled files
+*.class
+out/
+
+# Logs
+*.log
+
+# Database files
+*.db
+*.mv.db
+*.trace.db
