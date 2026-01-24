@@ -37,6 +37,8 @@ dependencies {
     // Add jOOQ code generation dependencies
     implementation("org.jooq:jooq-meta:3.18.7")
     implementation("org.jooq:jooq-codegen:3.18.7")
+    testImplementation("org.junit.jupiter:junit-jupiter:5.8.1")
+    testImplementation("junit:junit:4.13.1")
 }
 
 val dbUrl = "jdbc:h2:file:${projectDir}/build/db/gmp;DB_CLOSE_DELAY=-1;AUTO_SERVER=TRUE"
