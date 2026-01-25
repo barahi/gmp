@@ -6,5 +6,6 @@ public class SerializerBinder extends AbstractBinder {
     @Override
     protected void configure() {
         bind(PlayerSerializer.class).to(PlayerSerializer.class);
+        bind(GameSettingsSerializer.class).to(GameSettingsSerializer.class);
     }
 }

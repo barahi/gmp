@@ -1,7 +1,11 @@
 package org.barahi;
 
+import java.io.IOException;
+ import java.net.URI;
+
 import org.barahi.infra.InfraBinder;
 import org.barahi.server.resource.DummyResource;
+import org.barahi.server.resource.LobbyResource;
 import org.barahi.server.resource.PlayerResource;
 import org.barahi.server.serializer.SerializerBinder;
 import org.barahi.service.ServiceBinder;
@@ -10,9 +14,6 @@ import org.glassfish.grizzly.http.server.HttpServer;
 import org.glassfish.jersey.grizzly2.httpserver.GrizzlyHttpServerFactory;
 import org.glassfish.jersey.jackson.JacksonFeature;
 import org.glassfish.jersey.server.ResourceConfig;
-
-import java.io.IOException;
-import java.net.URI;
 
 public class ApiServer {
     // Base uri needs to be pulled in from configuration files
@@ -27,7 +28,8 @@ public class ApiServer {
                 .register(ServiceBinder.class)
                 .register(SerializerBinder.class)
                 .register(DummyResource.class)
-                .register(PlayerResource.class);
+                .register(PlayerResource.class)
+                .register(LobbyResource.class);
         return GrizzlyHttpServerFactory.createHttpServer(URI.create(BASE_URI), rc);
     }
 

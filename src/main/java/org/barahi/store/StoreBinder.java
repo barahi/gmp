@@ -6,5 +6,6 @@ public class StoreBinder extends AbstractBinder {
     @Override
     protected void configure() {
         bind(PlayerStore.class).to(PlayerStore.class);
+        bind(GameSettingsStore.class).to(GameSettingsStore.class);
     }
 }

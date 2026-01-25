@@ -1,16 +1,16 @@
 package org.barahi.store;
 
-import jakarta.inject.Inject;
+import java.util.UUID;
+
+import static org.barahi.generated.Tables.PLAYER;
+import org.barahi.generated.tables.records.PlayerRecord;
 import org.barahi.infra.DSLContextProvider;
 import org.barahi.serviceapi.player.Player;
 import org.barahi.serviceapi.player.Player.PlayerId;
 import org.barahi.serviceapi.player.PlayerImpl;
 import org.jooq.DSLContext;
-import org.barahi.generated.tables.records.PlayerRecord;
 
-import java.util.UUID;
-
-import static org.barahi.generated.Tables.PLAYER;
+import jakarta.inject.Inject;
 
 public class PlayerStore {
     private final DSLContext db;

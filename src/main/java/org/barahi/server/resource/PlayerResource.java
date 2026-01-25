@@ -1,17 +1,21 @@
 package org.barahi.server.resource;
 
-import jakarta.inject.Inject;
-import jakarta.ws.rs.*;
-import jakarta.ws.rs.core.MediaType;
-import jakarta.ws.rs.core.Response;
-import jakarta.ws.rs.core.Response.Status;
+import java.util.UUID;
+
 import org.barahi.server.json.PlayerJson;
 import org.barahi.server.serializer.PlayerSerializer;
 import org.barahi.serviceapi.player.Player;
 import org.barahi.serviceapi.player.Player.PlayerId;
 import org.barahi.serviceapi.player.PlayerService;
 
-import java.util.UUID;
+import jakarta.inject.Inject;
+import jakarta.ws.rs.Consumes;
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.POST;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.PathParam;
+import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.core.MediaType;
 
 @Path(PlayerResource.BASE_PATH)
 @Produces(MediaType.APPLICATION_JSON)
