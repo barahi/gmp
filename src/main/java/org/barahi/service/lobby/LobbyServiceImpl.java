@@ -2,6 +2,8 @@ package org.barahi.service.lobby;
 
 import java.util.UUID;
 
+import org.barahi.service.room.RoomServiceImpl;
+import org.barahi.serviceapi.gamesettings.GameSettings;
 import org.barahi.serviceapi.gamesettings.GameSettingsService;
 import org.barahi.serviceapi.lobby.Lobby;
 import org.barahi.serviceapi.lobby.LobbyImpl;
@@ -12,10 +14,14 @@ import jakarta.inject.Inject;
 
 public class LobbyServiceImpl implements LobbyService {
     private final LobbyStore lobbyStore;
+    private final GameSettingsService gameSettingsService;
+    private final RoomServiceImpl roomService;
 
     @Inject
-    public LobbyServiceImpl(LobbyStore lobbyStore, GameSettingsService gameSettingsService) {
+    public LobbyServiceImpl(LobbyStore lobbyStore, GameSettingsService gameSettingsService, RoomServiceImpl roomService) {
         this.lobbyStore = lobbyStore;
+        this.gameSettingsService = gameSettingsService;
+        this.roomService = roomService;
     }
 
     @Override
@@ -24,11 +30,9 @@ public class LobbyServiceImpl implements LobbyService {
     }
 
     @Override
-    public Lobby storeLobby(Lobby unsavedLobby) {
-        // Generate UUID for the lobby
+    public Lobby storeLobby(Lobby unsavedLobby) throws IllegalAccessException {
         String lobbyId = UUID.randomUUID().toString();
         
-        // Create Lobby with gameSettingsId, empty playerIds, and gameStarted=false
         Lobby lobbyWithIds = new LobbyImpl(
             lobbyId,
             unsavedLobby.getGameSettingsId(),
@@ -36,8 +40,26 @@ public class LobbyServiceImpl implements LobbyService {
             false
         );
         
-        // Store in database
         Lobby savedLobby = lobbyStore.storeLobby(lobbyWithIds);
+        
+        try {
+            GameSettings gameSettings = gameSettingsService.getGameSettings(
+                new GameSettings.GameSettingsId(unsavedLobby.getGameSettingsId())
+            );
+            
+            roomService.createRoomFromLobby(
+                UUID.randomUUID(),
+                new UUID[]{},
+                gameSettings.getPlayerCount(),
+                gameSettings.getNumberOfRounds(),
+                // FIX: language should be dynamic and should be passed from lobby creation request
+                // For now, we hardcode it to "en" -> english
+                "en"
+            );
+        } catch (IllegalAccessException e) {
+            throw e;
+        }
+        
         return savedLobby;
     }
 

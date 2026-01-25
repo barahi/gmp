@@ -7,5 +7,7 @@ public class StoreBinder extends AbstractBinder {
     protected void configure() {
         bind(PlayerStore.class).to(PlayerStore.class);
         bind(GameSettingsStore.class).to(GameSettingsStore.class);
+        bind(LobbyStore.class).to(LobbyStore.class);
+        bind(RoomStore.class).to(RoomStore.class);
     }
 }

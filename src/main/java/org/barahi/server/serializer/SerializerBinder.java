@@ -7,5 +7,6 @@ public class SerializerBinder extends AbstractBinder {
     protected void configure() {
         bind(PlayerSerializer.class).to(PlayerSerializer.class);
         bind(GameSettingsSerializer.class).to(GameSettingsSerializer.class);
+        bind(RoomSerializer.class).to(RoomSerializer.class);
     }
 }

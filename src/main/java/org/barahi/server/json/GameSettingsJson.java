@@ -2,17 +2,29 @@ package org.barahi.server.json;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
+
 public class GameSettingsJson {
     @JsonProperty
+    @NotNull(message = "playerCount is required")
+    @Min(value = 2, message = "playerCount must be at least 2")
     private int playerCount;
 
     @JsonProperty
+    @NotNull(message = "categories is required")
+    @NotEmpty(message = "categories must not be empty")
     private String[] categories;
 
     @JsonProperty
+    @NotNull(message = "roundDuration is required")
+    @Min(value = 1, message = "roundDuration must be at least 1")
     private int roundDuration;
 
     @JsonProperty
+    @NotNull(message = "numberOfRounds is required")
+    @Min(value = 1, message = "numberOfRounds must be at least 1")
     private int numberOfRounds;
 
     @JsonProperty

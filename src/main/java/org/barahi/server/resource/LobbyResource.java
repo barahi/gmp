@@ -10,6 +10,7 @@ import org.barahi.serviceapi.lobby.Lobby;
 import org.barahi.serviceapi.lobby.LobbyService;
 
 import jakarta.inject.Inject;
+import jakarta.validation.Valid;
 import jakarta.ws.rs.POST;
 import jakarta.ws.rs.Path;
 
@@ -37,16 +38,13 @@ public class LobbyResource {
     }
     
     @POST
-    public LobbyJson createLobby(GameSettingsJson gameSettingsJson) {
-        // 1. Create GameSettings
+    public LobbyJson createLobby(@Valid GameSettingsJson gameSettingsJson) throws IllegalAccessException {
         GameSettings unsavedGameSettings = gameSettingsSerializer.fromJson(gameSettingsJson);
         GameSettings gameSettings = gameSettingsService.storeGameSettings(unsavedGameSettings);
         
-        // 2. Create Lobby that references the GameSettings
         Lobby unsavedLobby = lobbySerializer.fromJson(new LobbyJson().setGameSettingsId(gameSettings.getId()));
         Lobby lobby = lobbyService.storeLobby(unsavedLobby);
         
-        // 3. Return Lobby as JSON
         return lobbySerializer.toJson(lobby);
     }
 }
