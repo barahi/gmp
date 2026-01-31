@@ -15,6 +15,7 @@ build/generated-src/
 # Compiled files
 *.class
 out/
+bin/
 
 # Logs
 *.log
