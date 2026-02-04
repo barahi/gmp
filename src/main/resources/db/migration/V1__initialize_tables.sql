@@ -19,6 +19,7 @@ CREATE TABLE game_settings (
     round_duration INT NOT NULL,
     number_of_rounds INT NOT NULL,
     language VARCHAR(20) NOT NULL,
+    password VARCHAR(100) NOT NULL,
     PRIMARY KEY (id),
     FOREIGN KEY (room_id) REFERENCES room(id) ON DELETE CASCADE
 );
