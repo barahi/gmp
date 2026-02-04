@@ -1,5 +1,7 @@
 package org.barahi.serviceapi.gameSettings;
 
+import java.util.List;
+
 import org.barahi.serviceapi.room.Room;
 
 
@@ -11,8 +13,10 @@ public class GameSettingsImpl implements GameSettings {
     private final int numberOfRounds;
     private final String language;
     private final String password;
+    private final List<String> categories;
+    private final List<String> excludedLetters;
 
-    public GameSettingsImpl(GameSettingsId id, Room.RoomId roomId, int maxPlayers, int roundDuration, int numberOfRounds, String language, String password) {
+    public GameSettingsImpl(GameSettingsId id, Room.RoomId roomId, int maxPlayers, int roundDuration, int numberOfRounds, String language, String password, List<String> categories, List<String> excludedLetters) {
         this.id = id;
         this.roomId = roomId;
         this.maxPlayers = maxPlayers;
@@ -20,6 +24,8 @@ public class GameSettingsImpl implements GameSettings {
         this.numberOfRounds = numberOfRounds;
         this.language = language;
         this.password = password;
+        this.categories = categories;
+        this.excludedLetters = excludedLetters;
     }
 
     @Override
@@ -55,5 +61,15 @@ public class GameSettingsImpl implements GameSettings {
     @Override
     public String getPassword() {
         return password;
+    }
+
+    @Override
+    public List<String> getCategories() {
+        return categories;
+    }
+
+    @Override
+    public List<String> getExcludedLetters() {
+        return excludedLetters; 
     }
 }

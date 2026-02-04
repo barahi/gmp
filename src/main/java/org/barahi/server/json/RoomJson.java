@@ -1,16 +1,33 @@
 package org.barahi.server.json;
 
+import java.util.List;
+
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class RoomJson {
-    @JsonProperty("id")
+    @JsonProperty
     private String id;
 
-    @JsonProperty("host_player_id")
+    @JsonProperty
     private String hostPlayerId;
 
-    @JsonProperty("is_game_started")
+    @JsonProperty
     private boolean isGameStarted;
+
+    @JsonProperty
+    private int maxPlayers;
+
+    @JsonProperty
+    private int roundDuration;
+
+    @JsonProperty
+    private int numberOfRounds;
+
+    @JsonProperty
+    private List<String> categories;
+
+    @JsonProperty
+    private List<String> excludedLetters;
 
     public String getId() {
         return id;
@@ -32,6 +49,51 @@ public class RoomJson {
 
     public boolean isGameStarted() {
         return isGameStarted;
+    }
+
+    public int getMaxPlayers() {
+        return maxPlayers;
+    }
+
+    public int getRoundDuration() {
+        return roundDuration;
+    }
+
+    public int getNumberOfRounds() {
+        return numberOfRounds;
+    }
+
+    public List<String> getCategories() {
+        return categories;
+    }
+
+    public List<String> getExcludedLetters() {
+        return excludedLetters;
+    }
+
+    public RoomJson setMaxPlayers(int maxPlayers) {
+        this.maxPlayers = maxPlayers;
+        return this;
+    }
+
+    public RoomJson setRoundDuration(int roundDuration) {
+        this.roundDuration = roundDuration;
+        return this;
+    }
+
+    public RoomJson setNumberOfRounds(int numberOfRounds) {
+        this.numberOfRounds = numberOfRounds;
+        return this;
+    }
+
+    public RoomJson setCategories(List<String> categories) {
+        this.categories = categories;
+        return this;
+    }
+
+    public RoomJson setExcludedLetters(List<String> excludedLetters) {              
+        this.excludedLetters = excludedLetters;
+        return this;
     }
 
     public RoomJson setGameStarted(boolean gameStarted) {

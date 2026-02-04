@@ -56,7 +56,9 @@ public class RoomServiceImpl implements RoomService {
                 createJson.getRoundDuration(),
                 createJson.getNumberOfRounds(),
                 createJson.getLanguage(),
-                createJson.getPassword()
+                createJson.getPassword(),
+                createJson.getCategories(),
+                createJson.getExcludedLetters()
         );
 
         // persist room and add host as participant
@@ -65,20 +67,10 @@ public class RoomServiceImpl implements RoomService {
             roomStore.addPlayerToRoom(room.getId(), hostId);
             gameSettingsStore.createGameSettings(settings);
 
-            // add categories 
-            for (String category : createJson.getCategories()) {
-                gameSettingsStore.addCategory(settings.getId(), category);
-            }
-            // add excluded letters if provided
-            if (createJson.getExcludedLetters() != null) {
-                for (String letter : createJson.getExcludedLetters()) {
-                    gameSettingsStore.addExclidedLetter(settings.getId(), letter);
-                }
-            }
         } catch (RuntimeException e) {
             throw new RuntimeException("Failed to create room", e);
         }
 
-        return roomSerializer.toJson(room);
+        return roomSerializer.toJson(room, settings);
     }
 }

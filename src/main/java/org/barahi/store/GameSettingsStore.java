@@ -7,6 +7,7 @@ import org.barahi.generated.tables.records.GameSettingsRecord;
 import org.barahi.infra.DSLContextProvider;
 import org.barahi.serviceapi.gameSettings.GameSettings;
 import org.jooq.DSLContext;
+import org.jooq.impl.DSL;
 
 import jakarta.inject.Inject;
 
@@ -19,24 +20,27 @@ public class GameSettingsStore {
     }
 
     public void createGameSettings(GameSettings settings) {
-        GameSettingsRecord record = toRecord(settings);
-        db.insertInto(GAME_SETTINGS)
-                .set(record)
-                .execute();
-    }
+        db.transaction(cfg -> {
+            DSLContext tx = DSL.using(cfg);
 
-    public void addCategory(GameSettings.GameSettingsId settingsId, String category) {
-        db.insertInto(CATEGORIES)
-                .set(CATEGORIES.GAME_SETTINGS_ID, settingsId.getId().toString())
-                .set(CATEGORIES.CATEGORY, category)
-                .execute();
-    }
+            tx.insertInto(GAME_SETTINGS)
+                    .set(toRecord(settings))
+                    .execute();
 
-    public void addExclidedLetter(GameSettings.GameSettingsId settingsId, String letter) {
-        db.insertInto(EXCLUDED_LETTERS)
-            .set(EXCLUDED_LETTERS.GAME_SETTINGS_ID, settingsId.getId().toString())
-            .set(EXCLUDED_LETTERS.LETTERS, letter)
-            .execute();
+            for (String category : settings.getCategories()) {
+                tx.insertInto(CATEGORIES)
+                        .set(CATEGORIES.GAME_SETTINGS_ID, settings.getId().getId().toString())
+                        .set(CATEGORIES.CATEGORY, category)
+                        .execute();
+            }
+
+            for (String letter : settings.getExcludedLetters()) {
+                tx.insertInto(EXCLUDED_LETTERS)
+                        .set(EXCLUDED_LETTERS.GAME_SETTINGS_ID, settings.getId().getId().toString())
+                        .set(EXCLUDED_LETTERS.LETTERS, letter)
+                        .execute();
+            }
+        });
     }
 
     private GameSettingsRecord toRecord(GameSettings settings) {

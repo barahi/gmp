@@ -1,5 +1,7 @@
 package org.barahi.serviceapi.gameSettings;
 
+import java.util.List;
+
 import org.barahi.infra.TypedUUID;
 import org.barahi.serviceapi.room.Room;
 
@@ -11,6 +13,8 @@ public interface GameSettings {
     int getNumberOfRounds();
     String getLanguage();
     String getPassword();
+    List<String> getCategories();
+    List<String> getExcludedLetters();
 
     class GameSettingsId extends TypedUUID<GameSettings> {
         public GameSettingsId(java.util.UUID id) {
