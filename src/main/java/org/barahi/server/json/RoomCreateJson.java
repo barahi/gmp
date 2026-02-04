@@ -1,12 +1,12 @@
 package org.barahi.server.json;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
+import java.util.List;
+import java.util.UUID;
+
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
-
-import java.util.List;
-import java.util.UUID;
+import jakarta.validation.constraints.Size;
 
 public class RoomCreateJson {
 
@@ -24,6 +24,7 @@ public class RoomCreateJson {
 
     @NotNull
     @NotEmpty
+    @Size(max=5)
     private List<String> categories;
 
     private List<String> excludedLetters;
@@ -32,6 +33,7 @@ public class RoomCreateJson {
     @NotEmpty
     private String language;
 
+    @NotNull
     @NotEmpty
     private String password;
 

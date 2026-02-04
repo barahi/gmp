@@ -60,9 +60,24 @@ public class RoomServiceImpl implements RoomService {
         );
 
         // persist room and add host as participant
-        roomStore.createRoom(room);
-        roomStore.addPlayerToRoom(room.getId(), hostId);
-        gameSettingsStore.createGameSettings(settings);
+        try {
+            roomStore.createRoom(room);
+            roomStore.addPlayerToRoom(room.getId(), hostId);
+            gameSettingsStore.createGameSettings(settings);
+
+            // add categories 
+            for (String category : createJson.getCategories()) {
+                gameSettingsStore.addCategory(settings.getId(), category);
+            }
+            // add excluded letters if provided
+            if (createJson.getExcludedLetters() != null) {
+                for (String letter : createJson.getExcludedLetters()) {
+                    gameSettingsStore.addExclidedLetter(settings.getId(), letter);
+                }
+            }
+        } catch (RuntimeException e) {
+            throw new RuntimeException("Failed to create room", e);
+        }
 
         return roomSerializer.toJson(room);
     }

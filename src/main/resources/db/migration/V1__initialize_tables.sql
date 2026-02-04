@@ -34,15 +34,15 @@ CREATE TABLE room_player (
 );
 
 CREATE TABLE categories (
-    game_setting_id VARCHAR(36) NOT NULL, 
+    game_settings_id VARCHAR(36) NOT NULL, 
     category VARCHAR(50) NOT NULL,
-    PRIMARY KEY (game_setting_id),
-    FOREIGN KEY (game_setting_id) REFERENCES game_settings(id) ON DELETE CASCADE
+    PRIMARY KEY (game_settings_id),
+    FOREIGN KEY (game_settings_id) REFERENCES game_settings(id) ON DELETE CASCADE
 );
 
 CREATE TABLE EXCLUDED_LETTERS (
-    game_setting_id VARCHAR(36) NOT NULL, 
+    game_settings_id VARCHAR(36) NOT NULL, 
     letters VARCHAR(50) NOT NULL,
-    PRIMARY KEY (game_setting_id),
-    FOREIGN KEY (game_setting_id) REFERENCES game_settings(id) ON DELETE CASCADE
+    PRIMARY KEY (game_settings_id),
+    FOREIGN KEY (game_settings_id) REFERENCES game_settings(id) ON DELETE CASCADE
 );
