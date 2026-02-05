@@ -4,6 +4,7 @@ import jakarta.inject.Inject;
 import org.barahi.infra.DSLContextProvider;
 import org.barahi.serviceapi.player.Player;
 import org.barahi.serviceapi.room.Room;
+import org.barahi.serviceapi.room.Room.RoomId;
 import org.barahi.serviceapi.room.RoomImpl;
 import org.jooq.DSLContext;
 import org.barahi.generated.tables.records.RoomRecord;
@@ -35,6 +36,17 @@ public class RoomStore {
                 .set(ROOM_PLAYER.ROOM_ID, roomId.getId().toString())
                 .set(ROOM_PLAYER.PLAYER_ID, playerId.getId().toString())
                 .execute();
+    }
+
+    // getRoomWithID gets room with room's id
+    public Room getRoomWithId(RoomId id) throws IllegalAccessException {
+        RoomRecord record = db.selectFrom(ROOM)
+            .where(ROOM.ID.eq(id.getId().toString()))
+            .fetchOne();
+        if (record == null) {
+            throw new IllegalAccessException(String.format("Tried to access non existant room with id: %s", id));
+        }
+        return fromRecord(record);
     }
 
     private RoomRecord toRecord(Room room) {

@@ -4,6 +4,7 @@ import org.barahi.infra.TypedUUID;
 import org.barahi.serviceapi.player.Player;
 
 import java.time.Instant;
+import java.util.UUID;
 
 public interface Room {
     RoomId getId();
@@ -12,7 +13,7 @@ public interface Room {
     Instant getCreatedAt();
 
     class RoomId extends TypedUUID<Room> {
-        public RoomId(java.util.UUID id) {
+        public RoomId(UUID id) {
             super(id);
         }
     }
