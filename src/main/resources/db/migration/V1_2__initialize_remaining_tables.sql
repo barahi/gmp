@@ -23,3 +23,4 @@ CREATE TABLE game_state_phases (
     phase VARCHAR(50) NOT NULL UNIQUE,
     PRIMARY KEY (id)
 );
+
