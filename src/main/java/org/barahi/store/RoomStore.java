@@ -1,0 +1,57 @@
+package org.barahi.store;
+
+import jakarta.inject.Inject;
+import org.barahi.infra.DSLContextProvider;
+import org.barahi.serviceapi.player.Player;
+import org.barahi.serviceapi.room.Room;
+import org.barahi.serviceapi.room.RoomImpl;
+import org.jooq.DSLContext;
+import org.barahi.generated.tables.records.RoomRecord;
+
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
+import java.util.UUID;
+
+import static org.barahi.generated.Tables.ROOM;
+import static org.barahi.generated.Tables.ROOM_PLAYER;
+
+public class RoomStore {
+    private final DSLContext db;
+
+    @Inject
+    public RoomStore(DSLContextProvider dbProvider) {
+        this.db = dbProvider.get();
+    }
+
+    public void createRoom(Room room) {
+        RoomRecord record = toRecord(room);
+        db.insertInto(ROOM)
+                .set(record)
+                .execute();
+    }
+
+    public void addPlayerToRoom(Room.RoomId roomId, Player.PlayerId playerId) {
+        db.insertInto(ROOM_PLAYER)
+                .set(ROOM_PLAYER.ROOM_ID, roomId.getId().toString())
+                .set(ROOM_PLAYER.PLAYER_ID, playerId.getId().toString())
+                .execute();
+    }
+
+    private RoomRecord toRecord(Room room) {
+        RoomRecord record = new RoomRecord();
+        record.setId(room.getId().getId().toString());
+        record.setHostPlayerId(room.getHostPlayerId().getId().toString());
+        record.setIsGameStarted(room.isGameStarted());
+        record.setCreatedAt(LocalDateTime.ofInstant(room.getCreatedAt(), ZoneOffset.UTC));
+        return record;
+    }
+
+    private Room fromRecord(RoomRecord record) {
+        return new RoomImpl(
+                new Room.RoomId(UUID.fromString(record.getId())),
+                new Player.PlayerId(UUID.fromString(record.getHostPlayerId())),
+                record.getIsGameStarted(),
+                record.getCreatedAt().toInstant(ZoneOffset.UTC)
+        );
+    }
+}
