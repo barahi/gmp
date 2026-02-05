@@ -33,8 +33,6 @@ public class RoomCreateJson {
     @NotEmpty
     private String language;
 
-    @NotNull
-    @NotEmpty
     private String password;
 
     public UUID getHostPlayerId() {
