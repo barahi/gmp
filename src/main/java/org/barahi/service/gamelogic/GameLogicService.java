@@ -6,9 +6,10 @@ import java.util.List;
 import java.util.Map;
 
 public interface GameLogicService {
-  void startGame(String roomId, List<PlayerId> playerIdList);
+  void startGame(String roomId);
 
-  Map<String, Integer> updatePlayerScores(String roomId, Map<PlayerId, Integer> prevRoundScoreMap);
+  Map<PlayerId, Integer> updatePlayerScores(String roomId, Map<PlayerId, Integer> prevRoundScoreMap);
 
   void startNextRound(String roomId);
+  Map<PlayerId, Integer> endGame(String roomId);
 }

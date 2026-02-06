@@ -6,6 +6,7 @@ import org.barahi.serviceapi.player.Player.PlayerId;
 import org.jooq.DSLContext;
 
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import static org.barahi.generated.Tables.CUMULATIVE_SCORE;
 
@@ -16,30 +17,27 @@ public class CumulativeScoreStore {
     this.db = dbProvider.get();
   }
 
-  public Map<String, Integer> getPlayerScores(String roomId){
-    return db.select(CUMULATIVE_SCORE.PLAYER_ID, CUMULATIVE_SCORE.SCORE)
-      .from(CUMULATIVE_SCORE)
-      .where(CUMULATIVE_SCORE.ROOM_ID.eq(roomId))
-      .fetchMap(
-        CUMULATIVE_SCORE.PLAYER_ID,
-        CUMULATIVE_SCORE.SCORE
-      );
+  public Map<PlayerId, Integer> getPlayerScores(String roomId){
+    Map<String, Integer> map =
+      db.select(CUMULATIVE_SCORE.PLAYER_ID, CUMULATIVE_SCORE.SCORE)
+        .from(CUMULATIVE_SCORE)
+        .where(CUMULATIVE_SCORE.ROOM_ID.eq(roomId))
+        .fetchMap(CUMULATIVE_SCORE.PLAYER_ID, CUMULATIVE_SCORE.SCORE);
+
+    return map.entrySet().stream().collect(Collectors.toMap(
+      entry -> PlayerId.of(entry.getKey()),
+      Map.Entry::getValue
+    ));
   }
 
-  public Map<String, Integer> updatePlayerScores(String roomId, Map<PlayerId, Integer> prevRoundScoreMap){
-    for (Map.Entry<PlayerId, Integer> entry: prevRoundScoreMap.entrySet() ){
+  public Map<PlayerId, Integer> updatePlayerScores(String roomId, Map<PlayerId, Integer> prevRoundScoreMap){
+    for (Map.Entry<PlayerId, Integer> entry : prevRoundScoreMap.entrySet()) {
       db.update(CUMULATIVE_SCORE)
         .set(CUMULATIVE_SCORE.SCORE, entry.getValue())
         .where(CUMULATIVE_SCORE.ROOM_ID.eq(roomId))
         .and(CUMULATIVE_SCORE.PLAYER_ID.eq(entry.getKey().toString()))
         .execute();
     }
-    return db.select(CUMULATIVE_SCORE.PLAYER_ID, CUMULATIVE_SCORE.SCORE)
-      .from(CUMULATIVE_SCORE)
-      .where(CUMULATIVE_SCORE.ROOM_ID.eq(roomId))
-      .fetchMap(
-        CUMULATIVE_SCORE.PLAYER_ID,
-        CUMULATIVE_SCORE.SCORE
-      );
+    return this.getPlayerScores(roomId);
   }
 }
