@@ -1,6 +1,8 @@
 package org.barahi.serviceapi.player;
 
+import org.barahi.generated.tables.records.CumulativeScoreRecord;
 import org.barahi.infra.TypedUUID;
+import org.jooq.TableField;
 
 import java.util.UUID;
 
@@ -23,7 +25,7 @@ public interface Player {
         }
 
         public static PlayerId newId() {
-            return new PlayerId(UUID.randomUUID());
+          return new PlayerId(UUID.randomUUID());
         }
     }
 }
