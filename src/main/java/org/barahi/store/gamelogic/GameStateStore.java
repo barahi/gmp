@@ -2,6 +2,8 @@ package org.barahi.store.gamelogic;
 
 import jakarta.inject.Inject;
 import org.barahi.infra.DSLContextProvider;
+import org.barahi.serviceapi.room.Room.RoomId;
+import org.barahi.serviceapi.room.RoundPhase;
 import org.jooq.DSLContext;
 
 import static org.barahi.generated.Tables.*;
@@ -14,24 +16,24 @@ public class GameStateStore {
     this.db = dbProvider.get();
   }
 
-  public int getCurrentRound(String roomId){
+  public int getCurrentRound(RoomId roomId){
     return db.select(GAME_STATE.CURRENT_ROUND)
       .from(GAME_STATE)
-      .where(GAME_STATE.ROOM_ID.eq(roomId))
+      .where(GAME_STATE.ROOM_ID.eq(roomId.toString()))
       .execute();
   }
-  public void changeGamePhaseAndRound(String roomId, String nextPhase, int roundNumber){
+  public void changeGamePhaseAndRound(RoomId roomId, RoundPhase nextPhase, int roundNumber){
     db.update(GAME_STATE)
-      .set(GAME_STATE.PHASE, nextPhase)
+      .set(GAME_STATE.PHASE, nextPhase.name())
       .set(GAME_STATE.CURRENT_ROUND, roundNumber)
-      .where(GAME_STATE.ROOM_ID.eq(roomId))
+      .where(GAME_STATE.ROOM_ID.eq(roomId.toString()))
       .execute();
   }
 
-  public void changeGamePhase(String roomId, String phase){
+  public void changeGamePhase(RoomId roomId, RoundPhase phase){
     db.update(GAME_STATE)
-      .set(GAME_STATE.PHASE, phase)
-      .where(GAME_STATE.ROOM_ID.eq(roomId))
+      .set(GAME_STATE.PHASE, phase.name())
+      .where(GAME_STATE.ROOM_ID.eq(roomId.toString()))
       .execute();
   }
 }

@@ -5,8 +5,7 @@ CREATE TABLE player_answer (
     answer VARCHAR(50),
     score INT,
     PRIMARY KEY (id),
-    FOREIGN KEY (player_id) REFERENCES player(id) ON DELETE CASCADE,
-    FOREIGN KEY (category) REFERENCES categories(category) ON DELETE CASCADE
+    FOREIGN KEY (player_id) REFERENCES player(id) ON DELETE CASCADE
 );
 
 CREATE TABLE cumulative_score (

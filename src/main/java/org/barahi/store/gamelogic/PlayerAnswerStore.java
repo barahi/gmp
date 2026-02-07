@@ -3,6 +3,7 @@ package org.barahi.store.gamelogic;
 import jakarta.inject.Inject;
 import org.barahi.generated.tables.records.PlayerAnswerRecord;
 import org.barahi.infra.DSLContextProvider;
+import org.barahi.infra.TypedUUID;
 import org.barahi.serviceapi.player.Player.PlayerId;
 import org.jooq.DSLContext;
 
@@ -22,10 +23,11 @@ public class PlayerAnswerStore {
   }
 
 
-  public Map<String, Map<PlayerId, String>> getAnswersForRound(int roundNumber){
+  public Map<String, Map<PlayerId, String>> getAnswersForRound(List<PlayerId> playerIds, int roundNumber){
     return db.select(PLAYER_ANSWER.CATEGORY, PLAYER_ANSWER.PLAYER_ID, PLAYER_ANSWER.ANSWER)
       .from(PLAYER_ANSWER)
       .where(PLAYER_ANSWER.ROUND.eq(roundNumber))
+      .and(PLAYER_ANSWER.PLAYER_ID.in(TypedUUID.getIds(playerIds)))
       .fetch()
       .stream()
       .collect(Collectors.groupingBy(

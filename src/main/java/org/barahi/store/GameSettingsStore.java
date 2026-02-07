@@ -1,7 +1,7 @@
 package org.barahi.store;
 
 import static org.barahi.generated.Tables.CATEGORIES;
-import static org.barahi.generated.Tables.EXCLUDED_LETTERS;
+import static org.barahi.generated.Tables.EXCLUDED_LETTER;
 import static org.barahi.generated.Tables.GAME_SETTINGS;
 
 
@@ -14,6 +14,8 @@ import org.jooq.DSLContext;
 import org.jooq.impl.DSL;
 
 import jakarta.inject.Inject;
+
+import java.util.List;
 
 public class GameSettingsStore {
     private final DSLContext db;
@@ -33,15 +35,15 @@ public class GameSettingsStore {
 
             for (String category : settings.getCategories()) {
                 tx.insertInto(CATEGORIES)
-                        .set(CATEGORIES.GAME_SETTINGS_ID, settings.getId().getId().toString())
+                        .set(CATEGORIES.ROOM_ID, settings.getId().getId().toString())
                         .set(CATEGORIES.CATEGORY, category)
                         .execute();
             }
 
             for (String letter : settings.getExcludedLetters()) {
-                tx.insertInto(EXCLUDED_LETTERS)
-                        .set(EXCLUDED_LETTERS.GAME_SETTINGS_ID, settings.getId().getId().toString())
-                        .set(EXCLUDED_LETTERS.LETTER, letter)
+                tx.insertInto(EXCLUDED_LETTER)
+                        .set(EXCLUDED_LETTER.ROOM_ID, settings.getId().getId().toString())
+                        .set(EXCLUDED_LETTER.LETTER, letter)
                         .execute();
             }
         });
@@ -55,9 +57,23 @@ public class GameSettingsStore {
                 .fetchOneInto(String.class);
     }
 
+    public int getNumberOfRounds(RoomId roomId){
+        return db.select(GAME_SETTINGS.NUMBER_OF_ROUNDS)
+          .from(GAME_SETTINGS)
+          .where(GAME_SETTINGS.ROOM_ID.eq(roomId.toString()))
+          .execute();
+    }
+
+    public List<Character> getLetterExclusions(RoomId roomId){
+        return db.select(EXCLUDED_LETTER.LETTER)
+          .from(EXCLUDED_LETTER)
+          .where(EXCLUDED_LETTER.ROOM_ID.eq(roomId.toString()))
+          .fetch()
+          .map(r -> r.get(EXCLUDED_LETTER.LETTER).charAt(0));
+    }
+
     private GameSettingsRecord toRecord(GameSettings settings) {
         GameSettingsRecord record = new GameSettingsRecord();
-        record.setId(settings.getId().getId().toString());
         record.setRoomId(settings.getRoomId().getId().toString());
         record.setMaxPlayers(settings.getMaxPlayers());
         record.setRoundDuration(settings.getRoundDuration());

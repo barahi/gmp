@@ -8,7 +8,7 @@ public abstract class TypedUUID<T> extends Id<T, UUID> {
         super(id);
     }
 
-    public static <T> List<UUID> getIds(List<TypedUUID<T>> typedIds) {
+    public static <T> List<UUID> getIds(List<? extends TypedUUID<T>> typedIds) {
         return typedIds.stream().map(TypedUUID::getId).toList();
     }
 }

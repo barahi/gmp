@@ -14,14 +14,13 @@ CREATE TABLE room (
 );
 
 CREATE TABLE game_settings (
-    id VARCHAR(36) NOT NULL,
     room_id VARCHAR(36) NOT NULL,
     max_players INT NOT NULL,
     round_duration INT NOT NULL,
     number_of_rounds INT NOT NULL,
     language VARCHAR(20) NOT NULL,
     password VARCHAR(100),
-    PRIMARY KEY (id),
+    PRIMARY KEY(room_id),
     FOREIGN KEY (room_id) REFERENCES room(id) ON DELETE CASCADE
 );
 
@@ -34,15 +33,15 @@ CREATE TABLE room_player (
     FOREIGN KEY (player_id) REFERENCES player(id) ON DELETE CASCADE
 );
 CREATE TABLE categories (
-    game_settings_id VARCHAR(36) NOT NULL,
+    room_id VARCHAR(36) NOT NULL,
     category VARCHAR(50) NOT NULL,
-    PRIMARY KEY (game_settings_id, category),
-    FOREIGN KEY (game_settings_id) REFERENCES game_settings(id) ON DELETE CASCADE
+    PRIMARY KEY (room_id, category),
+    FOREIGN KEY (room_id) REFERENCES game_settings(room_id) ON DELETE CASCADE
 );
 
 CREATE TABLE excluded_letter (
-    game_settings_id VARCHAR(36) NOT NULL,
+    room_id VARCHAR(36) NOT NULL,
     letter VARCHAR(1) NOT NULL,
-    PRIMARY KEY (game_settings_id, letter),
-    FOREIGN KEY (game_settings_id) REFERENCES game_settings(id) ON DELETE CASCADE
+    PRIMARY KEY (room_id, letter),
+    FOREIGN KEY (room_id) REFERENCES game_settings(room_id) ON DELETE CASCADE
 );
