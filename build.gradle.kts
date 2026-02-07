@@ -23,6 +23,12 @@ dependencies {
     implementation("org.glassfish.jersey.inject:jersey-hk2:3.1.3")
     implementation("org.glassfish.jersey.media:jersey-media-json-jackson:3.1.3")
 
+    // WebSocket implementation
+    implementation("javax.websocket:javax.websocket-api:1.1")
+    implementation("org.glassfish.tyrus:tyrus-core:1.21")
+    implementation("org.glassfish.tyrus:tyrus-server:1.21")
+    implementation("org.glassfish.tyrus:tyrus-container-grizzly-server:1.21")
+
     // Jackson dependencies
     implementation("com.fasterxml.jackson.core:jackson-core:2.15.3")
     implementation("com.fasterxml.jackson.core:jackson-annotations:2.15.3")

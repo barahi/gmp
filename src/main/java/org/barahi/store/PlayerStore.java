@@ -2,6 +2,7 @@ package org.barahi.store;
 
 import jakarta.inject.Inject;
 import org.barahi.infra.DSLContextProvider;
+import org.barahi.infra.exceptions.ObjectNotFoundException;
 import org.barahi.serviceapi.player.Player;
 import org.barahi.serviceapi.player.Player.PlayerId;
 import org.barahi.serviceapi.player.PlayerImpl;
@@ -20,12 +21,12 @@ public class PlayerStore {
         this.db = dbProvider.get();
     }
 
-    public Player getPlayer(PlayerId id) throws IllegalAccessException {
+    public Player getPlayer(PlayerId id) throws ObjectNotFoundException {
         PlayerRecord record = db.selectFrom(PLAYER)
                 .where(PLAYER.ID.eq(id.getId().toString()))
                 .fetchOne();
         if (record == null) {
-            throw new IllegalAccessException(String.format("Tried to access non existing player with id: %s", id));
+            throw new ObjectNotFoundException(Player.class, id);
         }
         return fromRecord(record);
     }
