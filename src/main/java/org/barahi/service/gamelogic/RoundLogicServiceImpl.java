@@ -32,7 +32,6 @@ public class RoundLogicServiceImpl implements RoundLogicService {
     String excluded = "xyz";
     String allowedChars = allChars.replace("[" + excluded + "]", "");
     int randomIdx = (int)(Math.random() * allowedChars.length());
-    // Note: Need to discuss whether we will save characters already picked in excludedLetters table ?
     return allowedChars.charAt(randomIdx);
   }
 
