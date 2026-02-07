@@ -9,12 +9,12 @@ import org.barahi.serviceapi.player.Player;
 import java.util.List;
 
 public class PlayerJoinedEventPayload implements EventPayload {
+    private static final PlayerSerializer PLAYER_SERIALIZER = new PlayerSerializer();
     private List<Player> players;
 
     @JsonProperty("players")
     public List<PlayerJson> getPlayers() {
-        PlayerSerializer playerSerializer = new PlayerSerializer();
-        return Functional.map(players, playerSerializer::toJson);
+        return Functional.map(players, PLAYER_SERIALIZER::toJson);
     }
 
     public void setPlayers(List<Player> players) {
