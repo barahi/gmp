@@ -1,11 +1,10 @@
 package org.barahi.serviceapi.player;
 
+import org.barahi.infra.exceptions.ObjectNotFoundException;
 import org.barahi.serviceapi.player.Player.PlayerId;
 
-import java.util.UUID;
-
 public interface PlayerService {
-    Player getPlayer(PlayerId id) throws IllegalAccessException;
+    Player getPlayer(PlayerId id) throws ObjectNotFoundException;
 
     Player storePlayer(Player unsavedPlayer);
 

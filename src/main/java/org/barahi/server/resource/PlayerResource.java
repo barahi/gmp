@@ -2,6 +2,8 @@ package org.barahi.server.resource;
 
 import java.util.UUID;
 
+import jakarta.ws.rs.*;
+import org.barahi.infra.exceptions.ObjectNotFoundException;
 import org.barahi.server.json.PlayerJson;
 import org.barahi.server.serializer.PlayerSerializer;
 import org.barahi.serviceapi.player.Player;
@@ -9,12 +11,6 @@ import org.barahi.serviceapi.player.Player.PlayerId;
 import org.barahi.serviceapi.player.PlayerService;
 
 import jakarta.inject.Inject;
-import jakarta.ws.rs.Consumes;
-import jakarta.ws.rs.GET;
-import jakarta.ws.rs.POST;
-import jakarta.ws.rs.Path;
-import jakarta.ws.rs.PathParam;
-import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
 
 @Path(PlayerResource.BASE_PATH)
@@ -42,18 +38,18 @@ public class PlayerResource {
 
     @GET
     @Path("{id}")
-    public PlayerJson getPlayer(@PathParam("id") String id) {
+    public PlayerJson getPlayer(@PathParam("id") String id) throws NotFoundException, BadRequestException {
         PlayerId playerId;
         try {
             playerId = new PlayerId(UUID.fromString(id));
         } catch (IllegalArgumentException e) {
-            return null;
+            throw new BadRequestException("Improperly formatted player id: " + id);
         }
         try {
             Player player = playerService.getPlayer(playerId);
             return playerSerializer.toJson(player);
-        } catch (IllegalAccessException e) {
-            return null;
+        } catch (ObjectNotFoundException e) {
+            throw new NotFoundException("Could not find player with id: " + id);
         }
     }
 

@@ -4,7 +4,7 @@ import org.barahi.infra.InfraBinder;
 import org.barahi.server.resource.DummyResource;
 import org.barahi.server.resource.PlayerResource;
 import org.barahi.server.resource.ServiceLocatorFeature;
-import org.barahi.server.resource.SocketResource;
+import org.barahi.server.resource.socket.SocketResource;
 import org.barahi.server.resource.WebSocketBinder;
 import org.barahi.server.serializer.SerializerBinder;
 import org.barahi.service.ServiceBinder;

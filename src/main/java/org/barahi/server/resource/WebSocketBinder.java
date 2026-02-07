@@ -1,5 +1,6 @@
 package org.barahi.server.resource;
 
+import org.barahi.server.resource.socket.SocketResource;
 import org.glassfish.hk2.utilities.binding.AbstractBinder;
 
 public class WebSocketBinder extends AbstractBinder {

@@ -1,8 +1,10 @@
 package org.barahi.service.room;
 
 import java.time.Instant;
+import java.util.List;
 import java.util.UUID;
 
+import org.barahi.infra.exceptions.ObjectNotFoundException;
 import org.barahi.server.json.RoomCreateJson;
 import org.barahi.server.json.RoomJson;
 import org.barahi.server.serializer.RoomSerializer;
@@ -36,19 +38,14 @@ public class RoomServiceImpl implements RoomService {
     }
 
     @Override
-    public RoomJson createRoom(RoomCreateJson createJson) throws IllegalArgumentException {
+    public RoomJson createRoom(RoomCreateJson createJson) throws ObjectNotFoundException {
         // validate host exists
-        PlayerId hostId = new PlayerId(createJson.getHostPlayerId());
-        try {
-            Player host = playerService.getPlayer(hostId);
-        } catch (IllegalAccessException e) {
-            throw new IllegalArgumentException("Host is not a valid player");
-        }
+        Player host = playerService.getPlayer(PlayerId.of(createJson.getHostPlayerId()));
 
         // create room domain
         UUID roomId = UUID.randomUUID();
         UUID gameSettingsId = UUID.randomUUID();
-        Room room = new RoomImpl(new RoomId(roomId), hostId, false, Instant.now());
+        Room room = new RoomImpl(new RoomId(roomId), host.getId(), false, Instant.now());
         GameSettings settings = new GameSettingsImpl(
                 new GameSettings.GameSettingsId(gameSettingsId),
                 room.getId(),
@@ -64,7 +61,7 @@ public class RoomServiceImpl implements RoomService {
         // persist room and add host as participant
         try {
             roomStore.createRoom(room);
-            roomStore.addPlayerToRoom(room.getId(), hostId);
+            roomStore.addPlayerToRoom(room.getId(), host.getId());
             gameSettingsStore.createGameSettings(settings);
 
         } catch (RuntimeException e) {
@@ -72,5 +69,15 @@ public class RoomServiceImpl implements RoomService {
         }
 
         return roomSerializer.toJson(room, settings);
+    }
+
+    @Override
+    public List<Player> getPlayersInRoom(RoomId roomId) {
+        return List.of();
+    }
+
+    @Override
+    public RoomId getRoomIdForPlayer(PlayerId playerId) {
+        return null;
     }
 }
