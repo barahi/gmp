@@ -57,11 +57,7 @@ public class SocketResource {
             return;
         }
 
-        if (PLAYER_SESSIONS.containsKey(player.getId())) {
-            broadcastErrorAndCloseSession(session, "Player already connected: " + playerId);
-            return;
-        }
-        PLAYER_SESSIONS.put(player.getId(), session);
+        PLAYER_SESSIONS.putIfAbsent(player.getId(), session);
         RoomId roomId = null;
         try {
             roomId = roomService.getRoomIdForPlayer(playerId);
