@@ -1,6 +1,7 @@
 CREATE TABLE player (
     id VARCHAR(36) PRIMARY KEY,
-    username VARCHAR(50) NOT NULL UNIQUE
+    username VARCHAR(50) NOT NULL UNIQUE,
+    is_priviledged BOOLEAN DEFAULT FALSE
 );
 
 CREATE TABLE room (

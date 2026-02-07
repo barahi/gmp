@@ -6,8 +6,10 @@ import org.barahi.infra.DSLContextProvider;
 import org.barahi.serviceapi.player.Player.PlayerId;
 import org.jooq.DSLContext;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import static org.barahi.generated.Tables.*;
 
@@ -19,15 +21,22 @@ public class PlayerAnswerStore {
     this.db = dbProvider.get();
   }
 
-  public void initializePlayerAnswer(String roomId, List<PlayerId> playerIdList) {
-    for (PlayerId p : playerIdList) {
-      db.insertInto(CUMULATIVE_SCORE)
-        .set(CUMULATIVE_SCORE.PLAYER_ID, p.toString())
-        .set(CUMULATIVE_SCORE.ROOM_ID, roomId)
-        .set(CUMULATIVE_SCORE.SCORE, 0)
-        .execute();
-    }
+
+  public Map<String, Map<PlayerId, String>> getAnswersForRound(int roundNumber){
+    return db.select(PLAYER_ANSWER.CATEGORY, PLAYER_ANSWER.PLAYER_ID, PLAYER_ANSWER.ANSWER)
+      .from(PLAYER_ANSWER)
+      .where(PLAYER_ANSWER.ROUND.eq(roundNumber))
+      .fetch()
+      .stream()
+      .collect(Collectors.groupingBy(
+        r -> r.get(PLAYER_ANSWER.CATEGORY),
+        Collectors.toMap(
+          r -> PlayerId.of(r.get(PLAYER_ANSWER.PLAYER_ID)),
+          r -> r.get(PLAYER_ANSWER.ANSWER)
+        )
+      ));
   }
+
 
   public void storeAnswers(Map<PlayerId, String> playerAnswers, String category, int roundNumber) {
     List<PlayerAnswerRecord> records = playerAnswers.entrySet().stream().map(

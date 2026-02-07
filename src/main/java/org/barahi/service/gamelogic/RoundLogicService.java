@@ -7,12 +7,9 @@ import static org.barahi.serviceapi.player.Player.*;
 
 public interface RoundLogicService {
 
-    Character startRound(); // generate random letter, create empty category summary ?
-    void storeAnswers(Map<String, String> playerAnswers, String category, int roundNumber);
-
-    Map<PlayerId, Integer> calculatePlayerScore();
-
-    void invalidatePlayerAnswer(PlayerId playerId, String category);
-
-    Map<PlayerId, Integer> endRound(); // call gameLogicService.nextRound()
+    char startRound(String roomId, int roundNumber);
+    void storeAnswers(String roomId, Map<PlayerId, String> playerAnswers, String category, int roundNumber);
+    Map<PlayerId, Integer> calculatePlayerScoreForRound(String roomId, int roundNumber);
+    void invalidatePlayerAnswer(String roomId, PlayerId playerId, String category);
+    void endRound(String roomId);
 }

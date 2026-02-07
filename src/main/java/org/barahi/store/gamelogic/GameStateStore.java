@@ -14,29 +14,23 @@ public class GameStateStore {
     this.db = dbProvider.get();
   }
 
-  public void initializeGameState(String roomId) {
-    db.insertInto(GAME_STATE)
-      .set(GAME_STATE.ROOM_ID, roomId)
-      .set(GAME_STATE.CURRENT_ROUND, 1)
-      .set(GAME_STATE.PHASE, "Submit")
-      .execute();
-  }
   public int getCurrentRound(String roomId){
     return db.select(GAME_STATE.CURRENT_ROUND)
       .from(GAME_STATE)
       .where(GAME_STATE.ROOM_ID.eq(roomId))
       .execute();
   }
-  public void changeGamePhase(String roomId, String nextPhase){
-    db.update(GAME_STATE).
-      set(GAME_STATE.PHASE, nextPhase)
+  public void changeGamePhaseAndRound(String roomId, String nextPhase, int roundNumber){
+    db.update(GAME_STATE)
+      .set(GAME_STATE.PHASE, nextPhase)
+      .set(GAME_STATE.CURRENT_ROUND, roundNumber)
       .where(GAME_STATE.ROOM_ID.eq(roomId))
       .execute();
   }
 
-  public void changeGameRound(String roomId, int newRound){
+  public void changeGamePhase(String roomId, String phase){
     db.update(GAME_STATE)
-      .set(GAME_STATE.CURRENT_ROUND, newRound)
+      .set(GAME_STATE.PHASE, phase)
       .where(GAME_STATE.ROOM_ID.eq(roomId))
       .execute();
   }
