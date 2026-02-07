@@ -2,9 +2,7 @@ package org.barahi.server.resource.socket;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.common.collect.BiMap;
-import com.google.common.collect.HashBiMap;
-import com.google.common.collect.Maps;
+import org.barahi.infra.Functional;
 import org.barahi.infra.LoggerFactory;
 import org.barahi.infra.exceptions.ObjectNotFoundException;
 import org.barahi.server.resource.GuiceWebSocketConfigurator;
@@ -16,16 +14,21 @@ import jakarta.inject.Inject;
 import org.barahi.serviceapi.room.Room.RoomId;
 import org.barahi.serviceapi.room.RoomService;
 
-import javax.websocket.*;
+import javax.websocket.OnClose;
+import javax.websocket.OnMessage;
+import javax.websocket.OnOpen;
+import javax.websocket.Session;
 import javax.websocket.server.PathParam;
 import javax.websocket.server.ServerEndpoint;
 import java.io.IOException;
 import java.util.List;
+import java.util.Objects;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Logger;
 
-@ServerEndpoint(value = "/ws/tootiefrootie", configurator = GuiceWebSocketConfigurator.class)
+@ServerEndpoint(value = "/ws/tootiefrootie/{playerId}", configurator = GuiceWebSocketConfigurator.class)
 public class SocketResource {
-    private static final BiMap<PlayerId, Session> PLAYER_SESSIONS = Maps.synchronizedBiMap(HashBiMap.create());
+    private static final ConcurrentHashMap<PlayerId, Session> PLAYER_SESSIONS = new ConcurrentHashMap<>();
     private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
     private static final Logger LOGGER = LoggerFactory.createLogger(SocketResource.class);
 
@@ -60,17 +63,28 @@ public class SocketResource {
             return;
         }
         PLAYER_SESSIONS.put(player.getId(), session);
-        RoomId roomId = roomService.getRoomIdForPlayer(playerId);
+        RoomId roomId = null;
+        try {
+            roomId = roomService.getRoomIdForPlayer(playerId);
+        } catch (ObjectNotFoundException e) {
+            broadcastErrorAndCloseSession(session, "Player not in any room: " + playerId);
+        }
         List<Player> players = roomService.getPlayersInRoom(roomId);
         broadcastEventToRoom(roomId, PlayerJoinedEvent.withListOfPlayers(players));
     }
 
     @OnMessage
-    public void onMessage(String message, Session session) {
-        System.out.println("Received message from " + session.getId() + ": " + message);
+    public void onMessage(String message, Session session, @PathParam("playerId") String rawPlayerId) {
+        LOGGER.info("Received message from " + session.getId() + ": " + message);
 
-        PlayerId playerId = PLAYER_SESSIONS.inverse().get(session);
-        RoomId roomId = roomService.getRoomIdForPlayer(playerId);
+        PlayerId playerId = PlayerId.of(rawPlayerId);
+        RoomId roomId;
+        try {
+            roomId = roomService.getRoomIdForPlayer(playerId);
+        } catch (ObjectNotFoundException e) {
+            broadcastError(session, "Player not in any room:" + playerId);
+            return;
+        }
 
         Event<?> event = getEventFromString(message);
         EventType eventType = EventType.valueOf(event.getType());
@@ -79,15 +93,19 @@ public class SocketResource {
                 StartRoundEvent startRoundEvent = (StartRoundEvent) event;
                 // TODO(michelle): Start round here
                 broadcastEventToRoom(roomId, startRoundEvent);
+                break;
             }
             case SUBMIT_ANSWERS: {
                 // TODO(michelle): Submit answers here
+                break;
             }
             case VOTE_INVALID: {
                 // TODO(michelle): Vote invalid here
+                break;
             }
             case NOOP: {
                 // Do Nothing.
+                break;
             }
             case PLAYER_LEFT:
             case PLAYER_JOINED:
@@ -98,8 +116,10 @@ public class SocketResource {
     }
 
     @OnClose
-    public void onClose(Session session) {
-        System.out.println("WebSocket connection closed: " + session.getId());
+    public void onClose(Session session, @PathParam("playerId") String rawPlayerId) {
+        PlayerId playerId = PlayerId.of(rawPlayerId);
+        PLAYER_SESSIONS.remove(playerId);
+        LOGGER.info("WebSocket connection closed: " + session.getId());
     }
 
     public void broadcastEventToRoom(RoomId roomId, Event<?> event) {
@@ -109,14 +129,15 @@ public class SocketResource {
 
     public void broadcastEventToRoom(List<Player> players, Event<?> event) {
         String eventDetails = writeEventAsString(event);
-        for (Player player: players) {
-            Session session = PLAYER_SESSIONS.get(player.getId());
+        List<Session> sessions = Functional.map(players, Player::getId, PLAYER_SESSIONS::get);
+        List<Session> validSessions = Functional.filter(sessions, session -> session != null && session.isOpen());
+        validSessions.forEach(session -> {
             try {
                 session.getBasicRemote().sendText(eventDetails);
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
-        }
+        });
     }
 
     private void broadcastError(Session session, String message) {
@@ -141,8 +162,8 @@ public class SocketResource {
         try {
             return OBJECT_MAPPER.writeValueAsString(event);
         } catch (JsonProcessingException e) {
-            LOGGER.severe("Should not happen.");
-            return "";
+            LOGGER.severe("Failed to serialize event for broadcasting: " + e.getMessage());
+            throw new RuntimeException("Failed to serialize event for broadcasting", e);
         }
     }
 

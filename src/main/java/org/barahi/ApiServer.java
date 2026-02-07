@@ -47,7 +47,7 @@ public class ApiServer {
             webSocketServer.start();
             System.out.println("✓ WebSocket server started successfully at ws://localhost:8081/ws/chat");
             System.out.println("  - Endpoint class: " + SocketResource.class.getName());
-            System.out.println("  - Path: /ws/chat");
+            System.out.println("  - Path: /ws/tootiefrootie/:player_id");
         } catch (DeploymentException e) {
             System.err.println("✗ Failed to start WebSocket server: " + e.getMessage());
             e.printStackTrace();

@@ -73,11 +73,11 @@ public class RoomServiceImpl implements RoomService {
 
     @Override
     public List<Player> getPlayersInRoom(RoomId roomId) {
-        return List.of();
+        throw new UnsupportedOperationException("getPlayersInRoom is not yet implemented");
     }
 
     @Override
     public RoomId getRoomIdForPlayer(PlayerId playerId) {
-        return null;
+        throw new UnsupportedOperationException("getRoomIdForPlayer is not yet implemented");
     }
 }

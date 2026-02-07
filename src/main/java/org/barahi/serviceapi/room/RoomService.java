@@ -14,5 +14,5 @@ public interface RoomService {
 
     List<Player> getPlayersInRoom(RoomId roomId);
 
-    RoomId getRoomIdForPlayer(PlayerId playerId);
+    RoomId getRoomIdForPlayer(PlayerId playerId) throws ObjectNotFoundException;
 }
