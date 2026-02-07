@@ -3,6 +3,7 @@ package org.barahi.service.room;
 import java.time.Instant;
 import java.util.UUID;
 
+import org.barahi.server.json.JoinRoomJson;
 import org.barahi.server.json.RoomCreateJson;
 import org.barahi.server.json.RoomJson;
 import org.barahi.server.serializer.RoomSerializer;
@@ -72,5 +73,39 @@ public class RoomServiceImpl implements RoomService {
         }
 
         return roomSerializer.toJson(room, settings);
+    }
+
+    @Override
+    public void addPlayerToRoom(String roomId, JoinRoomJson joinRoomJson) throws IllegalArgumentException {
+        PlayerId playerId;
+        RoomId roomUUID;
+        try {
+            playerId = new Player.PlayerId(UUID.fromString(joinRoomJson.getPlayerId()));
+            roomUUID = new Room.RoomId(UUID.fromString(roomId));
+        } catch (IllegalArgumentException e) {
+            throw new IllegalArgumentException(String.format("Invalid Id Format %s ", e));
+        }
+
+        // check if valid room and player
+        Room room;
+        Player player;
+        try {
+            room = roomStore.getRoomWithId(roomUUID);
+            player = playerService.getPlayer(playerId);
+        } catch (IllegalAccessException e) {
+            throw new IllegalArgumentException(String.format("Invalid Resource %s", e));
+        }
+
+        // check if the given password matches the room's password
+        if (joinRoomJson.getPassword() != null) {
+            String password = gameSettingsStore.getPasswordByRoomId(room.getId());
+
+            if (password != joinRoomJson.getPassword()) {
+                throw new IllegalArgumentException(String.format("The Password Does Not Match For The Given Room ID: %s", roomUUID));
+            }
+        }
+
+        // add player to the room
+        roomStore.addPlayerToRoom(roomUUID, playerId);
     }
 }

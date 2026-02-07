@@ -1,5 +1,6 @@
 package org.barahi.server.resource;
 
+import org.barahi.server.json.JoinRoomJson;
 import org.barahi.server.json.RoomCreateJson;
 import org.barahi.server.json.RoomJson;
 import org.barahi.serviceapi.room.RoomService;
@@ -10,6 +11,7 @@ import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.POST;
 import jakarta.ws.rs.Path;
+import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
 
@@ -34,5 +36,12 @@ public class RoomsResource {
     @POST
     public RoomJson createRoom(@Valid RoomCreateJson roomCreateJson) {
         return roomService.createRoom(roomCreateJson);
+    }
+
+    @POST
+    @Path("/room/{roomId}/join")
+    public void addPlayerToRoom(@PathParam("roomId") String roomId, @Valid JoinRoomJson joinRoomJson){
+        roomService.addPlayerToRoom(roomId, joinRoomJson);
+        return;
     }
 }
