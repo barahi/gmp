@@ -23,8 +23,4 @@ public enum EventType {
     public boolean isOutgoing() {
         return isOutgoing;
     }
-
-    public final String REPR() {
-        return this.name();
-    }
 }
