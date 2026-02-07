@@ -4,7 +4,7 @@ import org.barahi.infra.InfraBinder;
 import org.barahi.server.resource.DummyResource;
 import org.barahi.server.resource.PlayerResource;
 import org.barahi.server.resource.ServiceLocatorFeature;
-import org.barahi.server.resource.SocketResouce;
+import org.barahi.server.resource.SocketResource;
 import org.barahi.server.resource.WebSocketBinder;
 import org.barahi.server.serializer.SerializerBinder;
 import org.barahi.service.ServiceBinder;
@@ -42,11 +42,11 @@ public class ApiServer {
     public static Server startWebSocketServer() {
         System.out.println("Attempting to start WebSocket server on port 8081...");
 
-        webSocketServer = new Server("localhost", 8081, "/", null, SocketResouce.class);
+        webSocketServer = new Server("localhost", 8081, "/", null, SocketResource.class);
         try {
             webSocketServer.start();
             System.out.println("✓ WebSocket server started successfully at ws://localhost:8081/ws/chat");
-            System.out.println("  - Endpoint class: " + SocketResouce.class.getName());
+            System.out.println("  - Endpoint class: " + SocketResource.class.getName());
             System.out.println("  - Path: /ws/chat");
         } catch (DeploymentException e) {
             System.err.println("✗ Failed to start WebSocket server: " + e.getMessage());

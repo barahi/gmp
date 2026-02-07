@@ -12,14 +12,14 @@ import java.util.UUID;
 import java.util.concurrent.CopyOnWriteArraySet;
 
 @ServerEndpoint(value = "/ws/chat", configurator = GuiceWebSocketConfigurator.class)
-public class SocketResouce {
+public class SocketResource {
 
     private static final Set<javax.websocket.Session> SESSIONS = new CopyOnWriteArraySet<>();
 
     private final PlayerService playerService;
 
     @Inject
-    public SocketResouce(PlayerService playerService) {
+    public SocketResource(PlayerService playerService) {
         this.playerService = playerService;
         System.out.println("SocketResource created with PlayerService: " + (playerService != null ? "SUCCESS" : "NULL"));
     }
@@ -35,15 +35,10 @@ public class SocketResouce {
     }
 
     @OnMessage
-    public void onMessage(String message, javax.websocket.Session session) {
+    public void onMessage(String message, javax.websocket.Session session) throws IllegalAccessException {
         System.out.println("Received message from " + session.getId() + ": " + message);
-        try {
-            Player player = playerService.getPlayer(new Player.PlayerId(UUID.fromString(message)));
-            broadcastMessage(session.getId() + ": " + player.getUsername());
-        } catch (Exception e) {
-            System.err.println("Error processing message from " + session.getId() + ": " + e.getMessage());
-            broadcastMessage(session.getId() + ": " + message);
-        }
+        Player player = playerService.getPlayer(new Player.PlayerId(UUID.fromString(message)));
+        broadcastMessage(session.getId() + ": " + player.getUsername());
     }
 
     @OnClose
