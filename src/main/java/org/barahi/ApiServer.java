@@ -3,6 +3,7 @@ package org.barahi;
 import org.barahi.infra.InfraBinder;
 import org.barahi.server.resource.DummyResource;
 import org.barahi.server.resource.PlayerResource;
+import org.barahi.server.resource.RoomsResource;
 import org.barahi.server.resource.ServiceLocatorFeature;
 import org.barahi.server.resource.socket.SocketResource;
 import org.barahi.server.resource.WebSocketBinder;
@@ -35,7 +36,8 @@ public class ApiServer {
                 .register(WebSocketBinder.class)  // Register WebSocket endpoints for DI
                 .register(ServiceLocatorFeature.class)  // Capture ServiceLocator for WebSocket DI
                 .register(DummyResource.class)
-                .register(PlayerResource.class);
+                .register(PlayerResource.class)
+                .register(RoomsResource.class);
         return GrizzlyHttpServerFactory.createHttpServer(URI.create(BASE_URI), resourceConfig);
     }
 
