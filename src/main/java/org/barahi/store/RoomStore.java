@@ -72,7 +72,7 @@ public class RoomStore {
   public List<PlayerId> getPlayerIdsInRoom(RoomId roomId) {
         return db.select(ROOM_PLAYER.PLAYER_ID)
           .from(ROOM_PLAYER)
-          .where(ROOM_PLAYER.ROOM_ID.eq(roomId.toString()))
+          .where(ROOM_PLAYER.ROOM_ID.eq(roomId.getId().toString()))
           .fetch(ROOM_PLAYER.PLAYER_ID)
           .stream().map(PlayerId::of)
           .toList();
