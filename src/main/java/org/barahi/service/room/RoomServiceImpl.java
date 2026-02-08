@@ -81,7 +81,7 @@ public class RoomServiceImpl implements RoomService {
         RoomId roomUUID;
         try {
             playerId = new Player.PlayerId(UUID.fromString(joinRoomJson.getPlayerId()));
-            roomUUID = new Room.RoomId(UUID.fromString(roomId));
+            roomUUID = Room.RoomId.of(roomId);
         } catch (IllegalArgumentException e) {
             throw new IllegalArgumentException(String.format("Invalid Id Format %s ", e));
         }
@@ -100,8 +100,9 @@ public class RoomServiceImpl implements RoomService {
         if (joinRoomJson.getPassword() != null) {
             String password = gameSettingsStore.getPasswordByRoomId(room.getId());
 
-            if (password != joinRoomJson.getPassword()) {
-                throw new IllegalArgumentException(String.format("The Password Does Not Match For The Given Room ID: %s", roomUUID));
+            if (!password.equals(joinRoomJson.getPassword())) {
+                throw new IllegalArgumentException(
+                        String.format("The Password Does Not Match For The Given Room ID: %s", roomUUID));
             }
         }
 

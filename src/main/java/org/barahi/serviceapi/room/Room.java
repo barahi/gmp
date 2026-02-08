@@ -11,10 +11,17 @@ public interface Room {
     Player.PlayerId getHostPlayerId();
     boolean isGameStarted();
     Instant getCreatedAt();
-
-    class RoomId extends TypedUUID<Room> {
+    public class RoomId extends TypedUUID<Room> {
         public RoomId(UUID id) {
             super(id);
+        }
+
+        public static RoomId of(UUID id) {
+            return new RoomId(id);
+        }
+
+        public static RoomId of(String id) {
+            return new RoomId(UUID.fromString(id));
         }
     }
 }

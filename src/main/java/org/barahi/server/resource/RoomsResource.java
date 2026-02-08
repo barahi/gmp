@@ -14,12 +14,13 @@ import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
 
 @Path(RoomsResource.BASE_PATH)
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 public class RoomsResource {
-    public static final String BASE_PATH = "rooms";
+    public static final String BASE_PATH = "room";
 
     private final RoomService roomService;
 
@@ -39,9 +40,11 @@ public class RoomsResource {
     }
 
     @POST
-    @Path("/room/{roomId}/join")
-    public void addPlayerToRoom(@PathParam("roomId") String roomId, @Valid JoinRoomJson joinRoomJson){
+    @Path("/{roomId}/join")
+    public Response addPlayerToRoom(
+            @PathParam("roomId") String roomId,
+            @Valid JoinRoomJson joinRoomJson) {
         roomService.addPlayerToRoom(roomId, joinRoomJson);
-        return;
+        return Response.ok().build();
     }
 }

@@ -41,7 +41,7 @@ public class GameSettingsStore {
             for (String letter : settings.getExcludedLetters()) {
                 tx.insertInto(EXCLUDED_LETTERS)
                         .set(EXCLUDED_LETTERS.GAME_SETTINGS_ID, settings.getId().getId().toString())
-                        .set(EXCLUDED_LETTERS.LETTERS, letter)
+                        .set(EXCLUDED_LETTERS.LETTER, letter)
                         .execute();
             }
         });

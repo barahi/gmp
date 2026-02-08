@@ -44,7 +44,7 @@ public class RoomStore {
             .where(ROOM.ID.eq(id.getId().toString()))
             .fetchOne();
         if (record == null) {
-            throw new IllegalAccessException(String.format("Tried to access non existant room with id: %s", id));
+            throw new IllegalAccessException(String.format("Tried to access nonexistent room with id: %s", id));
         }
         return fromRecord(record);
     }

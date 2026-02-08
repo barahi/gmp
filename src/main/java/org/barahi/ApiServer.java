@@ -3,6 +3,7 @@ package org.barahi;
 import org.barahi.infra.InfraBinder;
 import org.barahi.server.resource.DummyResource;
 import org.barahi.server.resource.PlayerResource;
+import org.barahi.server.resource.RoomsResource;
 import org.barahi.server.serializer.SerializerBinder;
 import org.barahi.service.ServiceBinder;
 import org.barahi.store.StoreBinder;
@@ -27,7 +28,8 @@ public class ApiServer {
                 .register(ServiceBinder.class)
                 .register(SerializerBinder.class)
                 .register(DummyResource.class)
-                .register(PlayerResource.class);
+                .register(PlayerResource.class)
+                .register(RoomsResource.class);
         return GrizzlyHttpServerFactory.createHttpServer(URI.create(BASE_URI), rc);
     }
 

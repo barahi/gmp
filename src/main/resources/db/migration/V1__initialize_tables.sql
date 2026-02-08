@@ -32,17 +32,16 @@ CREATE TABLE room_player (
     FOREIGN KEY (room_id) REFERENCES room(id) ON DELETE CASCADE,
     FOREIGN KEY (player_id) REFERENCES player(id) ON DELETE CASCADE
 );
-
 CREATE TABLE categories (
-    game_settings_id VARCHAR(36) NOT NULL, 
+    game_settings_id VARCHAR(36) NOT NULL,
     category VARCHAR(50) NOT NULL,
-    PRIMARY KEY (game_settings_id),
+    PRIMARY KEY (game_settings_id, category),
     FOREIGN KEY (game_settings_id) REFERENCES game_settings(id) ON DELETE CASCADE
 );
 
-CREATE TABLE EXCLUDED_LETTERS (
-    game_settings_id VARCHAR(36) NOT NULL, 
-    letters VARCHAR(50) NOT NULL,
-    PRIMARY KEY (game_settings_id),
+CREATE TABLE excluded_letters (
+    game_settings_id VARCHAR(36) NOT NULL,
+    letter VARCHAR(1) NOT NULL,
+    PRIMARY KEY (game_settings_id, letter),
     FOREIGN KEY (game_settings_id) REFERENCES game_settings(id) ON DELETE CASCADE
 );

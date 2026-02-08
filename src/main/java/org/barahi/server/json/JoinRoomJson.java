@@ -4,18 +4,18 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class JoinRoomJson {
     @JsonProperty
-    private String id;
+    private String playerId;
 
     @JsonProperty
     private String password;
 
-    public JoinRoomJson setPlayerId(String id) {
-        this.id = id;
+    public JoinRoomJson setPlayerId(String playerId) {
+        this.playerId = playerId;
         return this;
     }
     
     public String getPlayerId() {
-        return id;
+        return playerId;
     }
     
     public JoinRoomJson setPassword(String password) {
