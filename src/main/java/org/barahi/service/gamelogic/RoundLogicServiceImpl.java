@@ -51,8 +51,7 @@ public class RoundLogicServiceImpl implements RoundLogicService {
 
   @Override
   public Map<PlayerId, Integer> calculatePlayerScoreForRound(RoomId roomId, int roundNumber) {
-//    List<PlayerId> playerIds = roomService.getPlayerIdsForRoom(roomId);
-    List<PlayerId> playerIds = List.of();
+    List<PlayerId> playerIds = roomService.getPlayerIdsInRoom(roomId);
     Map<String, Map<PlayerId, String>> categoryToPlayerAnswers = playerAnswerStore.getAnswersForRound(playerIds, roundNumber);
 
     // map to calculate answer occurrence per category
