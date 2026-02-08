@@ -7,7 +7,6 @@ import org.barahi.infra.TypedUUID;
 import org.barahi.serviceapi.player.Player.PlayerId;
 import org.jooq.DSLContext;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -42,7 +41,7 @@ public class PlayerAnswerStore {
 
   public void storeAnswers(Map<PlayerId, String> playerAnswers, String category, int roundNumber) {
     List<PlayerAnswerRecord> records = playerAnswers.entrySet().stream().map(
-      pa -> new PlayerAnswerRecord(null, pa.getKey().toString(), pa.getValue(), category, 100, roundNumber)
+      pa -> new PlayerAnswerRecord(pa.getKey().toString(), category, roundNumber, pa.getValue(), 100)
     ).toList();
     db.batchInsert(records).execute();
   }
