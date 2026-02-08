@@ -1,6 +1,8 @@
 package org.barahi.server.resource;
 
 import org.barahi.server.json.JoinRoomJson;
+import jakarta.ws.rs.*;
+import org.barahi.infra.exceptions.ObjectNotFoundException;
 import org.barahi.server.json.RoomCreateJson;
 import org.barahi.server.json.RoomJson;
 import org.barahi.serviceapi.room.RoomService;
@@ -36,7 +38,11 @@ public class RoomsResource {
 
     @POST
     public RoomJson createRoom(@Valid RoomCreateJson roomCreateJson) {
-        return roomService.createRoom(roomCreateJson);
+        try {
+            return roomService.createRoom(roomCreateJson);
+        } catch (ObjectNotFoundException e) {
+            throw new NotFoundException(e.getMessage());
+        }
     }
 
     @POST

@@ -13,5 +13,13 @@ public interface Player {
         public PlayerId(UUID id) {
             super(id);
         }
+
+        public static PlayerId of(UUID id) {
+            return new PlayerId(id);
+        }
+
+        public static PlayerId of(String id) throws IllegalArgumentException {
+            return PlayerId.of(UUID.fromString(id));
+        }
     }
 }

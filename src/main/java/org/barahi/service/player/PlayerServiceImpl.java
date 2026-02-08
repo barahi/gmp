@@ -1,6 +1,7 @@
 package org.barahi.service.player;
 
 import jakarta.inject.Inject;
+import org.barahi.infra.exceptions.ObjectNotFoundException;
 import org.barahi.serviceapi.player.Player;
 import org.barahi.serviceapi.player.Player.PlayerId;
 import org.barahi.serviceapi.player.PlayerImpl;
@@ -31,7 +32,7 @@ public class PlayerServiceImpl implements PlayerService {
     }
 
     @Override
-    public Player getPlayer(PlayerId playerId) throws IllegalAccessException {
+    public Player getPlayer(PlayerId playerId) throws ObjectNotFoundException {
         return playerStore.getPlayer(playerId);
     }
 }
