@@ -1,6 +1,7 @@
 CREATE TABLE categories (
-    room_id VARCHAR(36) NOT NULL,
+    id VARCHAR(36) NOT NULL,
+    game_settings_id VARCHAR(36) NOT NULL,
     category VARCHAR(50) NOT NULL,
-    PRIMARY KEY (room_id, category),
-    FOREIGN KEY (room_id) REFERENCES game_settings(room_id) ON DELETE CASCADE
+    PRIMARY KEY (id),
+    FOREIGN KEY (game_settings_id) REFERENCES game_settings(id) ON DELETE CASCADE
 );

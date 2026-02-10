@@ -1,5 +1,6 @@
 package org.barahi.service;
 
+import org.barahi.service.gamelogic.GameLogicServiceImpl;
 import org.barahi.service.player.PlayerServiceImpl;
 import org.barahi.service.room.RoomServiceImpl;
 import org.barahi.serviceapi.player.PlayerService;

@@ -8,7 +8,9 @@ import static org.barahi.generated.Tables.GAME_SETTINGS;
 import org.barahi.generated.tables.pojos.Room;
 import org.barahi.generated.tables.records.GameSettingsRecord;
 import org.barahi.infra.DSLContextProvider;
+import org.barahi.serviceapi.gameSettings.CategoryId;
 import org.barahi.serviceapi.gameSettings.GameSettings;
+import org.barahi.serviceapi.gameSettings.GameSettings.GameSettingsId;
 import org.barahi.serviceapi.room.Room.RoomId;
 import org.jooq.DSLContext;
 import org.jooq.impl.DSL;
@@ -16,6 +18,7 @@ import org.jooq.impl.DSL;
 import jakarta.inject.Inject;
 
 import java.util.List;
+import java.util.UUID;
 
 public class GameSettingsStore {
     private final DSLContext db;
@@ -33,22 +36,23 @@ public class GameSettingsStore {
                     .set(toRecord(settings))
                     .execute();
 
-            for (String category : settings.getCategories()) {
-                tx.insertInto(CATEGORIES)
-                        .set(CATEGORIES.ROOM_ID, settings.getId().getId().toString())
-                        .set(CATEGORIES.CATEGORY, category)
-                        .execute();
-            }
-
             for (String letter : settings.getExcludedLetters()) {
                 tx.insertInto(EXCLUDED_LETTER)
-                        .set(EXCLUDED_LETTER.ROOM_ID, settings.getId().getId().toString())
+                        .set(CATEGORIES.GAME_SETTINGS_ID, settings.getId().getId().toString())
                         .set(EXCLUDED_LETTER.LETTER, letter)
                         .execute();
             }
         });
 
     }
+
+//    public void createCategory(CategoryId categoryId, UUID gameSettingsId, String category) {
+//        db.insertInto(CATEGORIES)
+//          .set(CATEGORIES.ID, categoryId.toString())
+//          .set(CATEGORIES.GAME_SETTINGS_ID, gameSettingsId.toString())
+//          .set(CATEGORIES.CATEGORY, category)
+//          .execute();
+//    }
 
     public String getPasswordByRoomId(RoomId roomId) {
         return db.select(GAME_SETTINGS.PASSWORD)
@@ -67,7 +71,7 @@ public class GameSettingsStore {
     public List<Character> getLetterExclusions(RoomId roomId){
         return db.select(EXCLUDED_LETTER.LETTER)
           .from(EXCLUDED_LETTER)
-          .where(EXCLUDED_LETTER.ROOM_ID.eq(roomId.toString()))
+          .where(EXCLUDED_LETTER.GAME_SETTINGS_ID.eq(roomId.toString()))
           .fetch()
           .map(r -> r.get(EXCLUDED_LETTER.LETTER).charAt(0));
     }
