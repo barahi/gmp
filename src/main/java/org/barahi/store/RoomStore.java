@@ -39,6 +39,15 @@ public class RoomStore {
                 .execute();
     }
 
+    public List<PlayerId> getPlayerIdsInRoom(RoomId roomId) {
+        return db.select(ROOM_PLAYER.PLAYER_ID)
+          .from(ROOM_PLAYER)
+          .where(ROOM_PLAYER.ROOM_ID.eq(roomId.getId().toString()))
+          .fetch(ROOM_PLAYER.PLAYER_ID)
+          .stream().map(PlayerId::of)
+          .toList();
+    }
+
     // getRoomWithID gets room with room's id
     public Room getRoomWithId(RoomId id) throws IllegalAccessException {
         RoomRecord record = db.selectFrom(ROOM)
@@ -67,13 +76,4 @@ public class RoomStore {
                 record.getCreatedAt().toInstant(ZoneOffset.UTC)
         );
     }
-
-  public List<PlayerId> getPlayerIdsInRoom(RoomId roomId) {
-        return db.select(ROOM_PLAYER.PLAYER_ID)
-          .from(ROOM_PLAYER)
-          .where(ROOM_PLAYER.ROOM_ID.eq(roomId.getId().toString()))
-          .fetch(ROOM_PLAYER.PLAYER_ID)
-          .stream().map(PlayerId::of)
-          .toList();
-  }
 }

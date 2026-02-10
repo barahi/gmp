@@ -17,11 +17,11 @@ public class GameStateStore {
     this.db = dbProvider.get();
   }
 
-  public int getCurrentRound(RoomId roomId){
+  public Integer getCurrentRound(RoomId roomId){
     return db.select(GAME_STATE.CURRENT_ROUND)
       .from(GAME_STATE)
-      .where(GAME_STATE.ROOM_ID.eq(roomId.toString()))
-      .execute();
+      .where(GAME_STATE.ROOM_ID.eq(roomId.getId().toString()))
+      .fetchOne(GAME_STATE.CURRENT_ROUND);
   }
   public void changeGamePhaseAndRound(RoomId roomId, RoundPhase nextPhase, int roundNumber){
     db.insertInto(GAME_STATE)

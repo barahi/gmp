@@ -198,9 +198,10 @@ class RoundLogicServiceImplTest {
     Room.RoomId roomId = Room.RoomId.of(UUID.randomUUID());
     PlayerId p1 = PlayerId.newId();
     CategoryId categoryId = CategoryId.newId();
+    int roundNum = 4;
 
-    roundLogicService.invalidatePlayerAnswer(roomId, p1, categoryId);
-    verify(playerAnswerStore).updateScoreForAnswer(p1, categoryId, 0);
+    roundLogicService.invalidatePlayerAnswer(roomId, p1, categoryId, roundNum);
+    verify(playerAnswerStore).updateScoreForAnswer(p1, categoryId, 0, roundNum);
     verifyNoMoreInteractions(playerAnswerStore);
   }
 

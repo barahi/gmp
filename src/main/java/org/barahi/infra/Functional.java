@@ -39,7 +39,7 @@ public class Functional {
 
     public static <IN, OUT, IN_COLL extends Collection<IN>, OUT_COLL extends Collection<OUT>> OUT_COLL
     map(IN_COLL inputCollection, OUT_COLL outputCollection, Function<IN, OUT> mappingFunc) {
-        outputCollection.removeAll(List.copyOf(outputCollection));
+        outputCollection.clear();
         inputCollection.stream().map(mappingFunc).forEach(outputCollection::add);
         return outputCollection;
     }

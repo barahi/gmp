@@ -46,13 +46,13 @@ public class GameSettingsStore {
 
     }
 
-//    public void createCategory(CategoryId categoryId, UUID gameSettingsId, String category) {
-//        db.insertInto(CATEGORIES)
-//          .set(CATEGORIES.ID, categoryId.toString())
-//          .set(CATEGORIES.GAME_SETTINGS_ID, gameSettingsId.toString())
-//          .set(CATEGORIES.CATEGORY, category)
-//          .execute();
-//    }
+    public void createCategory(CategoryId categoryId, UUID gameSettingsId, String category) {
+        db.insertInto(CATEGORIES)
+          .set(CATEGORIES.ID, categoryId.getId().toString())
+          .set(CATEGORIES.GAME_SETTINGS_ID, gameSettingsId.toString())
+          .set(CATEGORIES.CATEGORY, category)
+          .execute();
+    }
 
     public String getGameSettingsId(RoomId roomId){
         return db.select(GAME_SETTINGS.ROOM_ID)
@@ -71,14 +71,14 @@ public class GameSettingsStore {
     public Integer getNumberOfRounds(RoomId roomId){
         return db.select(GAME_SETTINGS.NUMBER_OF_ROUNDS)
           .from(GAME_SETTINGS)
-          .where(GAME_SETTINGS.ROOM_ID.eq(roomId.toString()))
+          .where(GAME_SETTINGS.ROOM_ID.eq(roomId.getId().toString()))
           .fetchOne(GAME_SETTINGS.NUMBER_OF_ROUNDS);
     }
 
     public List<Character> getLetterExclusions(RoomId roomId){
         return db.select(EXCLUDED_LETTER.LETTER)
           .from(EXCLUDED_LETTER)
-          .where(EXCLUDED_LETTER.GAME_SETTINGS_ID.eq(roomId.toString()))
+          .where(EXCLUDED_LETTER.GAME_SETTINGS_ID.eq(roomId.getId().toString()))
           .fetch()
           .map(r -> r.get(EXCLUDED_LETTER.LETTER).charAt(0));
     }

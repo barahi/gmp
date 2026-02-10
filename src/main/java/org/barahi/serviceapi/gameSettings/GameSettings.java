@@ -1,6 +1,7 @@
 package org.barahi.serviceapi.gameSettings;
 
 import java.util.List;
+import java.util.UUID;
 
 import org.barahi.infra.TypedUUID;
 import org.barahi.serviceapi.room.Room;
@@ -19,6 +20,12 @@ public interface GameSettings {
     class GameSettingsId extends TypedUUID<GameSettings> {
         public GameSettingsId(java.util.UUID id) {
             super(id);
+        }
+        public static GameSettingsId of(UUID id) {
+            return new GameSettingsId(id);
+        }
+        public static GameSettingsId of(String id) throws IllegalArgumentException {
+            return GameSettingsId.of(UUID.fromString(id));
         }
     }
 }

@@ -89,8 +89,8 @@ public class RoundLogicServiceImpl implements RoundLogicService {
     gameStateStore.changeGamePhase(roomId, RoundPhase.VOTE);
   }
   @Override
-  public void invalidatePlayerAnswer(RoomId roomId, PlayerId playerId, CategoryId categoryId) {
-    playerAnswerStore.updateScoreForAnswer(playerId, categoryId, 0);
+  public void invalidatePlayerAnswer(RoomId roomId, PlayerId playerId, CategoryId categoryId, int roundNum) {
+    playerAnswerStore.updateScoreForAnswer(playerId, categoryId, roundNum, 0);
   }
 
   @Override

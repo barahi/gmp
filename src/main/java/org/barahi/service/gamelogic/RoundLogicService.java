@@ -14,6 +14,6 @@ public interface RoundLogicService {
     void storeAnswers(RoomId roomId, CategoryId categoryId, int roundNumber, Map<PlayerId, String> playerAnswers);
     Map<PlayerId, Integer> calculatePlayerScoreForRound(RoomId roomId, int roundNumber);
     void beginVotePhase(RoomId roomId);
-    void invalidatePlayerAnswer(RoomId roomId, PlayerId playerId, CategoryId category);
+    void invalidatePlayerAnswer(RoomId roomId, PlayerId playerId, CategoryId category, int roundNum);
     void endRound(RoomId roomId);
 }

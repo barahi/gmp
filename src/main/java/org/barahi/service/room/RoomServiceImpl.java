@@ -128,7 +128,7 @@ public class RoomServiceImpl implements RoomService {
     private void createCategories(UUID gameSettingsId, List<String> categories){
         for (String category: categories){
             CategoryId categoryId = CategoryId.newId();
-//            gameSettingsStore.createCategory(categoryId, UUID.fromString(gameSettingsId.toString()), category);
+            gameSettingsStore.createCategory(categoryId, UUID.fromString(gameSettingsId.toString()), category);
         }
     }
 }
