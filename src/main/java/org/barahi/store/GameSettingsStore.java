@@ -54,6 +54,13 @@ public class GameSettingsStore {
 //          .execute();
 //    }
 
+    public String getGameSettingsId(RoomId roomId){
+        return db.select(GAME_SETTINGS.ROOM_ID)
+          .from(GAME_SETTINGS)
+          .where(GAME_SETTINGS.ROOM_ID.eq(roomId.getId().toString()))
+          .fetchOne(GAME_SETTINGS.ID);
+    }
+
     public String getPasswordByRoomId(RoomId roomId) {
         return db.select(GAME_SETTINGS.PASSWORD)
                 .from(GAME_SETTINGS)
@@ -61,11 +68,11 @@ public class GameSettingsStore {
                 .fetchOneInto(String.class);
     }
 
-    public int getNumberOfRounds(RoomId roomId){
+    public Integer getNumberOfRounds(RoomId roomId){
         return db.select(GAME_SETTINGS.NUMBER_OF_ROUNDS)
           .from(GAME_SETTINGS)
           .where(GAME_SETTINGS.ROOM_ID.eq(roomId.toString()))
-          .execute();
+          .fetchOne(GAME_SETTINGS.NUMBER_OF_ROUNDS);
     }
 
     public List<Character> getLetterExclusions(RoomId roomId){

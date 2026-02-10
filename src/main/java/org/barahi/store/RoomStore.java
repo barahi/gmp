@@ -15,8 +15,7 @@ import java.time.ZoneOffset;
 import java.util.List;
 import java.util.UUID;
 
-import static org.barahi.generated.Tables.ROOM;
-import static org.barahi.generated.Tables.ROOM_PLAYER;
+import static org.barahi.generated.Tables.*;
 
 public class RoomStore {
     private final DSLContext db;

@@ -3,8 +3,10 @@ package org.barahi.server.resource;
 import org.barahi.server.json.JoinRoomJson;
 import jakarta.ws.rs.*;
 import org.barahi.infra.exceptions.ObjectNotFoundException;
+import org.barahi.server.json.PlayerJson;
 import org.barahi.server.json.RoomCreateJson;
 import org.barahi.server.json.RoomJson;
+import org.barahi.serviceapi.room.Room;
 import org.barahi.serviceapi.room.RoomService;
 
 import jakarta.inject.Inject;
@@ -17,6 +19,8 @@ import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
+
+import java.util.List;
 
 @Path(RoomsResource.BASE_PATH)
 @Produces(MediaType.APPLICATION_JSON)
@@ -53,4 +57,5 @@ public class RoomsResource {
         roomService.addPlayerToRoom(roomId, joinRoomJson);
         return Response.ok().build();
     }
+
 }

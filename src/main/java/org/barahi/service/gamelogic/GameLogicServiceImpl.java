@@ -52,12 +52,4 @@ public class GameLogicServiceImpl implements GameLogicService{
   public Map<PlayerId, Integer> endGame(RoomId roomId) {
     return cumulativeScoreStore.getPlayerScores(roomId);
   }
-
-
-  public enum RoundPhase {
-    SUBMIT,
-    REVIEW,
-    VOTE,
-    SCORE,
-  }
 }

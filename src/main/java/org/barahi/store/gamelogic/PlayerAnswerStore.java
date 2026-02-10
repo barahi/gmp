@@ -4,6 +4,7 @@ import jakarta.inject.Inject;
 import org.barahi.generated.tables.records.PlayerAnswerRecord;
 import org.barahi.infra.DSLContextProvider;
 import org.barahi.infra.TypedUUID;
+import org.barahi.serviceapi.gameSettings.CategoryId;
 import org.barahi.serviceapi.player.Player.PlayerId;
 import org.jooq.DSLContext;
 
@@ -39,19 +40,19 @@ public class PlayerAnswerStore {
   }
 
 
-  public void storeAnswers(Map<PlayerId, String> playerAnswers, String category, int roundNumber) {
+  public void storeAnswers(String gameSettingsId, CategoryId categoryId, int round, Map<PlayerId, String> playerAnswers) {
     List<PlayerAnswerRecord> records = playerAnswers.entrySet().stream().map(
       pa ->
-        new PlayerAnswerRecord(pa.getKey().toString(), category, roundNumber, pa.getValue(), 100)
+        new PlayerAnswerRecord(pa.getKey().toString(), categoryId.toString(), gameSettingsId, round, pa.getValue(), 100)
     ).toList();
     db.batchInsert(records).execute();
   }
 
-  public void updateScoreForAnswer(PlayerId playerId, String category, int newScore){
+  public void updateScoreForAnswer(PlayerId playerId, CategoryId categoryId, int newScore){
     db.update(PLAYER_ANSWER)
       .set(PLAYER_ANSWER.SCORE, newScore)
       .where(PLAYER_ANSWER.PLAYER_ID.eq(playerId.toString()))
-      .and(PLAYER_ANSWER.CATEGORY.eq(category))
+      .and(PLAYER_ANSWER.CATEGORY_ID.eq(categoryId.toString()))
       .execute();
   }
 }
