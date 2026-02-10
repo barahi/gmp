@@ -1,7 +1,9 @@
 package org.barahi.service.gamelogic;
 
-import org.barahi.serviceapi.player.Player;
+import org.barahi.service.room.RoomServiceImpl;
+import org.barahi.serviceapi.player.Player.PlayerId;
 import org.barahi.serviceapi.room.Room;
+import org.barahi.serviceapi.room.RoomService;
 import org.barahi.store.GameSettingsStore;
 import org.barahi.store.gamelogic.CumulativeScoreStore;
 import org.barahi.store.gamelogic.GameStateStore;
@@ -11,6 +13,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -30,6 +33,8 @@ public class GameLogicServiceTest {
   GameSettingsStore gameSettingsStore;
 
   @Mock
+  RoomServiceImpl roomService;
+  @Mock
   RoundLogicService roundLogicService;
 
   @InjectMocks
@@ -37,28 +42,37 @@ public class GameLogicServiceTest {
 
 
   @Test
-  public void startGameTest() {
+  void startGameTest() {
     Room.RoomId roomId = Room.RoomId.of(UUID.randomUUID());
+    PlayerId p1 = PlayerId.newId();
+    PlayerId p2 = PlayerId.newId();
+    PlayerId p3 = PlayerId.newId();
+    List<PlayerId> playerIds = List.of(p1, p2, p3);
+
+    when(roomService.getPlayerIdsInRoom(roomId)).thenReturn(playerIds);
+
     gameLogicService.startGame(roomId);
+
+    verify(cumulativeScoreStore).initializeScores(roomId, playerIds);
     verify(roundLogicService).startRound(roomId, 1);
-    verifyNoMoreInteractions(gameStateStore);
+    verifyNoMoreInteractions(gameStateStore, cumulativeScoreStore, roundLogicService, roomService, gameSettingsStore);
   }
 
   @Test
   public void updatePlayerScoreTest(){
     Room.RoomId roomId = Room.RoomId.of(UUID.randomUUID());
     int roundNum = 2;
-    Player.PlayerId p1 = Player.PlayerId.newId();
-    Player.PlayerId p2 = Player.PlayerId.newId();
-    Player.PlayerId p3 = Player.PlayerId.newId();
+    PlayerId p1 = PlayerId.newId();
+    PlayerId p2 = PlayerId.newId();
+    PlayerId p3 = PlayerId.newId();
 
-    Map<Player.PlayerId, Integer> roundScores = Map.of(p1, 250, p2, 350, p3, 400);
-    Map<Player.PlayerId, Integer> cumulativeScores = Map.of(p1, 1000, p2, 975, p3, 1200);
+    Map<PlayerId, Integer> roundScores = Map.of(p1, 250, p2, 350, p3, 400);
+    Map<PlayerId, Integer> cumulativeScores = Map.of(p1, 1000, p2, 975, p3, 1200);
 
     when(roundLogicService.calculatePlayerScoreForRound(roomId, roundNum)).thenReturn(roundScores);
     when(cumulativeScoreStore.updatePlayerScores(roomId, roundScores)).thenReturn(cumulativeScores);
 
-    Map<Player.PlayerId, Integer> result =
+    Map<PlayerId, Integer> result =
       gameLogicService.updatePlayerScores(roomId, roundNum);
 
     assertEquals(cumulativeScores, result);

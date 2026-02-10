@@ -2,6 +2,7 @@ package org.barahi.service.gamelogic;
 
 import jakarta.inject.Inject;
 import org.barahi.serviceapi.gameSettings.CategoryId;
+import org.barahi.serviceapi.gameSettings.GameSettings.GameSettingsId;
 import org.barahi.serviceapi.player.Player.PlayerId;
 import org.barahi.serviceapi.room.Room.RoomId;
 import org.barahi.serviceapi.room.RoomService;
@@ -33,12 +34,11 @@ public class RoundLogicServiceImpl implements RoundLogicService {
     this.gameLogicService = gameLogicService;
   }
 
-
   @Override
   public char startRound(RoomId roomId, int roundNumber) {
     gameStateStore.changeGamePhaseAndRound(roomId, RoundPhase.SUBMIT, roundNumber);
-
-    List<Character> excludedLetters = gameSettingsStore.getLetterExclusions(roomId);
+    GameSettingsId gameSettingsId = GameSettingsId.of(gameSettingsStore.getGameSettingsId(roomId));
+    List<Character> excludedLetters = gameSettingsStore.getLetterExclusions(gameSettingsId);
 
     String allChars = "abcdefghijklmnopqrstuvwxyz";
     StringBuilder allowed = new StringBuilder();

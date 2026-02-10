@@ -38,7 +38,7 @@ public class GameSettingsStore {
 
             for (String letter : settings.getExcludedLetters()) {
                 tx.insertInto(EXCLUDED_LETTER)
-                        .set(CATEGORIES.GAME_SETTINGS_ID, settings.getId().getId().toString())
+                        .set(EXCLUDED_LETTER.GAME_SETTINGS_ID, settings.getId().getId().toString())
                         .set(EXCLUDED_LETTER.LETTER, letter)
                         .execute();
             }
@@ -75,10 +75,10 @@ public class GameSettingsStore {
           .fetchOne(GAME_SETTINGS.NUMBER_OF_ROUNDS);
     }
 
-    public List<Character> getLetterExclusions(RoomId roomId){
+    public List<Character> getLetterExclusions(GameSettingsId gameSettingsId){
         return db.select(EXCLUDED_LETTER.LETTER)
           .from(EXCLUDED_LETTER)
-          .where(EXCLUDED_LETTER.GAME_SETTINGS_ID.eq(roomId.getId().toString()))
+          .where(EXCLUDED_LETTER.GAME_SETTINGS_ID.eq(gameSettingsId.getId().toString()))
           .fetch()
           .map(r -> r.get(EXCLUDED_LETTER.LETTER).charAt(0));
     }

@@ -1,6 +1,7 @@
 package org.barahi.service.gamelogic;
 
 import org.barahi.serviceapi.gameSettings.CategoryId;
+import org.barahi.serviceapi.gameSettings.GameSettings.GameSettingsId;
 import org.barahi.serviceapi.player.Player.PlayerId;
 import org.barahi.serviceapi.room.Room;
 import org.barahi.serviceapi.room.RoomService;
@@ -47,7 +48,9 @@ class RoundLogicServiceImplTest {
   @Test
   public void startRound_returnsRandomLetterNotInExcludedLetters() {
     Room.RoomId roomId = new Room.RoomId(UUID.randomUUID());
-    when(gameSettingsStore.getLetterExclusions(roomId)).thenReturn(List.of('x','y'));
+    GameSettingsId gameSettingsId = new GameSettingsId(UUID.randomUUID());
+    when(gameSettingsStore.getGameSettingsId(roomId)).thenReturn(gameSettingsId.getId().toString());
+    when(gameSettingsStore.getLetterExclusions(gameSettingsId)).thenReturn(List.of('x','y'));
 
     assertDoesNotThrow(() -> {
       char result = roundLogicService.startRound(roomId, 1);
@@ -201,7 +204,7 @@ class RoundLogicServiceImplTest {
     int roundNum = 4;
 
     roundLogicService.invalidatePlayerAnswer(roomId, p1, categoryId, roundNum);
-    verify(playerAnswerStore).updateScoreForAnswer(p1, categoryId, 0, roundNum);
+    verify(playerAnswerStore).updateScoreForAnswer(p1, categoryId, roundNum, 0);
     verifyNoMoreInteractions(playerAnswerStore);
   }
 
