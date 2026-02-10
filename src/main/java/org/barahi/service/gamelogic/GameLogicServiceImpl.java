@@ -30,11 +30,11 @@ public class GameLogicServiceImpl implements GameLogicService{
     roundLogicService.startRound(roomId, 1);
   }
 
-//  @Override
-//  public Map<PlayerId, Integer> updatePlayerScores(RoomId roomId, int roundNumber) {
-//    Map<PlayerId, Integer> scores = roundLogicService.calculatePlayerScoreForRound(roomId, roundNumber);
-//    return cumulativeScoreStore.updatePlayerScores(roomId, scores);
-//  }
+  @Override
+  public Map<PlayerId, Integer> updatePlayerScores(RoomId roomId, int roundNumber) {
+    Map<PlayerId, Integer> scores = roundLogicService.calculatePlayerScoreForRound(roomId, roundNumber);
+    return cumulativeScoreStore.updatePlayerScores(roomId, scores);
+  }
 
   @Override
   public void startNextRound(RoomId roomId) {
@@ -44,7 +44,7 @@ public class GameLogicServiceImpl implements GameLogicService{
       currRound++;
       roundLogicService.startRound(roomId, currRound );
     } else {
-      this.endGame(roomId);
+      endGame(roomId);
     }
   }
 

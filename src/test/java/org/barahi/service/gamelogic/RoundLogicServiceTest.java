@@ -8,12 +8,10 @@ import org.barahi.store.GameSettingsStore;
 import org.barahi.store.gamelogic.GameStateStore;
 import org.barahi.store.gamelogic.PlayerAnswerStore;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InOrder;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 
@@ -143,7 +141,7 @@ class RoundLogicServiceImplTest {
 
   @Test
   public void calculatePlayerScoreForRoundTestWithNulls() {
-    Room.RoomId roomId = new Room.RoomId(new UUID(8, 7));
+    Room.RoomId roomId = Room.RoomId.of(UUID.randomUUID());
     int roundNum = 5;
 
     PlayerId p1 = PlayerId.newId();

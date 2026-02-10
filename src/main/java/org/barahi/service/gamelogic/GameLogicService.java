@@ -8,7 +8,7 @@ import java.util.Map;
 
 public interface GameLogicService {
   void startGame(RoomId roomId);
-//  Map<PlayerId, Integer> updatePlayerScores(RoomId roomId, int roundNumber);
+  Map<PlayerId, Integer> updatePlayerScores(RoomId roomId, int roundNumber);
   void startNextRound(RoomId roomId);
   Map<PlayerId, Integer> endGame(RoomId roomId);
 }
