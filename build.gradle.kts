@@ -48,6 +48,8 @@ dependencies {
     testImplementation("org.mockito:mockito-core:5.5.0")
     testImplementation("org.mockito:mockito-junit-jupiter:5.5.0")
 
+    testImplementation("org.hamcrest:hamcrest:2.2")
+
 }
 
 

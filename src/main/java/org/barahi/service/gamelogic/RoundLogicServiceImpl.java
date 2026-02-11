@@ -15,6 +15,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import static org.barahi.service.gamelogic.RoundLogicHelper.generateRandomCharExcluding;
+
 public class RoundLogicServiceImpl implements RoundLogicService {
   private static final int CATEGORY_FULL_SCORE = 100;
 
@@ -40,16 +42,7 @@ public class RoundLogicServiceImpl implements RoundLogicService {
     GameSettingsId gameSettingsId = GameSettingsId.of(gameSettingsStore.getGameSettingsId(roomId));
     List<Character> excludedLetters = gameSettingsStore.getLetterExclusions(gameSettingsId);
 
-    String allChars = "abcdefghijklmnopqrstuvwxyz";
-    StringBuilder allowed = new StringBuilder();
-    for (char c : allChars.toCharArray()) {
-      if (!excludedLetters.contains(c)) {
-        allowed.append(c);
-      }
-    }
-
-    int randomIdx = (int) (Math.random() * allowed.length());
-    return allowed.charAt(randomIdx);
+    return generateRandomCharExcluding(excludedLetters);
   }
 
   @Override
