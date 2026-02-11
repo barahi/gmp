@@ -1,8 +1,6 @@
 package org.barahi.service.gamelogic;
 
 import jakarta.inject.Inject;
-import org.barahi.serviceapi.gameSettings.GameSettings;
-import org.barahi.serviceapi.gameSettings.GameSettings.GameSettingsId;
 import org.barahi.serviceapi.player.Player.PlayerId;
 import org.barahi.serviceapi.room.Room.RoomId;
 import org.barahi.serviceapi.room.RoomService;

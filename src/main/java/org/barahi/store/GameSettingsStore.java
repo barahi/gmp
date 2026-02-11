@@ -54,11 +54,12 @@ public class GameSettingsStore {
           .execute();
     }
 
-    public String getGameSettingsId(RoomId roomId){
-        return db.select(GAME_SETTINGS.ROOM_ID)
+    public GameSettingsId getGameSettingsId(RoomId roomId){
+        String id = db.select(GAME_SETTINGS.ID)
           .from(GAME_SETTINGS)
           .where(GAME_SETTINGS.ROOM_ID.eq(roomId.getId().toString()))
           .fetchOne(GAME_SETTINGS.ID);
+        return GameSettingsId.of(id);
     }
 
     public String getPasswordByRoomId(RoomId roomId) {

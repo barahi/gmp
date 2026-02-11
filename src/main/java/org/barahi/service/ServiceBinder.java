@@ -2,6 +2,7 @@ package org.barahi.service;
 
 import org.barahi.service.gamelogic.GameLogicService;
 import org.barahi.service.gamelogic.GameLogicServiceImpl;
+import org.barahi.service.gamelogic.RoundLogicService;
 import org.barahi.service.gamelogic.RoundLogicServiceImpl;
 import org.barahi.service.player.PlayerServiceImpl;
 import org.barahi.service.room.RoomServiceImpl;
@@ -14,7 +15,7 @@ public class ServiceBinder extends AbstractBinder {
     protected void configure() {
         bind(PlayerServiceImpl.class).to(PlayerService.class);
         bind(RoomServiceImpl.class).to(RoomService.class);
-        bind(RoundLogicServiceImpl.class).to(RoomService.class);
+        bind(RoundLogicServiceImpl.class).to(RoundLogicService.class);
         bind(GameLogicServiceImpl.class).to(GameLogicService.class);
     }
 }

@@ -3,8 +3,8 @@ package org.barahi.store.gamelogic;
 import jakarta.inject.Inject;
 import org.barahi.generated.tables.records.PlayerAnswerRecord;
 import org.barahi.infra.DSLContextProvider;
-import org.barahi.infra.TypedUUID;
 import org.barahi.serviceapi.gameSettings.CategoryId;
+import org.barahi.serviceapi.gameSettings.GameSettings.GameSettingsId;
 import org.barahi.serviceapi.player.Player.PlayerId;
 import org.jooq.DSLContext;
 
@@ -41,10 +41,10 @@ public class PlayerAnswerStore {
   }
 
 
-  public void storeAnswers(String gameSettingsId, CategoryId categoryId, int round, Map<PlayerId, String> playerAnswers) {
+  public void storeAnswers(GameSettingsId gameSettingsId, CategoryId categoryId, int round, Map<PlayerId, String> playerAnswers) {
     List<PlayerAnswerRecord> records = playerAnswers.entrySet().stream().map(
       pa ->
-        new PlayerAnswerRecord(pa.getKey().getId().toString(), categoryId.toString(), gameSettingsId, round, pa.getValue(), 100)
+        new PlayerAnswerRecord(pa.getKey().getId().toString(), categoryId.getId().toString(), gameSettingsId.getId().toString(), round, pa.getValue(), 100)
     ).toList();
     db.batchInsert(records).execute();
   }

@@ -13,7 +13,6 @@ import org.barahi.store.gamelogic.PlayerAnswerStore;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import static org.barahi.service.gamelogic.RoundLogicHelper.generateRandomCharExcluding;
 
@@ -39,7 +38,7 @@ public class RoundLogicServiceImpl implements RoundLogicService {
   @Override
   public char startRound(RoomId roomId, int roundNumber) {
     gameStateStore.changeGamePhaseAndRound(roomId, RoundPhase.SUBMIT, roundNumber);
-    GameSettingsId gameSettingsId = GameSettingsId.of(gameSettingsStore.getGameSettingsId(roomId));
+    GameSettingsId gameSettingsId = gameSettingsStore.getGameSettingsId(roomId);
     List<Character> excludedLetters = gameSettingsStore.getLetterExclusions(gameSettingsId);
 
     return generateRandomCharExcluding(excludedLetters);
@@ -48,7 +47,7 @@ public class RoundLogicServiceImpl implements RoundLogicService {
   @Override
   public void storeAnswers(RoomId roomId, CategoryId categoryId, int roundNumber, Map<PlayerId, String> playerAnswers) {
     gameStateStore.changeGamePhase(roomId, RoundPhase.SUBMIT);
-    String gameSettingsId = gameSettingsStore.getGameSettingsId(roomId);
+    GameSettingsId gameSettingsId = gameSettingsStore.getGameSettingsId(roomId);
     playerAnswerStore.storeAnswers(gameSettingsId, categoryId, roundNumber, playerAnswers);
   }
 

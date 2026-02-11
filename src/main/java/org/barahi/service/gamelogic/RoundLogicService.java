@@ -1,10 +1,8 @@
 package org.barahi.service.gamelogic;
 
 import org.barahi.serviceapi.gameSettings.CategoryId;
-import org.barahi.serviceapi.player.Player;
 import org.barahi.serviceapi.room.Room.RoomId;
 
-import java.util.List;
 import java.util.Map;
 
 import static org.barahi.serviceapi.player.Player.*;

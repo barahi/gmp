@@ -5,7 +5,6 @@ import org.barahi.generated.tables.records.CumulativeScoreRecord;
 import org.barahi.infra.DSLContextProvider;
 import org.barahi.serviceapi.player.Player.PlayerId;
 import org.barahi.serviceapi.room.Room.RoomId;
-import org.checkerframework.checker.units.qual.A;
 import org.jooq.DSLContext;
 import org.jooq.Query;
 

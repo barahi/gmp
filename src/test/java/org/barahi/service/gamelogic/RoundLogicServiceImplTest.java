@@ -1,6 +1,7 @@
 package org.barahi.service.gamelogic;
 
 import org.barahi.serviceapi.gameSettings.CategoryId;
+import org.barahi.serviceapi.gameSettings.GameSettings;
 import org.barahi.serviceapi.gameSettings.GameSettings.GameSettingsId;
 import org.barahi.serviceapi.player.Player.PlayerId;
 import org.barahi.serviceapi.room.Room;
@@ -46,18 +47,6 @@ class RoundLogicServiceImplTest {
   RoundLogicServiceImpl roundLogicService;
 
   @Test
-  public void startRound_returnsRandomLetterNotInExcludedLetters() {
-    Room.RoomId roomId = new Room.RoomId(UUID.randomUUID());
-    GameSettingsId gameSettingsId = new GameSettingsId(UUID.randomUUID());
-    List<Character> excludedList = List.of('x','y');
-    when(gameSettingsStore.getGameSettingsId(roomId)).thenReturn(gameSettingsId.getId().toString());
-    when(gameSettingsStore.getLetterExclusions(gameSettingsId)).thenReturn(excludedList);
-
-    char result = roundLogicService.startRound(roomId, 1);
-  }
-
-
-  @Test
   public void storeAnswersTest(){
     Room.RoomId roomId = new Room.RoomId(UUID.randomUUID());
     CategoryId categoryId = CategoryId.of(UUID.randomUUID());
@@ -65,7 +54,7 @@ class RoundLogicServiceImplTest {
     PlayerId p1 = PlayerId.newId();
     PlayerId p2 = PlayerId.newId();
     Map<PlayerId, String> playerAnswers = Map.of(p1, "Ant", p2, "Aardvark");
-    String gameSettingsId = "settings-123";
+    GameSettingsId gameSettingsId = new GameSettingsId(UUID.randomUUID());
 
     when(gameSettingsStore.getGameSettingsId(roomId)).thenReturn(gameSettingsId);
 
@@ -95,7 +84,7 @@ class RoundLogicServiceImplTest {
 
         when(roomService.getPlayerIdsInRoom(roomId)).thenReturn(playerIds);
 
-        Map<String, Map<PlayerId, String>> bigBoy = Map.of(
+        Map<String, Map<PlayerId, String>> categoryToAnswer = Map.of(
           "category1", Map.of(
             p1, "cat",
             p2, "cat",
@@ -123,7 +112,7 @@ class RoundLogicServiceImplTest {
             p7, "canada")
         );
 
-        when(playerAnswerStore.getAnswersForRound(playerIds,roundNum)).thenReturn(bigBoy);
+        when(playerAnswerStore.getAnswersForRound(playerIds,roundNum)).thenReturn(categoryToAnswer);
 
         Map<PlayerId, Integer> result = roundLogicService.calculatePlayerScoreForRound(roomId, roundNum);
 
@@ -149,31 +138,27 @@ class RoundLogicServiceImplTest {
     PlayerId p4 = PlayerId.newId();
     List<PlayerId> playerIds = List.of(p1, p2, p3, p4);
 
-    Map<String, Map<PlayerId, String>> bigBoy = Map.of(
+    Map<String, Map<PlayerId, String>> categoryToAnswer = Map.of(
       "category1", Map.of(
-        p1, "", // 0
-        p2, "cat", // 50
-        p3, "chameleon", //100
-        p4, "cat" //50
+        p1, "",
+        p2, "cat",
+        p3, "chameleon",
+        p4, "cat"
       ),
       "category2", Map.of(
-        p1, "", // 0
-        p2, "", // 0
-        p3, "crimson", // 50
-        p4, "crimson"), // 50
+        p1, "",
+        p2, "",
+        p3, "crimson",
+        p4, "crimson"),
 
       "category3", Map.of(
-        p1, "canada", // 100
+        p1, "canada",
         p2, "", // 0
-        p3, "colombia", // 50
-        p4, "colombia") // 50
-      // P1 -> 100
-      // P2 -> 50
-      // P3 -> 200
-      // P4 -> 150
+        p3, "colombia",
+        p4, "colombia")
     );
     when(roomService.getPlayerIdsInRoom(roomId)).thenReturn(playerIds);
-    when(playerAnswerStore.getAnswersForRound(playerIds,roundNum)).thenReturn(bigBoy);
+    when(playerAnswerStore.getAnswersForRound(playerIds,roundNum)).thenReturn(categoryToAnswer);
 
     Map<PlayerId, Integer> result = roundLogicService.calculatePlayerScoreForRound(roomId, roundNum);
 

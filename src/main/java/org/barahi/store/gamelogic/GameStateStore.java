@@ -2,7 +2,6 @@ package org.barahi.store.gamelogic;
 
 import jakarta.inject.Inject;
 import org.barahi.infra.DSLContextProvider;
-import org.barahi.service.gamelogic.GameLogicServiceImpl;
 import org.barahi.service.gamelogic.RoundPhase;
 import org.barahi.serviceapi.room.Room.RoomId;
 import org.jooq.DSLContext;
