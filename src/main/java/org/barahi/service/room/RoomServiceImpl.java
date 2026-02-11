@@ -65,6 +65,7 @@ public class RoomServiceImpl implements RoomService {
         try {
             roomStore.createRoom(room);
             roomStore.addPlayerToRoom(room.getId(), host.getId());
+            gameSettingsStore.createGameSettings(settings);
             createCategories(gameSettingsId, createJson.getCategories());
         } catch (RuntimeException e) {
             throw new RuntimeException("Failed to create room", e);
