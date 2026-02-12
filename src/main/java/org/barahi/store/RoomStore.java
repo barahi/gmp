@@ -3,6 +3,7 @@ package org.barahi.store;
 import jakarta.inject.Inject;
 import org.barahi.infra.DSLContextProvider;
 import org.barahi.serviceapi.player.Player;
+import org.barahi.serviceapi.player.Player.PlayerId;
 import org.barahi.serviceapi.room.Room;
 import org.barahi.serviceapi.room.Room.RoomId;
 import org.barahi.serviceapi.room.RoomImpl;
@@ -11,10 +12,10 @@ import org.barahi.generated.tables.records.RoomRecord;
 
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
+import java.util.List;
 import java.util.UUID;
 
-import static org.barahi.generated.Tables.ROOM;
-import static org.barahi.generated.Tables.ROOM_PLAYER;
+import static org.barahi.generated.Tables.*;
 
 public class RoomStore {
     private final DSLContext db;
@@ -36,6 +37,15 @@ public class RoomStore {
                 .set(ROOM_PLAYER.ROOM_ID, roomId.getId().toString())
                 .set(ROOM_PLAYER.PLAYER_ID, playerId.getId().toString())
                 .execute();
+    }
+
+    public List<PlayerId> getPlayerIdsInRoom(RoomId roomId) {
+        return db.select(ROOM_PLAYER.PLAYER_ID)
+          .from(ROOM_PLAYER)
+          .where(ROOM_PLAYER.ROOM_ID.eq(roomId.getId().toString()))
+          .fetch(ROOM_PLAYER.PLAYER_ID)
+          .stream().map(PlayerId::of)
+          .toList();
     }
 
     // getRoomWithID gets room with room's id

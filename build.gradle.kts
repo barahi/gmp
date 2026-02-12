@@ -37,6 +37,24 @@ dependencies {
     // Add jOOQ code generation dependencies
     implementation("org.jooq:jooq-meta:3.18.7")
     implementation("org.jooq:jooq-codegen:3.18.7")
+
+
+    // JUnit
+    testImplementation("org.junit.jupiter:junit-jupiter-api:5.10.0")
+    testImplementation("junit:junit:4.13.1")
+    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.10.0")
+
+    // Mockito for test mocking
+    testImplementation("org.mockito:mockito-core:5.5.0")
+    testImplementation("org.mockito:mockito-junit-jupiter:5.5.0")
+
+    testImplementation("org.hamcrest:hamcrest:2.2")
+
+}
+
+
+tasks.withType<Test>().configureEach {
+    useJUnitPlatform()
 }
 
 val dbUrl = "jdbc:h2:file:${projectDir}/build/db/gmp;DB_CLOSE_DELAY=-1;AUTO_SERVER=TRUE"

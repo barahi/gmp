@@ -124,7 +124,7 @@ public class SocketResource {
 
     public void broadcastEventToRoom(List<Player> players, Event<?> event) {
         String eventDetails = writeEventAsString(event);
-        List<Session> sessions = Functional.map(players, Player::getId, PLAYER_SESSIONS::get);
+        List<Session> sessions = Functional.map(players, player -> PLAYER_SESSIONS.get(player.getId()));
         List<Session> validSessions = Functional.filter(sessions, session -> session != null && session.isOpen());
         validSessions.forEach(session -> {
             try {
