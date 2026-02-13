@@ -42,12 +42,13 @@ public class RoomsResource {
 
     @POST
     @Path("/{roomId}/join")
-    public void addPlayerToRoom(
+    public Response addPlayerToRoom(
             @PathParam("roomId") String roomId,
             JoinRoomJson joinRoomJson
     ) {
         try {
           roomService.addPlayerToRoom(roomId, joinRoomJson);
+          return Response.ok().build();
         } catch (IllegalArgumentException e) {
             throw new BadRequestException("Failed to add player to room");
         }
@@ -55,9 +56,10 @@ public class RoomsResource {
 
     @DELETE
     @Path("/{roomId}/")
-    public void removeRoom (
+    public Response removeRoom (
         @PathParam("roomId") String roomId
     ) {
         roomService.removeRoomAndAllItsResources(roomId);
+        return Response.ok().build();
     }
 }

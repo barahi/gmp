@@ -8,6 +8,7 @@ import org.barahi.serviceapi.player.PlayerImpl;
 import org.barahi.serviceapi.player.PlayerService;
 import org.barahi.store.PlayerStore;
 
+import java.util.List;
 import java.util.UUID;
 
 public class PlayerServiceImpl implements PlayerService {
@@ -27,8 +28,8 @@ public class PlayerServiceImpl implements PlayerService {
     }
 
     @Override
-    public void removePlayer(PlayerId id) {
-        playerStore.deletePlayer(id);
+    public void removePlayer(List<PlayerId> ids) {
+        playerStore.deletePlayer(ids);
     }
 
     @Override

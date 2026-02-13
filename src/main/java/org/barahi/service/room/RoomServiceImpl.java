@@ -92,7 +92,7 @@ public class RoomServiceImpl implements RoomService {
         Integer currentPlayersInRoom = roomStore.getCurrentPlayersInRoomCount(roomUUID);
         Integer maxPlayersForRoom = gameSettingsStore.getMaxPlayers(roomUUID);
         if (currentPlayersInRoom == maxPlayersForRoom) {
-            throw new RoomFullException(roomId);
+            throw new RoomFullException();
         }
 
         try {
@@ -155,8 +155,6 @@ public class RoomServiceImpl implements RoomService {
         roomStore.deleteRoom(Room.RoomId.of(roomId));
 
         // delete all players in room
-        for (PlayerId playerId : playerIds) {
-            playerStore.deletePlayer(playerId);
-        }
+        playerStore.deletePlayer(playerIds);
     }
 }
