@@ -9,6 +9,7 @@ import org.barahi.serviceapi.player.PlayerImpl;
 import org.jooq.DSLContext;
 import org.barahi.generated.tables.records.PlayerRecord;
 
+import java.util.List;
 import java.util.UUID;
 
 import static org.barahi.generated.Tables.PLAYER;
@@ -38,11 +39,21 @@ public class PlayerStore {
           .execute();
     }
 
-    public void deletePlayer(PlayerId id) {
-        db.delete(PLAYER)
-           .where(PLAYER.ID.eq(id.getId().toString()))
-           .execute();
+public void deletePlayer(List<Player.PlayerId> ids) {
+
+    if (ids == null || ids.isEmpty()) {
+        return;
     }
+
+    List<String> rawIds = ids.stream()
+            .map(id -> id.getId().toString())
+            .toList();
+
+    db.deleteFrom(PLAYER)
+            .where(PLAYER.ID.in(rawIds))
+            .execute();
+}
+
 
     private PlayerRecord toRecord(Player player) {
         PlayerRecord record = new PlayerRecord();

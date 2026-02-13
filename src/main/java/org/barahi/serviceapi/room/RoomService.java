@@ -13,9 +13,8 @@ import java.util.List;
 public interface RoomService {
     RoomJson createRoom(RoomCreateJson createJson) throws ObjectNotFoundException;
     void addPlayerToRoom(String roomId, JoinRoomJson joinRoomJson) throws IllegalArgumentException;
-
     List<PlayerId> getPlayerIdsInRoom(RoomId roomId);
-
     List<Player> getPlayersInRoom(RoomId roomId);
     RoomId getRoomIdForPlayer(PlayerId playerId) throws ObjectNotFoundException;
+    void removeRoomAndAllItsResources(String roomId);
 }

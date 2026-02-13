@@ -1,7 +1,6 @@
 package org.barahi.serviceapi.gameSettings;
 
 import org.barahi.infra.TypedUUID;
-import org.barahi.serviceapi.player.Player;
 
 import java.util.UUID;
 

@@ -1,6 +1,5 @@
 package org.barahi.store;
 
-import org.barahi.generated.tables.records.CumulativeScoreRecord;
 import org.barahi.store.gamelogic.CumulativeScoreStore;
 import org.barahi.store.gamelogic.GameStateStore;
 import org.barahi.store.gamelogic.PlayerAnswerStore;
