@@ -5,7 +5,6 @@ import static org.barahi.generated.Tables.EXCLUDED_LETTER;
 import static org.barahi.generated.Tables.GAME_SETTINGS;
 
 
-import org.barahi.generated.tables.pojos.Room;
 import org.barahi.generated.tables.records.GameSettingsRecord;
 import org.barahi.infra.DSLContextProvider;
 import org.barahi.serviceapi.gameSettings.CategoryId;
@@ -16,6 +15,7 @@ import org.jooq.DSLContext;
 import org.jooq.impl.DSL;
 
 import jakarta.inject.Inject;
+import javassist.tools.rmi.ObjectNotFoundException;
 
 import java.util.List;
 import java.util.UUID;
@@ -76,6 +76,33 @@ public class GameSettingsStore {
           .fetchOne(GAME_SETTINGS.NUMBER_OF_ROUNDS);
     }
 
+    public void removeGameSettings(GameSettingsId gameSettingsId) throws ObjectNotFoundException {
+        int rowsAffected = db.deleteFrom(GAME_SETTINGS)
+                .where(GAME_SETTINGS.ID.eq(gameSettingsId.getId().toString()))
+                .execute();
+        if (rowsAffected == 0) {
+            throw new ObjectNotFoundException("GameSettings not found " + gameSettingsId);
+        }
+    }
+
+    public void removeCategories(GameSettingsId gameSettingsId) throws ObjectNotFoundException {
+        int rowsAffected = db.deleteFrom(CATEGORIES)
+                .where(GAME_SETTINGS.ID.eq(gameSettingsId.getId().toString()))
+                .execute();
+        if (rowsAffected == 0) {
+            throw new ObjectNotFoundException("Categories not found " + gameSettingsId);
+        }
+    }
+
+    public void removeExcluededLetter(GameSettingsId gameSettingsId) throws ObjectNotFoundException {
+        int rowsAffected = db.deleteFrom(EXCLUDED_LETTER)
+                .where(GAME_SETTINGS.ID.eq(gameSettingsId.getId().toString()))
+                .execute();
+        if (rowsAffected == 0) {
+            throw new ObjectNotFoundException("Excluded letter not found " + gameSettingsId);
+        }
+    }
+
     public List<Character> getLetterExclusions(GameSettingsId gameSettingsId){
         return db.select(EXCLUDED_LETTER.LETTER)
           .from(EXCLUDED_LETTER)
@@ -83,6 +110,13 @@ public class GameSettingsStore {
           .fetch()
           .map(r -> r.get(EXCLUDED_LETTER.LETTER).charAt(0));
     }
+
+    public Integer getMaxPlayers(RoomId roomId) {
+        return db.select(GAME_SETTINGS.MAX_PLAYERS)
+        .from(GAME_SETTINGS)
+        .where(GAME_SETTINGS.ROOM_ID.eq(roomId.getId().toString()))
+        .fetchOne(GAME_SETTINGS.MAX_PLAYERS);
+    } 
 
     private GameSettingsRecord toRecord(GameSettings settings) {
         GameSettingsRecord record = new GameSettingsRecord();

@@ -1,6 +1,8 @@
 package org.barahi.store;
 
 import jakarta.inject.Inject;
+import javassist.tools.rmi.ObjectNotFoundException;
+
 import org.barahi.infra.DSLContextProvider;
 import org.barahi.serviceapi.player.Player;
 import org.barahi.serviceapi.player.Player.PlayerId;
@@ -59,6 +61,13 @@ public class RoomStore {
         return fromRecord(record);
     }
 
+    public Integer getCurrentPlayersInRoomCount(RoomId roomId) {
+            return db.selectCount()
+            .from(ROOM_PLAYER)
+            .where(ROOM_PLAYER.ROOM_ID.eq(roomId.getId().toString()))
+            .fetchOne(0, Integer.class);
+    }
+
     private RoomRecord toRecord(Room room) {
         RoomRecord record = new RoomRecord();
         record.setId(room.getId().getId().toString());
@@ -76,4 +85,5 @@ public class RoomStore {
                 record.getCreatedAt().toInstant(ZoneOffset.UTC)
         );
     }
+
 }

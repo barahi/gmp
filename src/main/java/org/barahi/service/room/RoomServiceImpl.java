@@ -6,6 +6,7 @@ import java.util.UUID;
 
 import org.barahi.server.json.JoinRoomJson;
 import org.barahi.infra.exceptions.ObjectNotFoundException;
+import org.barahi.infra.exceptions.RoomFullException;
 import org.barahi.server.json.RoomCreateJson;
 import org.barahi.server.json.RoomJson;
 import org.barahi.server.serializer.RoomSerializer;
@@ -78,9 +79,15 @@ public class RoomServiceImpl implements RoomService {
     public void addPlayerToRoom(String roomId, JoinRoomJson joinRoomJson) throws IllegalArgumentException {
         PlayerId playerId;
         RoomId roomUUID;
+        roomUUID = Room.RoomId.of(roomId);
+        Integer currentPlayersInRoom = roomStore.getCurrentPlayersInRoomCount(roomUUID);
+        Integer maxPlayersForRoom = gameSettingsStore.getMaxPlayers(roomUUID);
+        if (currentPlayersInRoom == maxPlayersForRoom) {
+            throw new RoomFullException(roomId);
+        }
+
         try {
             playerId = new Player.PlayerId(UUID.fromString(joinRoomJson.getPlayerId()));
-            roomUUID = Room.RoomId.of(roomId);
         } catch (IllegalArgumentException e) {
             throw new IllegalArgumentException(String.format("Invalid Id Format %s ", e));
         }
@@ -132,4 +139,5 @@ public class RoomServiceImpl implements RoomService {
             gameSettingsStore.createCategory(categoryId, UUID.fromString(gameSettingsId.toString()), category);
         }
     }
+    
 }
