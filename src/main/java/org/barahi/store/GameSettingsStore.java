@@ -76,33 +76,6 @@ public class GameSettingsStore {
           .fetchOne(GAME_SETTINGS.NUMBER_OF_ROUNDS);
     }
 
-    public void removeGameSettings(GameSettingsId gameSettingsId) throws ObjectNotFoundException {
-        int rowsAffected = db.deleteFrom(GAME_SETTINGS)
-                .where(GAME_SETTINGS.ID.eq(gameSettingsId.getId().toString()))
-                .execute();
-        if (rowsAffected == 0) {
-            throw new ObjectNotFoundException("GameSettings not found " + gameSettingsId);
-        }
-    }
-
-    public void removeCategories(GameSettingsId gameSettingsId) throws ObjectNotFoundException {
-        int rowsAffected = db.deleteFrom(CATEGORIES)
-                .where(GAME_SETTINGS.ID.eq(gameSettingsId.getId().toString()))
-                .execute();
-        if (rowsAffected == 0) {
-            throw new ObjectNotFoundException("Categories not found " + gameSettingsId);
-        }
-    }
-
-    public void removeExcluededLetter(GameSettingsId gameSettingsId) throws ObjectNotFoundException {
-        int rowsAffected = db.deleteFrom(EXCLUDED_LETTER)
-                .where(GAME_SETTINGS.ID.eq(gameSettingsId.getId().toString()))
-                .execute();
-        if (rowsAffected == 0) {
-            throw new ObjectNotFoundException("Excluded letter not found " + gameSettingsId);
-        }
-    }
-
     public List<Character> getLetterExclusions(GameSettingsId gameSettingsId){
         return db.select(EXCLUDED_LETTER.LETTER)
           .from(EXCLUDED_LETTER)

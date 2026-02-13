@@ -21,6 +21,7 @@ import org.barahi.serviceapi.room.Room.RoomId;
 import org.barahi.serviceapi.room.RoomImpl;
 import org.barahi.serviceapi.room.RoomService;
 import org.barahi.store.GameSettingsStore;
+import org.barahi.store.PlayerStore;
 import org.barahi.store.RoomStore;
 
 import jakarta.inject.Inject;
@@ -32,13 +33,21 @@ public class RoomServiceImpl implements RoomService {
     private final RoomStore roomStore;
     private final RoomSerializer roomSerializer;
     private final GameSettingsStore gameSettingsStore;
+    private final PlayerStore playerStore;
 
     @Inject
-    public RoomServiceImpl(PlayerService playerService, RoomStore roomStore, RoomSerializer roomSerializer, GameSettingsStore gameSettingsStore) {
+    public RoomServiceImpl(
+            PlayerService playerService,
+            RoomStore roomStore,
+            RoomSerializer roomSerializer,
+            GameSettingsStore gameSettingsStore,
+            PlayerStore playerStore
+    ) {
         this.playerService = playerService;
         this.roomStore = roomStore;
         this.roomSerializer = roomSerializer;
         this.gameSettingsStore = gameSettingsStore;
+        this.playerStore = playerStore;
     }
 
     @Override
@@ -140,4 +149,14 @@ public class RoomServiceImpl implements RoomService {
         }
     }
     
+    @Override
+    public void removeRoomAndAllItsResources(String roomId) {
+        List<PlayerId> playerIds = roomStore.getPlayerIdsInRoom(Room.RoomId.of(roomId));
+        roomStore.deleteRoom(Room.RoomId.of(roomId));
+
+        // delete all players in room
+        for (PlayerId playerId : playerIds) {
+            playerStore.deletePlayer(playerId);
+        }
+    }
 }

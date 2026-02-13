@@ -61,6 +61,12 @@ public class RoomStore {
         return fromRecord(record);
     }
 
+    public void deleteRoom(RoomId roomId) {
+        db.deleteFrom(ROOM)
+            .where(ROOM.ID.eq(roomId.getId().toString()))
+            .execute();
+    }
+
     public Integer getCurrentPlayersInRoomCount(RoomId roomId) {
             return db.selectCount()
             .from(ROOM_PLAYER)

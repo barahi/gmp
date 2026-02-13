@@ -1,8 +1,6 @@
 package org.barahi.serviceapi.player;
 
-import org.barahi.generated.tables.records.CumulativeScoreRecord;
 import org.barahi.infra.TypedUUID;
-import org.jooq.TableField;
 
 import java.util.UUID;
 
