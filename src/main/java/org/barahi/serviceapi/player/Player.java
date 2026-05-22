@@ -14,6 +14,11 @@ public interface Player {
             super(id);
         }
 
+        @Override
+        public String toString() {
+            return this.getId() != null ? this.getId().toString() : "null";
+        }
+
         public static PlayerId of(UUID id) {
             return new PlayerId(id);
         }

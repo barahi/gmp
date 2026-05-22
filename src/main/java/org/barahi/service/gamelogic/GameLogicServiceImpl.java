@@ -13,46 +13,34 @@ import java.util.Map;
 
 public class GameLogicServiceImpl implements GameLogicService{
 
-  private final GameStateStore gameStateStore;
   private final CumulativeScoreStore cumulativeScoreStore;
   private final GameSettingsStore gameSettingsStore;
-  private final RoundLogicService roundLogicService;
   private final RoomService roomService;
 
 
   @Inject
-  public GameLogicServiceImpl(GameStateStore gameStateStore, CumulativeScoreStore cumulativeScoreStore, GameSettingsStore gameSettingsStore, RoundLogicService roundLogicService, RoomService roomService){
-    this.gameStateStore = gameStateStore;
+  public GameLogicServiceImpl(CumulativeScoreStore cumulativeScoreStore, GameSettingsStore gameSettingsStore, RoomService roomService){
     this.cumulativeScoreStore = cumulativeScoreStore;
-    this.roundLogicService = roundLogicService;
     this.gameSettingsStore = gameSettingsStore;
     this.roomService = roomService;
   }
 
   @Override
-  public void startGame(RoomId roomId){
+  public void initGame(RoomId roomId){
     List<PlayerId> playerIds = roomService.getPlayerIdsInRoom(roomId);
     cumulativeScoreStore.initializeScores(roomId, playerIds);
-    roundLogicService.startRound(roomId, 1);
   }
 
   @Override
-  public Map<PlayerId, Integer> updatePlayerScores(RoomId roomId, int roundNumber) {
-    Map<PlayerId, Integer> scores = roundLogicService.calculatePlayerScoreForRound(roomId, roundNumber);
-    return cumulativeScoreStore.updatePlayerScores(roomId, scores);
+  public void updatePlayerScores(RoomId roomId, Map<PlayerId, Integer> scores) {
+    cumulativeScoreStore.updatePlayerScores(roomId, scores);
   }
 
   @Override
-  public void startNextRound(RoomId roomId) {
-    int numberOfRounds = gameSettingsStore.getNumberOfRounds(roomId);
-    int currRound = gameStateStore.getCurrentRound(roomId);
-    if (currRound < numberOfRounds){
-      currRound++;
-      roundLogicService.startRound(roomId, currRound);
-    } else {
-      endGame(roomId);
-    }
+  public int getNumberOfRounds(RoomId roomId){
+    return gameSettingsStore.getNumberOfRounds(roomId);
   }
+
 
   @Override
   public Map<PlayerId, Integer> endGame(RoomId roomId) {

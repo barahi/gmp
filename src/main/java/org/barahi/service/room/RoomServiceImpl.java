@@ -10,7 +10,6 @@ import org.barahi.infra.exceptions.RoomFullException;
 import org.barahi.server.json.RoomCreateJson;
 import org.barahi.server.json.RoomJson;
 import org.barahi.server.serializer.RoomSerializer;
-import org.barahi.serviceapi.gameSettings.CategoryId;
 import org.barahi.serviceapi.gameSettings.GameSettings;
 import org.barahi.serviceapi.gameSettings.GameSettingsImpl;
 import org.barahi.serviceapi.player.Player;
@@ -76,7 +75,6 @@ public class RoomServiceImpl implements RoomService {
             roomStore.createRoom(room);
             roomStore.addPlayerToRoom(room.getId(), host.getId());
             gameSettingsStore.createGameSettings(settings);
-            createCategories(gameSettingsId, createJson.getCategories());
         } catch (RuntimeException e) {
             throw new RuntimeException("Failed to create room", e);
         }
@@ -134,20 +132,14 @@ public class RoomServiceImpl implements RoomService {
 
     @Override
     public List<Player> getPlayersInRoom(RoomId roomId) {
-        throw new UnsupportedOperationException("getPlayersInRoom is not yet implemented");
+        return playerStore.getPlayersInRoom(roomId);
     }
 
     @Override
     public RoomId getRoomIdForPlayer(PlayerId playerId) {
-        throw new UnsupportedOperationException("getRoomIdForPlayer is not yet implemented");
+        return playerStore.getRoomIdForPlayer(playerId);
     }
 
-    private void createCategories(UUID gameSettingsId, List<String> categories){
-        for (String category: categories){
-            CategoryId categoryId = CategoryId.newId();
-            gameSettingsStore.createCategory(categoryId, UUID.fromString(gameSettingsId.toString()), category);
-        }
-    }
     
     @Override
     public void removeRoomAndAllItsResources(String roomId) {

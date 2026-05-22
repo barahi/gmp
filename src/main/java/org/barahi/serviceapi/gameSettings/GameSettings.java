@@ -27,5 +27,10 @@ public interface GameSettings {
         public static GameSettingsId of(String id) throws IllegalArgumentException {
             return GameSettingsId.of(UUID.fromString(id));
         }
+
+        @Override
+        public String toString() {
+            return this.getId().toString();
+        }
     }
 }

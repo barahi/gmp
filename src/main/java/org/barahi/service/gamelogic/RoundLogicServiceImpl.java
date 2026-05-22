@@ -22,17 +22,15 @@ public class RoundLogicServiceImpl implements RoundLogicService {
   private final RoomService roomService;
   private final PlayerAnswerStore playerAnswerStore;
   private final GameStateStore gameStateStore;
-  private final GameLogicService gameLogicService;
   private final GameSettingsStore gameSettingsStore;
 
 
   @Inject
-  public RoundLogicServiceImpl(RoomService roomService, PlayerAnswerStore playerAnswerStore, GameStateStore gameStateStore, GameLogicService gameLogicService, GameSettingsStore gameSettingsStore){
+  public RoundLogicServiceImpl(RoomService roomService, PlayerAnswerStore playerAnswerStore, GameStateStore gameStateStore, GameSettingsStore gameSettingsStore){
     this.roomService = roomService;
     this.playerAnswerStore = playerAnswerStore;
     this.gameStateStore = gameStateStore;
     this.gameSettingsStore = gameSettingsStore;
-    this.gameLogicService = gameLogicService;
   }
 
   @Override
@@ -40,7 +38,6 @@ public class RoundLogicServiceImpl implements RoundLogicService {
     gameStateStore.changeGamePhaseAndRound(roomId, RoundPhase.SUBMIT, roundNumber);
     GameSettingsId gameSettingsId = gameSettingsStore.getGameSettingsId(roomId);
     List<Character> excludedLetters = gameSettingsStore.getLetterExclusions(gameSettingsId);
-
     return generateRandomCharExcluding(excludedLetters);
   }
 
@@ -88,7 +85,6 @@ public class RoundLogicServiceImpl implements RoundLogicService {
   @Override
   public void endRound(RoomId roomId) {
     gameStateStore.changeGamePhase(roomId, RoundPhase.SCORE);
-    gameLogicService.startNextRound(roomId);
   }
 
 }
