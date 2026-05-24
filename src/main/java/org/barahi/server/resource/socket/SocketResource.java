@@ -24,6 +24,7 @@ import javax.websocket.server.PathParam;
 import javax.websocket.server.ServerEndpoint;
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -102,8 +103,21 @@ public class SocketResource {
                 broadcastEventToRoom(roomId, startRoundEvent);
                 break;
             }
+
             case SUBMIT_ANSWERS: {
-                // TODO(michelle): Submit answers here
+                System.out.println("case submit answers ");
+                SubmitAnswersEvent submitAnswersEvent = (SubmitAnswersEvent)event;
+                SubmitAnswersEventPayload payload = submitAnswersEvent.getPayload();
+                System.out.println("got category id: " + payload.getCategoryId());
+
+                gameCoordinator.storeAnswers(roomId, payload.getCategoryId(), payload.getRoundNumber(), payload.getPlayerAnswers());
+                Map<PlayerId, Integer> roundScores = gameCoordinator.calculatePlayerScoreForRound(roomId, payload.getRoundNumber());
+                System.out.println("round scores: " + roundScores);
+
+                RoundScoreEventPayload responsePayload = new RoundScoreEventPayload(payload.getRoundNumber(), roundScores);
+                RoundScoreEvent roundScoreEvent = new RoundScoreEvent(responsePayload);
+                broadcastEventToRoom(roomId, roundScoreEvent);
+                System.out.println("BROADCAST");
                 break;
             }
             case VOTE_INVALID: {
@@ -180,8 +194,6 @@ public class SocketResource {
         } catch (JsonProcessingException e) {
             LOGGER.log(Level.SEVERE, "Jackson parsing failed!", e);
             return new NoopEvent();
-//            LOGGER.severe("Can happen, but I'm too lazy to handle this right now!");
-//            return new NoopEvent();
         }
     }
 }

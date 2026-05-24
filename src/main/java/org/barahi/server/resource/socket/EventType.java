@@ -5,6 +5,7 @@ public enum EventType {
     PLAYER_JOINED(false, true),
     START_ROUND(true, true),
     SUBMIT_ANSWERS(true, false),
+    ROUND_SCORES(false, true),
     VOTE_INVALID(true, false),
     PLAYER_LEFT(false, true);
 

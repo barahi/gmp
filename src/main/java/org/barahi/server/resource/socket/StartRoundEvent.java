@@ -6,7 +6,8 @@ public class StartRoundEvent implements Event<StartRoundEventPayload> {
     @JsonProperty("payload")
     private StartRoundEventPayload startRoundEventPayload;
 
-    public StartRoundEvent() {}
+    public StartRoundEvent(){};
+
     public StartRoundEvent(StartRoundEventPayload startRoundEventPayload) {
         this.startRoundEventPayload = startRoundEventPayload;
     }

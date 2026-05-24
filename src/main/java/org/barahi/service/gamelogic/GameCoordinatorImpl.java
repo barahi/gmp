@@ -37,7 +37,7 @@ public class GameCoordinatorImpl implements GameCoordinator {
     roundLogicService.beginVotePhase(roomId);
   }
   @Override
-  public void invalidatePlayerAnswer(RoomId roomId, PlayerId playerId, CategoryId categoryId, int roundNum) {
+  public void  invalidatePlayerAnswer(RoomId roomId, PlayerId playerId, CategoryId categoryId, int roundNum) {
     roundLogicService.invalidatePlayerAnswer(roomId, playerId, categoryId, roundNum);
   }
   @Override

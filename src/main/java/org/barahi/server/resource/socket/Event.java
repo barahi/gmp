@@ -10,6 +10,7 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
         @JsonSubTypes.Type(value = NoopEvent.class, name = "NOOP"),
         @JsonSubTypes.Type(value = StartRoundEvent.class, name = "START_ROUND"),
         @JsonSubTypes.Type(value = SubmitAnswersEvent.class, name = "SUBMIT_ANSWERS"),
+        @JsonSubTypes.Type(value = RoundScoreEvent.class, name = "ROUND_SCORES"),
         @JsonSubTypes.Type(value = VoteInvalidEvent.class, name = "VOTE_INVALID"),
         @JsonSubTypes.Type(value = PlayerLeftEvent.class, name = "PLAYER_LEFT")
 })
