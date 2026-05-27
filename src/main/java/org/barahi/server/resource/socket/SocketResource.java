@@ -5,7 +5,11 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.barahi.infra.Functional;
 import org.barahi.infra.LoggerFactory;
 import org.barahi.infra.exceptions.ObjectNotFoundException;
+import org.barahi.server.json.RoundScoreEventPayloadJson;
+import org.barahi.server.json.SubmitAnswerPayloadEventJson;
 import org.barahi.server.resource.GuiceWebSocketConfigurator;
+import org.barahi.server.serializer.RoundScoreEventPayloadSerializer;
+import org.barahi.server.serializer.SubmitAnswerPayloadEventSerializer;
 import org.barahi.service.gamelogic.GameCoordinator;
 import org.barahi.serviceapi.player.Player;
 import org.barahi.serviceapi.player.Player.PlayerId;
@@ -14,7 +18,6 @@ import org.barahi.serviceapi.player.PlayerService;
 import jakarta.inject.Inject;
 import org.barahi.serviceapi.room.Room.RoomId;
 import org.barahi.serviceapi.room.RoomService;
-import org.jooq.meta.derby.sys.Sys;
 
 import javax.websocket.OnClose;
 import javax.websocket.OnMessage;
@@ -36,14 +39,17 @@ public class SocketResource {
     private static final Logger LOGGER = LoggerFactory.createLogger(SocketResource.class);
     private final PlayerService playerService;
     private final RoomService roomService;
-
     private final GameCoordinator gameCoordinator;
+    private final SubmitAnswerPayloadEventSerializer submitAnswerPayloadEventSerializer;
+    private final RoundScoreEventPayloadSerializer roundScoreEventPayloadSerializer;
 
     @Inject
-    public SocketResource(PlayerService playerService, RoomService roomService, GameCoordinator gameCoordinator) {
+    public SocketResource(PlayerService playerService, RoomService roomService, GameCoordinator gameCoordinator, SubmitAnswerPayloadEventSerializer submitAnswerPayloadEventSerializer, RoundScoreEventPayloadSerializer roundScoreEventPayloadSerializer) {
         this.playerService = playerService;
         this.roomService = roomService;
         this.gameCoordinator = gameCoordinator;
+        this.submitAnswerPayloadEventSerializer = submitAnswerPayloadEventSerializer;
+        this.roundScoreEventPayloadSerializer = roundScoreEventPayloadSerializer;
     }
 
     @OnOpen
@@ -63,7 +69,7 @@ public class SocketResource {
             return;
         }
 
-        PLAYER_SESSIONS.putIfAbsent(player.getId(), session);
+        PLAYER_SESSIONS.put(player.getId(), session);
         RoomId roomId = null;
         try {
             roomId = roomService.getRoomIdForPlayer(playerId);
@@ -97,7 +103,6 @@ public class SocketResource {
         switch (eventType) {
             case START_ROUND: {
                 char letterForRound = gameCoordinator.startNewGame(roomId);
-                System.out.println("Generated round character is " + letterForRound);
                 StartRoundEventPayload payload = new StartRoundEventPayload(letterForRound, 1);
                 StartRoundEvent startRoundEvent = new StartRoundEvent(payload);
                 broadcastEventToRoom(roomId, startRoundEvent);
@@ -105,19 +110,18 @@ public class SocketResource {
             }
 
             case SUBMIT_ANSWERS: {
-                System.out.println("case submit answers ");
-                SubmitAnswersEvent submitAnswersEvent = (SubmitAnswersEvent)event;
-                SubmitAnswersEventPayload payload = submitAnswersEvent.getPayload();
-                System.out.println("got category id: " + payload.getCategoryId());
+                SubmitAnswersEvent submitAnswersEvent = (SubmitAnswersEvent) event;
+                SubmitAnswerPayloadEventJson jsonIncomingPayload = submitAnswersEvent.getPayload();
+                SubmitAnswersEventPayload serializedPayload = submitAnswerPayloadEventSerializer.fromJson(jsonIncomingPayload);
 
-                gameCoordinator.storeAnswers(roomId, payload.getCategoryId(), payload.getRoundNumber(), payload.getPlayerAnswers());
-                Map<String, Map<PlayerId, Integer>>  roundScores = gameCoordinator.calculatePlayerScoreForRound(roomId, payload.getRoundNumber());
-                System.out.println("round scores: " + roundScores);
+                gameCoordinator.storeAnswers(roomId, serializedPayload.getCategoryId(), serializedPayload.getRoundNumber(), serializedPayload.getPlayerAnswers());
+                Map<String, Map<PlayerId, Integer>> roundScores = gameCoordinator.calculatePlayerScoreForRound(roomId, serializedPayload.getRoundNumber());
 
-                RoundScoreEventPayload responsePayload = new RoundScoreEventPayload(payload.getRoundNumber(), roundScores);
-                RoundScoreEvent roundScoreEvent = new RoundScoreEvent(responsePayload);
+                RoundScoreEventPayload outgoingPayload = new RoundScoreEventPayload(serializedPayload.getRoundNumber(), roundScores);
+                RoundScoreEventPayloadJson roundScoreJson = roundScoreEventPayloadSerializer.toJson(outgoingPayload);
+
+                RoundScoreEvent roundScoreEvent = new RoundScoreEvent(roundScoreJson);
                 broadcastEventToRoom(roomId, roundScoreEvent);
-                System.out.println("BROADCAST");
                 break;
             }
             case VOTE_INVALID: {
@@ -154,6 +158,7 @@ public class SocketResource {
         List<Session> validSessions = Functional.filter(sessions, session -> session != null && session.isOpen());
         validSessions.forEach(session -> {
             try {
+                System.out.println("try executed");
                 session.getBasicRemote().sendText(eventDetails);
             } catch (IOException e) {
                 throw new RuntimeException(e);

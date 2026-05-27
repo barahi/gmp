@@ -1,15 +1,16 @@
 package org.barahi.server.json;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import org.barahi.server.resource.socket.EventPayload;
 
 import java.util.Map;
 
-public class RoundScoreEventPayloadJson {
-  @JsonProperty
-  int roundNumber;
+public class RoundScoreEventPayloadJson implements EventPayload {
+  @JsonProperty("roundNumber")
+  private int roundNumber;
 
-  @JsonProperty
-  Map<String, Integer> playerScores;
+  @JsonProperty("roundScoreMap")
+  private Map<String, Map<String, Integer>> roundScoreMap;
 
   public int getRoundNumber() {
     return roundNumber;
@@ -19,19 +20,11 @@ public class RoundScoreEventPayloadJson {
     this.roundNumber = roundNumber;
   }
 
-  public String getCategory() {
-    return category;
+  public Map<String, Map<String, Integer>> getRoundScoreMap() {
+    return roundScoreMap;
   }
 
-  public void setCategory(String category) {
-    this.category = category;
-  }
-
-  public Map<String, Integer> getPlayerScores() {
-    return playerScores;
-  }
-
-  public void setPlayerScores(Map<String, Integer> playerScores) {
-    this.playerScores = playerScores;
+  public void setRoundScoreMap(Map<String, Map<String, Integer>> roundScoreMap) {
+    this.roundScoreMap = roundScoreMap;
   }
 }

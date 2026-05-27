@@ -1,13 +1,15 @@
 package org.barahi.server.resource.socket;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import org.barahi.server.json.SubmitAnswerPayloadEventJson;
 
-public class SubmitAnswersEvent implements Event<SubmitAnswersEventPayload> {
+public class SubmitAnswersEvent implements Event<SubmitAnswerPayloadEventJson> {
     @JsonProperty("payload")
-    private SubmitAnswersEventPayload submitAnswersEventPayload;
+    private SubmitAnswerPayloadEventJson eventPayloadJson;
     public SubmitAnswersEvent() {}
-    public SubmitAnswersEvent(SubmitAnswersEventPayload submitAnswersEventPayload) {
-        this.submitAnswersEventPayload = submitAnswersEventPayload;
+
+    public SubmitAnswersEvent(SubmitAnswerPayloadEventJson eventPayloadJson) {
+        this.eventPayloadJson = eventPayloadJson;
     }
 
     @Override
@@ -18,13 +20,13 @@ public class SubmitAnswersEvent implements Event<SubmitAnswersEventPayload> {
 
     @Override
     @JsonProperty("payload")
-    public SubmitAnswersEventPayload getPayload() {
-        return submitAnswersEventPayload;
+    public SubmitAnswerPayloadEventJson getPayload() {
+        return eventPayloadJson;
     }
 
     @Override
     @JsonProperty("payload")
-    public void setPayload(SubmitAnswersEventPayload submitAnswersEventPayload) {
-        this.submitAnswersEventPayload = submitAnswersEventPayload;
+    public void setPayload(SubmitAnswerPayloadEventJson submitAnswersEventPayload) {
+        this.eventPayloadJson = submitAnswersEventPayload;
     }
 }

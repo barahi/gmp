@@ -26,7 +26,7 @@ public class CumulativeScoreStore {
     List<CumulativeScoreRecord> records = new ArrayList<>();
     playerIds.forEach(playerId -> {
       CumulativeScoreRecord record =
-        new CumulativeScoreRecord(playerId.toString(), roomId.getId().toString(), 0);
+        new CumulativeScoreRecord(playerId.getId().toString(), roomId.getId().toString(), 0);
       records.add(record);
     });
     db.batchInsert(records).execute();
@@ -48,11 +48,12 @@ public class CumulativeScoreStore {
   public Map<PlayerId, Integer> updatePlayerScores(RoomId roomId, Map<PlayerId, Integer> prevRoundScoreMap){
     List<Query> queries = new ArrayList<>();
     for (Map.Entry<PlayerId, Integer> entry : prevRoundScoreMap.entrySet()) {
+
       queries.add(
         db.update(CUMULATIVE_SCORE)
           .set(CUMULATIVE_SCORE.SCORE, CUMULATIVE_SCORE.SCORE.plus(entry.getValue()))
           .where(CUMULATIVE_SCORE.ROOM_ID.eq(roomId.getId().toString()))
-          .and(CUMULATIVE_SCORE.PLAYER_ID.eq(entry.getKey().toString()))
+          .and(CUMULATIVE_SCORE.PLAYER_ID.eq(entry.getKey().getId().toString()))
       );
     }
     db.batch(queries).execute();
