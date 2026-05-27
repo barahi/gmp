@@ -7,9 +7,11 @@ import org.barahi.infra.LoggerFactory;
 import org.barahi.infra.exceptions.ObjectNotFoundException;
 import org.barahi.server.json.RoundScoreEventPayloadJson;
 import org.barahi.server.json.SubmitAnswerPayloadEventJson;
+import org.barahi.server.json.SubmitVoteEventPayloadJson;
 import org.barahi.server.resource.GuiceWebSocketConfigurator;
 import org.barahi.server.serializer.RoundScoreEventPayloadSerializer;
 import org.barahi.server.serializer.SubmitAnswerPayloadEventSerializer;
+import org.barahi.server.serializer.SubmitVoteEventPayloadSerializer;
 import org.barahi.service.gamelogic.GameCoordinator;
 import org.barahi.serviceapi.player.Player;
 import org.barahi.serviceapi.player.Player.PlayerId;
@@ -43,13 +45,16 @@ public class SocketResource {
     private final SubmitAnswerPayloadEventSerializer submitAnswerPayloadEventSerializer;
     private final RoundScoreEventPayloadSerializer roundScoreEventPayloadSerializer;
 
+    private final SubmitVoteEventPayloadSerializer voteInvalidEventPayloadSerializer;
+
     @Inject
-    public SocketResource(PlayerService playerService, RoomService roomService, GameCoordinator gameCoordinator, SubmitAnswerPayloadEventSerializer submitAnswerPayloadEventSerializer, RoundScoreEventPayloadSerializer roundScoreEventPayloadSerializer) {
+    public SocketResource(PlayerService playerService, RoomService roomService, GameCoordinator gameCoordinator, SubmitAnswerPayloadEventSerializer submitAnswerPayloadEventSerializer, RoundScoreEventPayloadSerializer roundScoreEventPayloadSerializer, SubmitVoteEventPayloadSerializer voteInvalidEventPayloadSerializer) {
         this.playerService = playerService;
         this.roomService = roomService;
         this.gameCoordinator = gameCoordinator;
         this.submitAnswerPayloadEventSerializer = submitAnswerPayloadEventSerializer;
         this.roundScoreEventPayloadSerializer = roundScoreEventPayloadSerializer;
+        this.voteInvalidEventPayloadSerializer = voteInvalidEventPayloadSerializer;
     }
 
     @OnOpen
@@ -124,10 +129,18 @@ public class SocketResource {
                 broadcastEventToRoom(roomId, roundScoreEvent);
                 break;
             }
-            case VOTE_INVALID: {
-                // TODO(michelle): Vote invalid here
+            case BEGIN_VOTE_PHASE: {
+                gameCoordinator.beginVotePhase(roomId);
+            }
+
+            case SUBMIT_VOTE: {
+                SubmitVoteEvent voteInvalidEvent = (SubmitVoteEvent) event;
+                SubmitVoteEventPayloadJson jsonIncomingPayload = voteInvalidEvent.getPayload();
+                SubmitVoteEventPayload serializedPayload = voteInvalidEventPayloadSerializer.fromJson(jsonIncomingPayload);
+                gameCoordinator.submitVote(roomId, serializedPayload.getCategoryId(), serializedPayload.getRoundNumber(), serializedPayload.getTargetPlayerId(), serializedPayload.getVoterId(), serializedPayload.getVote());
                 break;
             }
+
             case NOOP: {
                 // Do Nothing.
                 break;

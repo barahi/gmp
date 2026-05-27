@@ -6,7 +6,8 @@ public enum EventType {
     START_ROUND(true, true),
     SUBMIT_ANSWERS(true, false),
     ROUND_SCORES(false, true),
-    VOTE_INVALID(true, false),
+    BEGIN_VOTE_PHASE(true, false),
+    SUBMIT_VOTE(true, false),
     PLAYER_LEFT(false, true);
 
     private final boolean isIncoming;

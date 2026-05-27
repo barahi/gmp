@@ -11,7 +11,8 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
         @JsonSubTypes.Type(value = StartRoundEvent.class, name = "START_ROUND"),
         @JsonSubTypes.Type(value = SubmitAnswersEvent.class, name = "SUBMIT_ANSWERS"),
         @JsonSubTypes.Type(value = RoundScoreEvent.class, name = "ROUND_SCORES"),
-        @JsonSubTypes.Type(value = VoteInvalidEvent.class, name = "VOTE_INVALID"),
+        @JsonSubTypes.Type(value = BeginVotePhaseEvent.class, name = "BEGIN_VOTE_PHASE"),
+        @JsonSubTypes.Type(value = SubmitVoteEvent.class, name = "SUBMIT_VOTE"),
         @JsonSubTypes.Type(value = PlayerLeftEvent.class, name = "PLAYER_LEFT")
 })
 public interface Event<T extends EventPayload> {
