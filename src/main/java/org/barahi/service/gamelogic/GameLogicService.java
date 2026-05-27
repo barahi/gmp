@@ -7,7 +7,7 @@ import java.util.Map;
 
 public interface GameLogicService {
   void initGame(RoomId roomId);
-  void updatePlayerScores(RoomId roomId, Map<PlayerId, Integer> scores);
+  Map<PlayerId, Integer> updatePlayerScores(RoomId roomId, Map<PlayerId, Integer> finalScores);
   int getNumberOfRounds(RoomId roomId);
   Map<PlayerId, Integer> endGame(RoomId roomId);
 }

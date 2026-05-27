@@ -9,9 +9,6 @@ public class RoundScoreEventPayloadJson {
   int roundNumber;
 
   @JsonProperty
-  String category;
-
-  @JsonProperty
   Map<String, Integer> playerScores;
 
   public int getRoundNumber() {

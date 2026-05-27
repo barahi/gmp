@@ -10,6 +10,7 @@ import org.barahi.store.GameSettingsStore;
 import org.barahi.store.gamelogic.GameStateStore;
 import org.barahi.store.gamelogic.PlayerAnswerStore;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -49,27 +50,32 @@ public class RoundLogicServiceImpl implements RoundLogicService {
   }
 
   @Override
-  public Map<PlayerId, Integer> calculatePlayerScoreForRound(RoomId roomId, int roundNumber) {
+  public Map<String, Map<PlayerId, Integer>> calculatePlayerScoreForRound(RoomId roomId, int roundNumber) {
     List<PlayerId> playerIds = roomService.getPlayerIdsInRoom(roomId);
     Map<String, Map<PlayerId, String>> categoryIdToPlayerAnswers = playerAnswerStore.getAnswersForRound(playerIds, roundNumber);
+    Map<String, Map<PlayerId, Integer>> roundScores = new HashMap<>();
 
-    Map<PlayerId, Integer> roundScores = new HashMap<>();
-
-    categoryIdToPlayerAnswers.forEach((categoryId, playerAnswer) -> {
-        Map<String, Integer> answerCount = new HashMap<>();
-        playerAnswer.forEach((playerId, answer) -> {
-          if (answer != null && !answer.isEmpty()) {
-            answerCount.put(answer, answerCount.getOrDefault(answer, 0) + 1);
+    categoryIdToPlayerAnswers.forEach((category, playerAnswer) -> {
+      Map<String, Integer> answerCount = new HashMap<>();
+      playerAnswer.forEach((playerId, answer) -> {
+        if (answer != null && !answer.isEmpty()){
+          String cleanedAnswer = answer.toLowerCase();
+          answerCount.put(cleanedAnswer, answerCount.getOrDefault(cleanedAnswer,0) + 1);
+        }
+      });
+      Map<PlayerId, Integer> playerScores = new HashMap<>();
+      playerAnswer.forEach((playerId, answer) -> {
+        if (!answer.isEmpty()){
+          String cleanedAnswer = answer.toLowerCase();
+          if (answerCount.containsKey(cleanedAnswer)){
+            playerScores.put(playerId, CATEGORY_FULL_SCORE/answerCount.get(cleanedAnswer));
+            return;
           }
-        });
-
-        playerAnswer.forEach((playerId, answer) -> {
-          if (answer != null && !answer.isEmpty() && answerCount.containsKey(answer)){
-            roundScores.put(playerId, roundScores.getOrDefault(playerId, 0) +
-              CATEGORY_FULL_SCORE/ answerCount.get(answer));
-          }
-        });
-    }) ;
+        }
+        playerScores.put(playerId, 0);
+      });
+      roundScores.put(category, playerScores);
+    });
     return roundScores;
   }
 
@@ -77,9 +83,22 @@ public class RoundLogicServiceImpl implements RoundLogicService {
   public void beginVotePhase(RoomId roomId){
     gameStateStore.changeGamePhase(roomId, RoundPhase.VOTE);
   }
+  //
   @Override
   public void invalidatePlayerAnswer(RoomId roomId, PlayerId playerId, CategoryId categoryId, int roundNum) {
-    playerAnswerStore.updateScoreForAnswer(playerId, categoryId, roundNum, 0);
+    playerAnswerStore.updateScoreForAnswer(playerId, categoryId, roundNum, -1);
+  }
+
+  @Override
+  public Map<PlayerId, Integer> finalizeRoundScores(RoomId roomId, int roundNumber){
+    Map<String, Map<PlayerId, Integer>> scores = calculatePlayerScoreForRound(roomId, roundNumber);
+    Map<PlayerId, Integer> finalRoundScores = new HashMap<>();
+    scores.forEach((category, playerScore) -> {
+      playerScore.forEach((playerId, score) -> {
+        finalRoundScores.put(playerId, finalRoundScores.getOrDefault(playerId, 0) + score);
+      });
+    });
+    return finalRoundScores;
   }
 
   @Override

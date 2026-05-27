@@ -111,7 +111,7 @@ public class SocketResource {
                 System.out.println("got category id: " + payload.getCategoryId());
 
                 gameCoordinator.storeAnswers(roomId, payload.getCategoryId(), payload.getRoundNumber(), payload.getPlayerAnswers());
-                Map<PlayerId, Integer> roundScores = gameCoordinator.calculatePlayerScoreForRound(roomId, payload.getRoundNumber());
+                Map<String, Map<PlayerId, Integer>>  roundScores = gameCoordinator.calculatePlayerScoreForRound(roomId, payload.getRoundNumber());
                 System.out.println("round scores: " + roundScores);
 
                 RoundScoreEventPayload responsePayload = new RoundScoreEventPayload(payload.getRoundNumber(), roundScores);

@@ -6,7 +6,6 @@ import org.barahi.serviceapi.room.Room.RoomId;
 import org.barahi.serviceapi.room.RoomService;
 import org.barahi.store.GameSettingsStore;
 import org.barahi.store.gamelogic.CumulativeScoreStore;
-import org.barahi.store.gamelogic.GameStateStore;
 
 import java.util.List;
 import java.util.Map;
@@ -32,8 +31,8 @@ public class GameLogicServiceImpl implements GameLogicService{
   }
 
   @Override
-  public void updatePlayerScores(RoomId roomId, Map<PlayerId, Integer> scores) {
-    cumulativeScoreStore.updatePlayerScores(roomId, scores);
+  public Map<PlayerId, Integer> updatePlayerScores(RoomId roomId, Map<PlayerId, Integer> finalScores) {
+    return cumulativeScoreStore.updatePlayerScores(roomId, finalScores);
   }
 
   @Override

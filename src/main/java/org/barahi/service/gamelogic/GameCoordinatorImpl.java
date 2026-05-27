@@ -29,28 +29,30 @@ public class GameCoordinatorImpl implements GameCoordinator {
     roundLogicService.storeAnswers(roomId, categoryId, roundNumber, playerAnswers);
   }
   @Override
-  public Map<PlayerId, Integer> calculatePlayerScoreForRound(RoomId roomId, int roundNumber) {
+  public Map<String, Map<PlayerId, Integer>>  calculatePlayerScoreForRound(RoomId roomId, int roundNumber) {
     return roundLogicService.calculatePlayerScoreForRound(roomId, roundNumber);
   }
   @Override
   public void beginVotePhase(RoomId roomId){
     roundLogicService.beginVotePhase(roomId);
   }
+
+  // function to submit vote
   @Override
-  public void  invalidatePlayerAnswer(RoomId roomId, PlayerId playerId, CategoryId categoryId, int roundNum) {
+  public void invalidatePlayerAnswer(RoomId roomId, PlayerId playerId, CategoryId categoryId, int roundNum) {
     roundLogicService.invalidatePlayerAnswer(roomId, playerId, categoryId, roundNum);
+  }
+  @Override
+  public Map<PlayerId, Integer> updatePlayerScores(RoomId roomId, int roundNumber) {
+    Map<PlayerId, Integer> finalScores = roundLogicService.finalizeRoundScores(roomId, roundNumber);
+    return gameLogicService.updatePlayerScores(roomId, finalScores);
   }
   @Override
   public void endRound(RoomId roomId) {
     roundLogicService.endRound(roomId);
     startNextRound(roomId);
   }
-  @Override
-  public Map<PlayerId, Integer> updatePlayerScores(RoomId roomId, int currRound) {
-    Map<PlayerId, Integer> scores = roundLogicService.calculatePlayerScoreForRound(roomId, currRound);
-    gameLogicService.updatePlayerScores(roomId, scores);
-    return scores;
-  }
+
   @Override
   public void startNextRound(RoomId roomId) {
     int numberOfRounds = gameLogicService.getNumberOfRounds(roomId);

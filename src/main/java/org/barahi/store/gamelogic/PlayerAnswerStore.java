@@ -24,15 +24,17 @@ public class PlayerAnswerStore {
 
 
   public Map<String, Map<PlayerId, String>> getAnswersForRound(List<PlayerId> playerIds, int roundNumber){
-    return db.select(PLAYER_ANSWER.CATEGORY_ID, PLAYER_ANSWER.PLAYER_ID, PLAYER_ANSWER.ANSWER)
+    return db.select(CATEGORIES.CATEGORY, PLAYER_ANSWER.PLAYER_ID, PLAYER_ANSWER.ANSWER)
       .from(PLAYER_ANSWER)
+      .join(CATEGORIES).on(PLAYER_ANSWER.CATEGORY_ID.eq(CATEGORIES.ID))
       .where(PLAYER_ANSWER.ROUND.eq(roundNumber))
+      .and(PLAYER_ANSWER.SCORE.ne(-1))
       .and(PLAYER_ANSWER.PLAYER_ID.in(
         playerIds.stream().map(id -> id.getId().toString()).collect(Collectors.toList())))
       .fetch()
       .stream()
       .collect(Collectors.groupingBy(
-        r -> r.get(PLAYER_ANSWER.CATEGORY_ID),
+        r -> r.get(CATEGORIES.CATEGORY),
         Collectors.toMap(
           r -> PlayerId.of(r.get(PLAYER_ANSWER.PLAYER_ID)),
           r -> r.get(PLAYER_ANSWER.ANSWER)
@@ -48,6 +50,7 @@ public class PlayerAnswerStore {
     ).toList();
     db.batchInsert(records).execute();
   }
+
 
   public void updateScoreForAnswer(PlayerId playerId, CategoryId categoryId, int roundNum, int newScore){
     db.update(PLAYER_ANSWER)

@@ -8,7 +8,6 @@ import org.barahi.serviceapi.room.Room.RoomId;
 import org.jooq.DSLContext;
 import org.jooq.Query;
 
-import java.sql.Array;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
