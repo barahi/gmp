@@ -9,6 +9,7 @@ import org.barahi.serviceapi.room.RoomService;
 import org.barahi.store.GameSettingsStore;
 import org.barahi.store.gamelogic.GameStateStore;
 import org.barahi.store.gamelogic.PlayerAnswerStore;
+import org.barahi.store.gamelogic.PlayerVoteStore;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -25,13 +26,15 @@ public class RoundLogicServiceImpl implements RoundLogicService {
   private final GameStateStore gameStateStore;
   private final GameSettingsStore gameSettingsStore;
 
+  private final PlayerVoteStore playerVoteStore;
 
   @Inject
-  public RoundLogicServiceImpl(RoomService roomService, PlayerAnswerStore playerAnswerStore, GameStateStore gameStateStore, GameSettingsStore gameSettingsStore){
+  public RoundLogicServiceImpl(RoomService roomService, PlayerAnswerStore playerAnswerStore, GameStateStore gameStateStore, GameSettingsStore gameSettingsStore, PlayerVoteStore playerVoteStore){
     this.roomService = roomService;
     this.playerAnswerStore = playerAnswerStore;
     this.gameStateStore = gameStateStore;
     this.gameSettingsStore = gameSettingsStore;
+    this.playerVoteStore = playerVoteStore;
   }
 
   @Override
@@ -83,7 +86,17 @@ public class RoundLogicServiceImpl implements RoundLogicService {
   public void beginVotePhase(RoomId roomId){
     gameStateStore.changeGamePhase(roomId, RoundPhase.VOTE);
   }
-  //
+
+  @Override
+  public void submitVote(RoomId roomId, CategoryId categoryId, int roundNumber, PlayerId targetPlayerId, PlayerId voterId, boolean vote){
+    playerVoteStore.savePlayerVote(roomId, categoryId, roundNumber, targetPlayerId, voterId, vote);
+  }
+
+  @Override
+  public boolean answerGotApproved(RoomId roomId, CategoryId categoryId, int roundNumber, PlayerId targetPlayerId){
+    return playerVoteStore.isAnswerVerified(roomId, categoryId, roundNumber, targetPlayerId);
+  }
+
   @Override
   public void invalidatePlayerAnswer(RoomId roomId, PlayerId playerId, CategoryId categoryId, int roundNum) {
     playerAnswerStore.updateScoreForAnswer(playerId, categoryId, roundNum, -1);

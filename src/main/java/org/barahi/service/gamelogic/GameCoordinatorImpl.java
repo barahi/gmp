@@ -4,6 +4,7 @@ import jakarta.inject.Inject;
 import org.barahi.serviceapi.gameSettings.CategoryId;
 import org.barahi.serviceapi.player.Player.PlayerId;
 import org.barahi.serviceapi.room.Room.RoomId;
+import org.checkerframework.checker.units.qual.C;
 
 import java.util.Map;
 
@@ -38,9 +39,20 @@ public class GameCoordinatorImpl implements GameCoordinator {
   }
 
   @Override
-  public void invalidatePlayerAnswer(RoomId roomId, PlayerId playerId, CategoryId categoryId, int roundNum) {
-    roundLogicService.invalidatePlayerAnswer(roomId, playerId, categoryId, roundNum);
+  public void submitVote(RoomId roomId, CategoryId categoryId, int roundNumber, PlayerId targetPlayerId, PlayerId voterId, boolean vote){
+    roundLogicService.submitVote(roomId, categoryId, roundNumber, targetPlayerId, voterId, vote);
   }
+
+
+  @Override
+  public boolean finalizeVotePhase(RoomId roomId, CategoryId categoryId, int roundNumber, PlayerId targetPlayerId){
+    boolean verdict = roundLogicService.answerGotApproved(roomId,categoryId, roundNumber,targetPlayerId);
+    if (!verdict){
+      roundLogicService.invalidatePlayerAnswer(roomId, targetPlayerId, categoryId, roundNumber);
+    }
+    return verdict;
+  }
+
   @Override
   public Map<PlayerId, Integer> updatePlayerScores(RoomId roomId, int roundNumber) {
     Map<PlayerId, Integer> finalScores = roundLogicService.finalizeRoundScores(roomId, roundNumber);

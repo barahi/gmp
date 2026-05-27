@@ -15,6 +15,17 @@ public class PlayerVoteStore {
     this.db = dbProvider.get();
   }
 
+  public void savePlayerVote(RoomId roomId, CategoryId categoryId, int roundNumber, PlayerId targetPlayerId, PlayerId voterId, boolean isValid){
+    db.insertInto(PLAYER_VOTE)
+      .set(PLAYER_VOTE.ROOM_ID, roomId.getId().toString())
+      .set(PLAYER_VOTE.CATEGORY_ID, categoryId.getId().toString())
+      .set(PLAYER_VOTE.ROUND, roundNumber)
+      .set(PLAYER_VOTE.TARGET_PLAYER_ID, targetPlayerId.getId().toString())
+      .set(PLAYER_VOTE.VOTER_ID, voterId.getId().toString())
+      .set(PLAYER_VOTE.IS_VALID, isValid)
+      .execute();
+  }
+
   public boolean isAnswerVerified(RoomId roomId, CategoryId categoryId, int roundNumber, PlayerId targetPlayerId){
     int approvedVotes = db.selectCount()
       .from(PLAYER_VOTE)
@@ -25,12 +36,12 @@ public class PlayerVoteStore {
       .and(PLAYER_VOTE.IS_VALID.eq(true))
       .execute();
 
-    int totalVotes = db.selectCount()
+    int totalPlayers = db.selectCount()
       .from(ROOM_PLAYER)
       .where(ROOM_PLAYER.ROOM_ID.eq(roomId.getId().toString()))
       .execute();
 
-    return approvedVotes >= (totalVotes-1)/2.0;
+    return approvedVotes >= (totalPlayers-1)/2.0;
   }
 
 }

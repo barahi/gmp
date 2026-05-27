@@ -14,5 +14,6 @@ public class StoreBinder extends AbstractBinder {
         bind(CumulativeScoreStore.class).to(CumulativeScoreStore.class);
         bind(PlayerAnswerStore.class).to(PlayerAnswerStore.class);
         bind(GameStateStore.class).to(GameStateStore.class);
+        bind(PlayerAnswerStore.class).to(PlayerAnswerStore.class);
     }
 }
