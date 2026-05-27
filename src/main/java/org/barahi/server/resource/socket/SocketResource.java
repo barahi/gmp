@@ -118,9 +118,9 @@ public class SocketResource {
                 Map<String, Map<PlayerId, Integer>> roundScores = gameCoordinator.calculatePlayerScoreForRound(roomId, serializedPayload.getRoundNumber());
 
                 RoundScoreEventPayload outgoingPayload = new RoundScoreEventPayload(serializedPayload.getRoundNumber(), roundScores);
-                RoundScoreEventPayloadJson roundScoreJson = roundScoreEventPayloadSerializer.toJson(outgoingPayload);
+                RoundScoreEventPayloadJson outgoingPayloadJson = roundScoreEventPayloadSerializer.toJson(outgoingPayload);
 
-                RoundScoreEvent roundScoreEvent = new RoundScoreEvent(roundScoreJson);
+                RoundScoreEvent roundScoreEvent = new RoundScoreEvent(outgoingPayloadJson);
                 broadcastEventToRoom(roomId, roundScoreEvent);
                 break;
             }

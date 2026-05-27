@@ -24,6 +24,7 @@ public class PlayerAnswerStore {
 
 
   public Map<String, Map<PlayerId, String>> getAnswersForRound(List<PlayerId> playerIds, int roundNumber){
+    db.selectFrom(PLAYER)
     return db.select(CATEGORIES.CATEGORY, PLAYER_ANSWER.PLAYER_ID, PLAYER_ANSWER.ANSWER)
       .from(PLAYER_ANSWER)
       .join(CATEGORIES).on(PLAYER_ANSWER.CATEGORY_ID.eq(CATEGORIES.ID))
