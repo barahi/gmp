@@ -1,7 +1,7 @@
 package org.barahi.server.serializer;
 
 import org.barahi.server.json.SubmitVoteEventPayloadJson;
-import org.barahi.server.resource.socket.SubmitVoteEventPayload;
+import org.barahi.server.resource.socket.events.submitvote.SubmitVoteEventPayload;
 import org.barahi.serviceapi.gameSettings.CategoryId;
 import org.barahi.serviceapi.player.Player.PlayerId;
 

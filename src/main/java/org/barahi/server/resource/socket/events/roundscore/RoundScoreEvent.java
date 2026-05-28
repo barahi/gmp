@@ -1,7 +1,9 @@
-package org.barahi.server.resource.socket;
+package org.barahi.server.resource.socket.events.roundscore;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import org.barahi.server.json.RoundScoreEventPayloadJson;
+import org.barahi.server.resource.socket.Event;
+import org.barahi.server.resource.socket.EventType;
 
 public class RoundScoreEvent implements Event<RoundScoreEventPayloadJson> {
   @JsonProperty("payload")

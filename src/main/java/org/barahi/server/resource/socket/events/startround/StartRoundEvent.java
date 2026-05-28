@@ -1,6 +1,8 @@
-package org.barahi.server.resource.socket;
+package org.barahi.server.resource.socket.events.startround;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import org.barahi.server.resource.socket.Event;
+import org.barahi.server.resource.socket.EventType;
 
 public class StartRoundEvent implements Event<StartRoundEventPayload> {
     @JsonProperty("payload")

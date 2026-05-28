@@ -1,9 +1,11 @@
-package org.barahi.server.resource.socket;
+package org.barahi.server.resource.socket.events.submitvote;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import org.barahi.server.json.SubmitVoteEventPayloadJson;
+import org.barahi.server.resource.socket.Event;
+import org.barahi.server.resource.socket.EventType;
 
-public class SubmitVoteEvent implements Event<SubmitVoteEventPayloadJson>{
+public class SubmitVoteEvent implements Event<SubmitVoteEventPayloadJson> {
     @JsonProperty("payload")
     private SubmitVoteEventPayloadJson voteInvalidEventPayloadJson;
 

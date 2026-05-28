@@ -3,6 +3,14 @@ package org.barahi.server.resource.socket;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import org.barahi.server.resource.socket.events.beginvote.BeginVotePhaseEvent;
+import org.barahi.server.resource.socket.events.noop.NoopEvent;
+import org.barahi.server.resource.socket.events.playerjoined.PlayerJoinedEvent;
+import org.barahi.server.resource.socket.events.playerleft.PlayerLeftEvent;
+import org.barahi.server.resource.socket.events.roundscore.RoundScoreEvent;
+import org.barahi.server.resource.socket.events.startround.StartRoundEvent;
+import org.barahi.server.resource.socket.events.submitanswers.SubmitAnswersEvent;
+import org.barahi.server.resource.socket.events.submitvote.SubmitVoteEvent;
 
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.EXISTING_PROPERTY, property = "type")
 @JsonSubTypes({

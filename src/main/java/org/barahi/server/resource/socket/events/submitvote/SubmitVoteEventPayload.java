@@ -1,9 +1,10 @@
-package org.barahi.server.resource.socket;
+package org.barahi.server.resource.socket.events.submitvote;
 
+import org.barahi.server.resource.socket.EventPayload;
 import org.barahi.serviceapi.gameSettings.CategoryId;
 import org.barahi.serviceapi.player.Player.PlayerId;
 
-public class SubmitVoteEventPayload implements EventPayload{
+public class SubmitVoteEventPayload implements EventPayload {
   private CategoryId categoryId;
   private int roundNumber;
   private PlayerId targetPlayerId;

@@ -1,5 +1,6 @@
-package org.barahi.server.resource.socket;
+package org.barahi.server.resource.socket.events.roundscore;
 
+import org.barahi.server.resource.socket.EventPayload;
 import org.barahi.serviceapi.player.Player.PlayerId;
 
 import java.util.Map;

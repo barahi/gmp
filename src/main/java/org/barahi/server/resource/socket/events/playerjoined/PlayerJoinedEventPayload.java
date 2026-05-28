@@ -1,8 +1,9 @@
-package org.barahi.server.resource.socket;
+package org.barahi.server.resource.socket.events.playerjoined;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import org.barahi.infra.Functional;
 import org.barahi.server.json.PlayerJson;
+import org.barahi.server.resource.socket.EventPayload;
 import org.barahi.server.serializer.PlayerSerializer;
 import org.barahi.serviceapi.player.Player;
 

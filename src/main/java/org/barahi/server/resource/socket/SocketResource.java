@@ -9,6 +9,16 @@ import org.barahi.server.json.RoundScoreEventPayloadJson;
 import org.barahi.server.json.SubmitAnswerPayloadEventJson;
 import org.barahi.server.json.SubmitVoteEventPayloadJson;
 import org.barahi.server.resource.GuiceWebSocketConfigurator;
+import org.barahi.server.resource.socket.events.noop.NoopEvent;
+import org.barahi.server.resource.socket.events.playerjoined.PlayerJoinedEvent;
+import org.barahi.server.resource.socket.events.roundscore.RoundScoreEvent;
+import org.barahi.server.resource.socket.events.roundscore.RoundScoreEventPayload;
+import org.barahi.server.resource.socket.events.startround.StartRoundEvent;
+import org.barahi.server.resource.socket.events.startround.StartRoundEventPayload;
+import org.barahi.server.resource.socket.events.submitanswers.SubmitAnswersEvent;
+import org.barahi.server.resource.socket.events.submitanswers.SubmitAnswersEventPayload;
+import org.barahi.server.resource.socket.events.submitvote.SubmitVoteEvent;
+import org.barahi.server.resource.socket.events.submitvote.SubmitVoteEventPayload;
 import org.barahi.server.serializer.RoundScoreEventPayloadSerializer;
 import org.barahi.server.serializer.SubmitAnswerPayloadEventSerializer;
 import org.barahi.server.serializer.SubmitVoteEventPayloadSerializer;
@@ -82,12 +92,7 @@ public class SocketResource {
             broadcastErrorAndCloseSession(session, "Player not in any room: " + playerId);
         }
         List<Player> players = roomService.getPlayersInRoom(roomId);
-        players.forEach( p -> {
-            System.out.println("players that joined are: "  + p.getId().toString());
-        });
-
         broadcastEventToRoom(roomId, PlayerJoinedEvent.withListOfPlayers(players));
-        System.out.println("reached");
     }
 
     @OnMessage
@@ -141,6 +146,10 @@ public class SocketResource {
                 break;
             }
 
+            // TO DO: add event FINALIZE_VOTE_PHASE (re calculate scores), return scores and start new round
+            // TO DO: add END_GAME that returns the cumulative scores/
+
+
             case NOOP: {
                 // Do Nothing.
                 break;
@@ -171,7 +180,6 @@ public class SocketResource {
         List<Session> validSessions = Functional.filter(sessions, session -> session != null && session.isOpen());
         validSessions.forEach(session -> {
             try {
-                System.out.println("try executed");
                 session.getBasicRemote().sendText(eventDetails);
             } catch (IOException e) {
                 throw new RuntimeException(e);

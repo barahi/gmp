@@ -1,7 +1,7 @@
 package org.barahi.server.serializer;
 
 import org.barahi.server.json.SubmitAnswerPayloadEventJson;
-import org.barahi.server.resource.socket.SubmitAnswersEventPayload;
+import org.barahi.server.resource.socket.events.submitanswers.SubmitAnswersEventPayload;
 import org.barahi.serviceapi.gameSettings.CategoryId;
 import org.barahi.serviceapi.player.Player.PlayerId;
 

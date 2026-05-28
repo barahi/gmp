@@ -1,7 +1,7 @@
 package org.barahi.server.serializer;
 
 import org.barahi.server.json.RoundScoreEventPayloadJson;
-import org.barahi.server.resource.socket.RoundScoreEventPayload;
+import org.barahi.server.resource.socket.events.roundscore.RoundScoreEventPayload;
 
 import java.util.HashMap;
 import java.util.Map;

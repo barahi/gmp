@@ -1,7 +1,9 @@
-package org.barahi.server.resource.socket;
+package org.barahi.server.resource.socket.events.submitanswers;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import org.barahi.server.json.SubmitAnswerPayloadEventJson;
+import org.barahi.server.resource.socket.Event;
+import org.barahi.server.resource.socket.EventType;
 
 public class SubmitAnswersEvent implements Event<SubmitAnswerPayloadEventJson> {
     @JsonProperty("payload")

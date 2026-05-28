@@ -1,4 +1,8 @@
-package org.barahi.server.resource.socket;
+package org.barahi.server.resource.socket.events.noop;
+
+import org.barahi.server.resource.socket.Event;
+import org.barahi.server.resource.socket.EventPayload;
+import org.barahi.server.resource.socket.EventType;
 
 public class NoopEvent implements Event<NoopEvent.NoopEventPayload> {
     @Override

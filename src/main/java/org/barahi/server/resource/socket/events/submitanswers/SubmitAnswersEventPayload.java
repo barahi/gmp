@@ -1,13 +1,14 @@
-package org.barahi.server.resource.socket;
+package org.barahi.server.resource.socket.events.submitanswers;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import org.barahi.server.resource.socket.EventPayload;
 import org.barahi.server.serializer.PlayerSerializer;
 import org.barahi.serviceapi.gameSettings.CategoryId;
 import org.barahi.serviceapi.player.Player.PlayerId;
 
 import java.util.Map;
 
-public class SubmitAnswersEventPayload implements EventPayload{
+public class SubmitAnswersEventPayload implements EventPayload {
   private CategoryId categoryId;
   private int roundNumber;
   @JsonDeserialize(keyUsing = PlayerSerializer.PlayerIdKeyDeserializer.class)
