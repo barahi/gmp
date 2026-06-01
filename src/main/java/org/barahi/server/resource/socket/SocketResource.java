@@ -7,6 +7,7 @@ import org.barahi.infra.LoggerFactory;
 import org.barahi.infra.exceptions.ObjectNotFoundException;
 import org.barahi.server.json.*;
 import org.barahi.server.resource.GuiceWebSocketConfigurator;
+import org.barahi.server.resource.socket.events.endgame.EndGameEvent;
 import org.barahi.server.resource.socket.events.endround.EndRoundEvent;
 import org.barahi.server.resource.socket.events.endround.RoundResultsEvent;
 import org.barahi.server.resource.socket.events.noop.NoopEvent;
@@ -59,10 +60,13 @@ public class SocketResource {
     private final SubmitVoteEventPayloadSerializer submitVoteEventPayloadSerializer;
     private final VoteResultsEventPayloadSerializer voteResultsEventPayloadSerializer;
     private final PlayerScoresPayloadEventSerializer playerScoresPayloadEventSerializer;
+    private final EndGamePayloadEventSerializer endGamePayloadEventSerializer;
 
 
     @Inject
-    public SocketResource(PlayerService playerService, RoomService roomService, GameCoordinator gameCoordinator, SubmitAnswerPayloadEventSerializer submitAnswerPayloadEventSerializer, RoundScoreEventPayloadSerializer roundScoreEventPayloadSerializer, SubmitVoteEventPayloadSerializer submitVoteEventPayloadSerializer, VoteResultsEventPayloadSerializer voteResultsEventPayloadSerializer, PlayerScoresPayloadEventSerializer playerScoresPayloadEventSerializer) {
+    public SocketResource(PlayerService playerService, RoomService roomService, GameCoordinator gameCoordinator, SubmitAnswerPayloadEventSerializer submitAnswerPayloadEventSerializer,
+                          RoundScoreEventPayloadSerializer roundScoreEventPayloadSerializer, SubmitVoteEventPayloadSerializer submitVoteEventPayloadSerializer, VoteResultsEventPayloadSerializer
+                                voteResultsEventPayloadSerializer, PlayerScoresPayloadEventSerializer playerScoresPayloadEventSerializer, EndGamePayloadEventSerializer endGamePayloadEventSerializer) {
         this.playerService = playerService;
         this.roomService = roomService;
         this.gameCoordinator = gameCoordinator;
@@ -71,6 +75,7 @@ public class SocketResource {
         this.submitVoteEventPayloadSerializer = submitVoteEventPayloadSerializer;
         this.voteResultsEventPayloadSerializer = voteResultsEventPayloadSerializer;
         this.playerScoresPayloadEventSerializer = playerScoresPayloadEventSerializer;
+        this.endGamePayloadEventSerializer = endGamePayloadEventSerializer;
     }
 
     @OnOpen
@@ -180,8 +185,13 @@ public class SocketResource {
                 break;
             }
 
-
-
+            case END_GAME: {
+                Map<PlayerId, Integer> scores = gameCoordinator.endGame(roomId);
+                EndGamePayloadJson serializedJson = endGamePayloadEventSerializer.toJson(scores);
+                EndGameEvent outgoingEvent = new EndGameEvent(serializedJson);
+                broadcastEventToRoom(roomId, outgoingEvent);
+                break;
+            }
 
             case NOOP: {
                 // Do Nothing.

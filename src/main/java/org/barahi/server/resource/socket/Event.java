@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import org.barahi.server.resource.socket.events.beginvote.BeginVotePhaseEvent;
+import org.barahi.server.resource.socket.events.endgame.EndGameEvent;
 import org.barahi.server.resource.socket.events.endround.EndRoundEvent;
 import org.barahi.server.resource.socket.events.endround.RoundResultsEvent;
 import org.barahi.server.resource.socket.events.noop.NoopEvent;
@@ -29,6 +30,7 @@ import org.barahi.server.resource.socket.events.voteresult.VoteResultsEvent;
         @JsonSubTypes.Type(value = VoteResultsEvent.class, name = "VOTE_RESULTS"),
         @JsonSubTypes.Type(value = EndRoundEvent.class, name = "END_ROUND"),
         @JsonSubTypes.Type(value = RoundResultsEvent.class, name = "ROUND_RESULTS"),
+        @JsonSubTypes.Type(value = EndGameEvent.class, name = "END_GAME"),
         @JsonSubTypes.Type(value = PlayerLeftEvent.class, name = "PLAYER_LEFT")
 })
 public interface Event<T extends EventPayload> {

@@ -12,5 +12,7 @@ public class SerializerBinder extends AbstractBinder {
         bind(SubmitVoteEventPayloadSerializer.class).to(SubmitVoteEventPayloadSerializer.class);
         bind(BeginVotePayloadEventSerializer.class).to(BeginVotePayloadEventSerializer.class);
         bind(VoteResultsEventPayloadSerializer.class).to(VoteResultsEventPayloadSerializer.class);
+        bind(PlayerScoresPayloadEventSerializer.class).to(PlayerScoresPayloadEventSerializer.class);
+        bind(EndGamePayloadEventSerializer.class).to(EndGamePayloadEventSerializer.class);
     }
 }

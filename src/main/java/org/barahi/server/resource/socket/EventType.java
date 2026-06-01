@@ -12,6 +12,7 @@ public enum EventType {
     VOTE_RESULTS(false, true),
     END_ROUND(true, false),
     ROUND_RESULTS(false, true),
+    END_GAME(false, true),
     PLAYER_LEFT(false, true);
 
     private final boolean isIncoming;
