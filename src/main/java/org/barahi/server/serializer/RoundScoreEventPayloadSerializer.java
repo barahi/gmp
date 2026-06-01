@@ -1,14 +1,14 @@
 package org.barahi.server.serializer;
 
-import org.barahi.server.json.RoundScoreEventPayloadJson;
+import org.barahi.server.json.RoundScorePayloadJson;
 import org.barahi.server.resource.socket.events.roundscore.RoundScoreEventPayload;
 
 import java.util.HashMap;
 import java.util.Map;
 
 public class RoundScoreEventPayloadSerializer {
-  public RoundScoreEventPayloadJson toJson(RoundScoreEventPayload payload){
-    RoundScoreEventPayloadJson json = new RoundScoreEventPayloadJson();
+  public RoundScorePayloadJson toJson(RoundScoreEventPayload payload){
+    RoundScorePayloadJson json = new RoundScorePayloadJson();
     json.setRoundNumber(payload.getRoundNumber());
     Map<String, Map<String, Integer>> fullScoreMap = new HashMap<>();
     if (payload.getRoundScoreMap() != null){

@@ -1,17 +1,17 @@
 package org.barahi.server.resource.socket.events.submitvote;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import org.barahi.server.json.SubmitVoteEventPayloadJson;
+import org.barahi.server.json.SubmitVotePayloadJson;
 import org.barahi.server.resource.socket.Event;
 import org.barahi.server.resource.socket.EventType;
 
-public class SubmitVoteEvent implements Event<SubmitVoteEventPayloadJson> {
+public class SubmitVoteEvent implements Event<SubmitVotePayloadJson> {
     @JsonProperty("payload")
-    private SubmitVoteEventPayloadJson voteInvalidEventPayloadJson;
+    private SubmitVotePayloadJson voteInvalidEventPayloadJson;
 
     public SubmitVoteEvent(){}
 
-    public SubmitVoteEvent(SubmitVoteEventPayloadJson voteInvalidEventPayloadJson) {
+    public SubmitVoteEvent(SubmitVotePayloadJson voteInvalidEventPayloadJson) {
         this.voteInvalidEventPayloadJson = voteInvalidEventPayloadJson;
     }
 
@@ -23,12 +23,12 @@ public class SubmitVoteEvent implements Event<SubmitVoteEventPayloadJson> {
 
     @Override
     @JsonProperty("payload")
-    public SubmitVoteEventPayloadJson getPayload() {
+    public SubmitVotePayloadJson getPayload() {
         return voteInvalidEventPayloadJson;
     }
     @Override
     @JsonProperty("payload")
-    public void setPayload(SubmitVoteEventPayloadJson voteInvalidEventPayloadJson) {
+    public void setPayload(SubmitVotePayloadJson voteInvalidEventPayloadJson) {
         this.voteInvalidEventPayloadJson = voteInvalidEventPayloadJson;
     }
 }

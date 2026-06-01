@@ -11,7 +11,8 @@ import org.barahi.server.resource.socket.events.roundscore.RoundScoreEvent;
 import org.barahi.server.resource.socket.events.startround.StartRoundEvent;
 import org.barahi.server.resource.socket.events.submitanswers.SubmitAnswersEvent;
 import org.barahi.server.resource.socket.events.submitvote.SubmitVoteEvent;
-import org.barahi.server.resource.socket.events.voteresult.VoteResultEvent;
+import org.barahi.server.resource.socket.events.voteresult.EndVotePhaseEvent;
+import org.barahi.server.resource.socket.events.voteresult.VoteResultsEvent;
 
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.EXISTING_PROPERTY, property = "type")
 @JsonSubTypes({
@@ -22,7 +23,8 @@ import org.barahi.server.resource.socket.events.voteresult.VoteResultEvent;
         @JsonSubTypes.Type(value = RoundScoreEvent.class, name = "ROUND_SCORES"),
         @JsonSubTypes.Type(value = BeginVotePhaseEvent.class, name = "BEGIN_VOTE_PHASE"),
         @JsonSubTypes.Type(value = SubmitVoteEvent.class, name = "SUBMIT_VOTE"),
-        @JsonSubTypes.Type(value = VoteResultEvent.class, name = "VOTE_RESULT"),
+        @JsonSubTypes.Type(value = EndVotePhaseEvent.class, name = "END_VOTE_ROUND"),
+        @JsonSubTypes.Type(value = VoteResultsEvent.class, name = "VOTE_RESULTS"),
         @JsonSubTypes.Type(value = PlayerLeftEvent.class, name = "PLAYER_LEFT")
 })
 public interface Event<T extends EventPayload> {

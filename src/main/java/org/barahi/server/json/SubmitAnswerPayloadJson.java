@@ -5,7 +5,7 @@ import org.barahi.server.resource.socket.EventPayload;
 
 import java.util.Map;
 
-public class SubmitAnswerPayloadEventJson implements EventPayload {
+public class SubmitAnswerPayloadJson implements EventPayload {
   @JsonProperty
   String categoryId;
   @JsonProperty

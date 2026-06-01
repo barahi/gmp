@@ -8,7 +8,8 @@ public enum EventType {
     ROUND_SCORES(false, true),
     BEGIN_VOTE_PHASE(true, false),
     SUBMIT_VOTE(true, false),
-    VOTE_RESULT(false, true),
+    END_VOTE_PHASE(true, false),
+    VOTE_RESULTS(false, true),
     PLAYER_LEFT(false, true);
 
     private final boolean isIncoming;

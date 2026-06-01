@@ -3,7 +3,7 @@ package org.barahi.server.json;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import org.barahi.server.resource.socket.EventPayload;
 
-public class SubmitVoteEventPayloadJson implements EventPayload {
+public class BeginVotePayloadJson implements EventPayload {
   @JsonProperty
   String categoryId;
 
@@ -17,11 +17,12 @@ public class SubmitVoteEventPayloadJson implements EventPayload {
   String voterId;
 
   @JsonProperty
-  boolean vote;
+  String answer;
 
   public String getCategoryId() {
     return categoryId;
   }
+
   public void setCategoryId(String categoryId) {
     this.categoryId = categoryId;
   }
@@ -50,11 +51,11 @@ public class SubmitVoteEventPayloadJson implements EventPayload {
     this.voterId = voterId;
   }
 
-  public boolean getVote() {
-    return vote;
+  public String getAnswer() {
+    return answer;
   }
 
-  public void setVote(boolean vote) {
-    this.vote = vote;
+  public void setAnswer(String answer) {
+    this.answer = answer;
   }
 }

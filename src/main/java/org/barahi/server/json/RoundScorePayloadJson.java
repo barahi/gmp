@@ -5,7 +5,7 @@ import org.barahi.server.resource.socket.EventPayload;
 
 import java.util.Map;
 
-public class RoundScoreEventPayloadJson implements EventPayload {
+public class RoundScorePayloadJson implements EventPayload {
   @JsonProperty("roundNumber")
   private int roundNumber;
 

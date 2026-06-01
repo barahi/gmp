@@ -1,16 +1,16 @@
 package org.barahi.server.resource.socket.events.roundscore;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import org.barahi.server.json.RoundScoreEventPayloadJson;
+import org.barahi.server.json.RoundScorePayloadJson;
 import org.barahi.server.resource.socket.Event;
 import org.barahi.server.resource.socket.EventType;
 
-public class RoundScoreEvent implements Event<RoundScoreEventPayloadJson> {
+public class RoundScoreEvent implements Event<RoundScorePayloadJson> {
   @JsonProperty("payload")
-  private RoundScoreEventPayloadJson roundScoreEventJson;
+  private RoundScorePayloadJson roundScoreEventJson;
 
   public RoundScoreEvent(){};
-  public RoundScoreEvent(RoundScoreEventPayloadJson roundScoreEventJson) {
+  public RoundScoreEvent(RoundScorePayloadJson roundScoreEventJson) {
     this.roundScoreEventJson = roundScoreEventJson;
   }
 
@@ -22,12 +22,12 @@ public class RoundScoreEvent implements Event<RoundScoreEventPayloadJson> {
 
   @Override
   @JsonProperty("payload")
-  public RoundScoreEventPayloadJson getPayload() {
+  public RoundScorePayloadJson getPayload() {
     return roundScoreEventJson;
   }
 
   @Override
-  public void setPayload(RoundScoreEventPayloadJson roundScoreEventJson) {
+  public void setPayload(RoundScorePayloadJson roundScoreEventJson) {
     this.roundScoreEventJson = roundScoreEventJson;
   }
 }

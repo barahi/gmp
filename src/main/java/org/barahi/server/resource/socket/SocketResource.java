@@ -7,8 +7,6 @@ import org.barahi.infra.LoggerFactory;
 import org.barahi.infra.exceptions.ObjectNotFoundException;
 import org.barahi.server.json.*;
 import org.barahi.server.resource.GuiceWebSocketConfigurator;
-import org.barahi.server.resource.socket.events.beginvote.BeginVotePhaseEvent;
-import org.barahi.server.resource.socket.events.beginvote.BeginVotePhasePayload;
 import org.barahi.server.resource.socket.events.noop.NoopEvent;
 import org.barahi.server.resource.socket.events.playerjoined.PlayerJoinedEvent;
 import org.barahi.server.resource.socket.events.roundscore.RoundScoreEvent;
@@ -19,12 +17,12 @@ import org.barahi.server.resource.socket.events.submitanswers.SubmitAnswersEvent
 import org.barahi.server.resource.socket.events.submitanswers.SubmitAnswersEventPayload;
 import org.barahi.server.resource.socket.events.submitvote.SubmitVoteEvent;
 import org.barahi.server.resource.socket.events.submitvote.SubmitVoteEventPayload;
-import org.barahi.server.resource.socket.events.voteresult.VoteResultEvent;
-import org.barahi.server.serializer.BeginVotePayloadEventSerializer;
-import org.barahi.server.serializer.RoundScoreEventPayloadSerializer;
-import org.barahi.server.serializer.SubmitAnswerPayloadEventSerializer;
-import org.barahi.server.serializer.SubmitVoteEventPayloadSerializer;
+import org.barahi.server.resource.socket.events.voteresult.EndVotePhaseEvent;
+import org.barahi.server.resource.socket.events.voteresult.VoteResultsEvent;
+import org.barahi.server.serializer.*;
+import org.barahi.service.gamelogic.Dto.VoteRoundResults;
 import org.barahi.service.gamelogic.GameCoordinator;
+import org.barahi.serviceapi.gameSettings.CategoryId;
 import org.barahi.serviceapi.player.Player;
 import org.barahi.serviceapi.player.Player.PlayerId;
 import org.barahi.serviceapi.player.PlayerService;
@@ -56,19 +54,19 @@ public class SocketResource {
     private final GameCoordinator gameCoordinator;
     private final SubmitAnswerPayloadEventSerializer submitAnswerPayloadEventSerializer;
     private final RoundScoreEventPayloadSerializer roundScoreEventPayloadSerializer;
-    private final SubmitVoteEventPayloadSerializer voteInvalidEventPayloadSerializer;
+    private final SubmitVoteEventPayloadSerializer submitVoteEventPayloadSerializer;
+    private final VoteResultsEventPayloadSerializer voteResultsEventPayloadSerializer;
 
-    private final BeginVotePayloadEventSerializer beginVotePayloadEventSerializer;
 
     @Inject
-    public SocketResource(PlayerService playerService, RoomService roomService, GameCoordinator gameCoordinator, SubmitAnswerPayloadEventSerializer submitAnswerPayloadEventSerializer, RoundScoreEventPayloadSerializer roundScoreEventPayloadSerializer, SubmitVoteEventPayloadSerializer voteInvalidEventPayloadSerializer, BeginVotePayloadEventSerializer beginVotePayloadEventSerializer) {
+    public SocketResource(PlayerService playerService, RoomService roomService, GameCoordinator gameCoordinator, SubmitAnswerPayloadEventSerializer submitAnswerPayloadEventSerializer, RoundScoreEventPayloadSerializer roundScoreEventPayloadSerializer, SubmitVoteEventPayloadSerializer submitVoteEventPayloadSerializer, VoteResultsEventPayloadSerializer voteResultsEventPayloadSerializer) {
         this.playerService = playerService;
         this.roomService = roomService;
         this.gameCoordinator = gameCoordinator;
         this.submitAnswerPayloadEventSerializer = submitAnswerPayloadEventSerializer;
         this.roundScoreEventPayloadSerializer = roundScoreEventPayloadSerializer;
-        this.voteInvalidEventPayloadSerializer = voteInvalidEventPayloadSerializer;
-        this.beginVotePayloadEventSerializer = beginVotePayloadEventSerializer;
+        this.submitVoteEventPayloadSerializer = submitVoteEventPayloadSerializer;
+        this.voteResultsEventPayloadSerializer = voteResultsEventPayloadSerializer;
     }
 
     @OnOpen
@@ -125,14 +123,14 @@ public class SocketResource {
 
             case SUBMIT_ANSWERS: {
                 SubmitAnswersEvent submitAnswersEvent = (SubmitAnswersEvent) event;
-                SubmitAnswerPayloadEventJson jsonIncomingPayload = submitAnswersEvent.getPayload();
+                SubmitAnswerPayloadJson jsonIncomingPayload = submitAnswersEvent.getPayload();
                 SubmitAnswersEventPayload serializedPayload = submitAnswerPayloadEventSerializer.fromJson(jsonIncomingPayload);
 
                 gameCoordinator.storeAnswers(roomId, serializedPayload.getCategoryId(), serializedPayload.getRoundNumber(), serializedPayload.getPlayerAnswers());
                 Map<String, Map<PlayerId, Integer>> roundScores = gameCoordinator.calculatePlayerScoreForRound(roomId, serializedPayload.getRoundNumber());
 
                 RoundScoreEventPayload outgoingPayload = new RoundScoreEventPayload(serializedPayload.getRoundNumber(), roundScores);
-                RoundScoreEventPayloadJson outgoingPayloadJson = roundScoreEventPayloadSerializer.toJson(outgoingPayload);
+                RoundScorePayloadJson outgoingPayloadJson = roundScoreEventPayloadSerializer.toJson(outgoingPayload);
 
                 RoundScoreEvent roundScoreEvent = new RoundScoreEvent(outgoingPayloadJson);
                 broadcastEventToRoom(roomId, roundScoreEvent);
@@ -144,18 +142,25 @@ public class SocketResource {
 
             case SUBMIT_VOTE: {
                 SubmitVoteEvent voteInvalidEvent = (SubmitVoteEvent) event;
-                SubmitVoteEventPayloadJson jsonIncomingPayload = voteInvalidEvent.getPayload();
-                SubmitVoteEventPayload serializedPayload = voteInvalidEventPayloadSerializer.fromJson(jsonIncomingPayload);
+                SubmitVotePayloadJson jsonIncomingPayload = voteInvalidEvent.getPayload();
+                SubmitVoteEventPayload serializedPayload = submitVoteEventPayloadSerializer.fromJson(jsonIncomingPayload);
                 gameCoordinator.submitVote(roomId, serializedPayload.getCategoryId(), serializedPayload.getRoundNumber(), serializedPayload.getTargetPlayerId(), serializedPayload.getVoterId(), serializedPayload.getVote());
                 break;
             }
 
-            case VOTE_RESULT: {
-                VoteResultEvent voteResultEvent = new VoteResultEvent();
-                gameCoordinator.
-                VoteResultEventPayloadJson outgoingJson = new VoteResultEventPayloadJson();
-                voteResultEvent.setPayload();
+            case END_VOTE_PHASE: {
+                EndVotePhaseEvent endVotePhaseEvent = (EndVotePhaseEvent)event;
+                EndVotePhasePayloadJson incomingJson = endVotePhaseEvent.getPayload();
+
+                VoteRoundResults results = gameCoordinator.getVoteResults(roomId, CategoryId.of(incomingJson.getCategoryId()), incomingJson.getRoundNumber(), PlayerId.of(incomingJson.getTargetPlayerId()));
+
+                VoteResultsPayloadJson outgoingJson = voteResultsEventPayloadSerializer.toJson(results);
+                VoteResultsEvent outgoingEvent = new VoteResultsEvent(outgoingJson);
+                broadcastEventToRoom(roomId, outgoingEvent);
+                gameCoordinator.updatePlayerScores(roomId, results.getRoundNumber());
+                break;
             }
+
             // TO DO: add event FINALIZE_VOTE_PHASE (re calculate scores), return scores and start new round
 
 

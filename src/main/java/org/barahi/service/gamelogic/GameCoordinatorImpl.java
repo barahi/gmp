@@ -1,7 +1,6 @@
 package org.barahi.service.gamelogic;
 
 import jakarta.inject.Inject;
-import org.barahi.server.resource.socket.events.voteresult.VoteResultEventPayload;
 import org.barahi.service.gamelogic.Dto.VoteRoundResults;
 import org.barahi.serviceapi.gameSettings.CategoryId;
 import org.barahi.serviceapi.player.Player.PlayerId;

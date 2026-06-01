@@ -1,15 +1,15 @@
 package org.barahi.server.resource.socket.events.beginvote;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import org.barahi.server.json.BeginVotePayloadEventJson;
+import org.barahi.server.json.BeginVotePayloadJson;
 import org.barahi.server.resource.socket.Event;
 import org.barahi.server.resource.socket.EventType;
 
-public class BeginVotePhaseEvent implements Event<BeginVotePayloadEventJson> {
+public class BeginVotePhaseEvent implements Event<BeginVotePayloadJson> {
   @JsonProperty("payload")
-  private BeginVotePayloadEventJson beginVotePayloadEventJson;
+  private BeginVotePayloadJson beginVotePayloadEventJson;
 
-  public BeginVotePhaseEvent(BeginVotePayloadEventJson beginVotePayloadEventJson) {
+  public BeginVotePhaseEvent(BeginVotePayloadJson beginVotePayloadEventJson) {
     this.beginVotePayloadEventJson = beginVotePayloadEventJson;
   }
 
@@ -20,13 +20,13 @@ public class BeginVotePhaseEvent implements Event<BeginVotePayloadEventJson> {
 
   @Override
   @JsonProperty("payload")
-  public BeginVotePayloadEventJson getPayload() {
+  public BeginVotePayloadJson getPayload() {
     return beginVotePayloadEventJson;
   }
 
   @Override
   @JsonProperty("payload")
-  public void setPayload(BeginVotePayloadEventJson payload) {
+  public void setPayload(BeginVotePayloadJson payload) {
     this.beginVotePayloadEventJson = payload;
   }
 }

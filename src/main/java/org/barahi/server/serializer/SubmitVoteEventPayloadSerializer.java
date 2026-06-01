@@ -1,12 +1,12 @@
 package org.barahi.server.serializer;
 
-import org.barahi.server.json.SubmitVoteEventPayloadJson;
+import org.barahi.server.json.SubmitVotePayloadJson;
 import org.barahi.server.resource.socket.events.submitvote.SubmitVoteEventPayload;
 import org.barahi.serviceapi.gameSettings.CategoryId;
 import org.barahi.serviceapi.player.Player.PlayerId;
 
 public class SubmitVoteEventPayloadSerializer {
-  public SubmitVoteEventPayload fromJson(SubmitVoteEventPayloadJson json){
+  public SubmitVoteEventPayload fromJson(SubmitVotePayloadJson json){
     SubmitVoteEventPayload payload = new SubmitVoteEventPayload();
     payload.setCategoryId(CategoryId.of(json.getCategoryId()));
     payload.setRoundNumber(json.getRoundNumber());
