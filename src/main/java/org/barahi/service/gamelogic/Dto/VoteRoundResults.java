@@ -1,20 +1,20 @@
-package org.barahi.server.resource.socket.events.voteresult;
-import org.barahi.server.resource.socket.EventPayload;
-import org.barahi.serviceapi.gameSettings.CategoryId;
-import org.barahi.serviceapi.player.Player.PlayerId;
+package org.barahi.service.gamelogic.Dto;
 
-public class VoteResultEventPayload implements EventPayload {
+import org.barahi.serviceapi.gameSettings.CategoryId;
+import org.barahi.serviceapi.player.Player;
+
+public class VoteRoundResults {
   private CategoryId categoryId;
 
   private int roundNumber;
 
-  private PlayerId targetPlayerId;
+  private Player.PlayerId targetPlayerId;
 
   private int validAnswerVotes;
 
   private int invalidAnswerVotes;
 
-  public VoteResultEventPayload(CategoryId categoryId, int roundNumber, PlayerId targetPlayerId, int validAnswerVotes, int invalidAnswerVotes) {
+  public VoteRoundResults(CategoryId categoryId, int roundNumber, Player.PlayerId targetPlayerId, int validAnswerVotes, int invalidAnswerVotes) {
     this.categoryId = categoryId;
     this.roundNumber = roundNumber;
     this.targetPlayerId = targetPlayerId;
@@ -38,11 +38,11 @@ public class VoteResultEventPayload implements EventPayload {
     this.roundNumber = roundNumber;
   }
 
-  public PlayerId getTargetPlayerId() {
+  public Player.PlayerId getTargetPlayerId() {
     return targetPlayerId;
   }
 
-  public void setTargetPlayerId(PlayerId targetPlayerId) {
+  public void setTargetPlayerId(Player.PlayerId targetPlayerId) {
     this.targetPlayerId = targetPlayerId;
   }
 

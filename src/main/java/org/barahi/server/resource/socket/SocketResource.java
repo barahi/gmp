@@ -5,10 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.barahi.infra.Functional;
 import org.barahi.infra.LoggerFactory;
 import org.barahi.infra.exceptions.ObjectNotFoundException;
-import org.barahi.server.json.BeginVotePayloadEventJson;
-import org.barahi.server.json.RoundScoreEventPayloadJson;
-import org.barahi.server.json.SubmitAnswerPayloadEventJson;
-import org.barahi.server.json.SubmitVoteEventPayloadJson;
+import org.barahi.server.json.*;
 import org.barahi.server.resource.GuiceWebSocketConfigurator;
 import org.barahi.server.resource.socket.events.beginvote.BeginVotePhaseEvent;
 import org.barahi.server.resource.socket.events.beginvote.BeginVotePhasePayload;
@@ -22,6 +19,7 @@ import org.barahi.server.resource.socket.events.submitanswers.SubmitAnswersEvent
 import org.barahi.server.resource.socket.events.submitanswers.SubmitAnswersEventPayload;
 import org.barahi.server.resource.socket.events.submitvote.SubmitVoteEvent;
 import org.barahi.server.resource.socket.events.submitvote.SubmitVoteEventPayload;
+import org.barahi.server.resource.socket.events.voteresult.VoteResultEvent;
 import org.barahi.server.serializer.BeginVotePayloadEventSerializer;
 import org.barahi.server.serializer.RoundScoreEventPayloadSerializer;
 import org.barahi.server.serializer.SubmitAnswerPayloadEventSerializer;
@@ -152,7 +150,15 @@ public class SocketResource {
                 break;
             }
 
+            case VOTE_RESULT: {
+                VoteResultEvent voteResultEvent = new VoteResultEvent();
+                gameCoordinator.
+                VoteResultEventPayloadJson outgoingJson = new VoteResultEventPayloadJson();
+                voteResultEvent.setPayload();
+            }
             // TO DO: add event FINALIZE_VOTE_PHASE (re calculate scores), return scores and start new round
+
+
             // TO DO: add END_GAME that returns the cumulative scores/
 
 

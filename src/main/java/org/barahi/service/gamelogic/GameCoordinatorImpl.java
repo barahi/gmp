@@ -1,6 +1,8 @@
 package org.barahi.service.gamelogic;
 
 import jakarta.inject.Inject;
+import org.barahi.server.resource.socket.events.voteresult.VoteResultEventPayload;
+import org.barahi.service.gamelogic.Dto.VoteRoundResults;
 import org.barahi.serviceapi.gameSettings.CategoryId;
 import org.barahi.serviceapi.player.Player.PlayerId;
 import org.barahi.serviceapi.room.Room.RoomId;
@@ -42,14 +44,20 @@ public class GameCoordinatorImpl implements GameCoordinator {
     roundLogicService.submitVote(roomId, categoryId, roundNumber, targetPlayerId, voterId, vote);
   }
 
+  @Override
+  public VoteRoundResults getVoteResults(RoomId roomId, CategoryId categoryId, int roundNumber, PlayerId targetPlayerId){
+    return roundLogicService.getVoteRoundResults(roomId, categoryId, roundNumber, targetPlayerId);
+  }
+
 
   @Override
-  public boolean finalizeVotePhase(RoomId roomId, CategoryId categoryId, int roundNumber, PlayerId targetPlayerId){
-    boolean verdict = roundLogicService.answerGotApproved(roomId,categoryId, roundNumber,targetPlayerId);
+  public void finalizeVotePhase(RoomId roomId, CategoryId categoryId, int roundNumber, PlayerId targetPlayerId){
+    VoteRoundResults results  = roundLogicService.getVoteRoundResults(roomId, categoryId, roundNumber, targetPlayerId);
+    int totalVotes = results.getValidAnswerVotes() + results.getInvalidAnswerVotes();
+    boolean verdict = results.getValidAnswerVotes() >= (totalVotes-1)/2.0;
     if (!verdict){
       roundLogicService.invalidatePlayerAnswer(roomId, targetPlayerId, categoryId, roundNumber);
     }
-    return verdict;
   }
 
   @Override

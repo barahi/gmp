@@ -1,5 +1,6 @@
 package org.barahi.service.gamelogic;
 
+import org.barahi.service.gamelogic.Dto.VoteRoundResults;
 import org.barahi.serviceapi.gameSettings.CategoryId;
 import org.barahi.serviceapi.player.Player.PlayerId;
 import org.barahi.serviceapi.room.Room.RoomId;
@@ -12,9 +13,10 @@ public interface GameCoordinator {
  Map<String, Map<PlayerId, Integer>>  calculatePlayerScoreForRound(RoomId roomId, int roundNumber);
  void beginVotePhase(RoomId roomId);
  void submitVote(RoomId roomId, CategoryId categoryId, int roundNumber, PlayerId targetPlayerId, PlayerId voterId, boolean vote);
- boolean finalizeVotePhase(RoomId roomId, CategoryId categoryId, int roundNumber, PlayerId targetPlayerId);
- void endRound(RoomId roomId);
+ VoteRoundResults getVoteResults(RoomId roomId, CategoryId categoryId, int roundNumber, PlayerId targetPlayerId);
+ void finalizeVotePhase(RoomId roomId, CategoryId categoryId, int roundNumber, PlayerId targetPlayerId);
  Map<PlayerId, Integer> updatePlayerScores(RoomId roomId, int currRound);
+ void endRound(RoomId roomId);
  void startNextRound(RoomId roomId);
  Map<PlayerId, Integer> endGame(RoomId roomId);
 }
