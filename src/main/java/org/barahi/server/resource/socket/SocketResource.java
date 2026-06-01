@@ -7,6 +7,8 @@ import org.barahi.infra.LoggerFactory;
 import org.barahi.infra.exceptions.ObjectNotFoundException;
 import org.barahi.server.json.*;
 import org.barahi.server.resource.GuiceWebSocketConfigurator;
+import org.barahi.server.resource.socket.events.endround.EndRoundEvent;
+import org.barahi.server.resource.socket.events.endround.RoundResultsEvent;
 import org.barahi.server.resource.socket.events.noop.NoopEvent;
 import org.barahi.server.resource.socket.events.playerjoined.PlayerJoinedEvent;
 import org.barahi.server.resource.socket.events.roundscore.RoundScoreEvent;
@@ -56,10 +58,11 @@ public class SocketResource {
     private final RoundScoreEventPayloadSerializer roundScoreEventPayloadSerializer;
     private final SubmitVoteEventPayloadSerializer submitVoteEventPayloadSerializer;
     private final VoteResultsEventPayloadSerializer voteResultsEventPayloadSerializer;
+    private final PlayerScoresPayloadEventSerializer playerScoresPayloadEventSerializer;
 
 
     @Inject
-    public SocketResource(PlayerService playerService, RoomService roomService, GameCoordinator gameCoordinator, SubmitAnswerPayloadEventSerializer submitAnswerPayloadEventSerializer, RoundScoreEventPayloadSerializer roundScoreEventPayloadSerializer, SubmitVoteEventPayloadSerializer submitVoteEventPayloadSerializer, VoteResultsEventPayloadSerializer voteResultsEventPayloadSerializer) {
+    public SocketResource(PlayerService playerService, RoomService roomService, GameCoordinator gameCoordinator, SubmitAnswerPayloadEventSerializer submitAnswerPayloadEventSerializer, RoundScoreEventPayloadSerializer roundScoreEventPayloadSerializer, SubmitVoteEventPayloadSerializer submitVoteEventPayloadSerializer, VoteResultsEventPayloadSerializer voteResultsEventPayloadSerializer, PlayerScoresPayloadEventSerializer playerScoresPayloadEventSerializer) {
         this.playerService = playerService;
         this.roomService = roomService;
         this.gameCoordinator = gameCoordinator;
@@ -67,6 +70,7 @@ public class SocketResource {
         this.roundScoreEventPayloadSerializer = roundScoreEventPayloadSerializer;
         this.submitVoteEventPayloadSerializer = submitVoteEventPayloadSerializer;
         this.voteResultsEventPayloadSerializer = voteResultsEventPayloadSerializer;
+        this.playerScoresPayloadEventSerializer = playerScoresPayloadEventSerializer;
     }
 
     @OnOpen
@@ -152,19 +156,31 @@ public class SocketResource {
                 EndVotePhaseEvent endVotePhaseEvent = (EndVotePhaseEvent)event;
                 EndVotePhasePayloadJson incomingJson = endVotePhaseEvent.getPayload();
 
-                VoteRoundResults results = gameCoordinator.getVoteResults(roomId, CategoryId.of(incomingJson.getCategoryId()), incomingJson.getRoundNumber(), PlayerId.of(incomingJson.getTargetPlayerId()));
+                VoteRoundResults voteResults = gameCoordinator.getVoteResults(roomId, CategoryId.of(incomingJson.getCategoryId()), incomingJson.getRoundNumber(), PlayerId.of(incomingJson.getTargetPlayerId()));
 
-                VoteResultsPayloadJson outgoingJson = voteResultsEventPayloadSerializer.toJson(results);
-                VoteResultsEvent outgoingEvent = new VoteResultsEvent(outgoingJson);
+                VoteResultsPayloadJson serializedJson = voteResultsEventPayloadSerializer.toJson(voteResults);
+                VoteResultsEvent outgoingEvent = new VoteResultsEvent(serializedJson);
+
                 broadcastEventToRoom(roomId, outgoingEvent);
-                gameCoordinator.updatePlayerScores(roomId, results.getRoundNumber());
+                gameCoordinator.finalizeVotePhase(roomId, voteResults.getCategoryId(), voteResults.getRoundNumber(), voteResults.getTargetPlayerId());
                 break;
             }
 
-            // TO DO: add event FINALIZE_VOTE_PHASE (re calculate scores), return scores and start new round
+            case END_ROUND: {
+                EndRoundEvent endRoundEvent = (EndRoundEvent) event;
+                EndRoundPayloadJson incomingJson = endRoundEvent.getPayload();
+
+                Map<PlayerId, Integer> playerScores = gameCoordinator.updatePlayerScores(roomId, incomingJson.getRoundNumber());
+
+                RoundResultsPayloadJson serializedJson = playerScoresPayloadEventSerializer.toJson(playerScores);
+                RoundResultsEvent outgoingEvent = new RoundResultsEvent(serializedJson);
+
+                broadcastEventToRoom(roomId, outgoingEvent);
+                gameCoordinator.endRound(roomId);
+                break;
+            }
 
 
-            // TO DO: add END_GAME that returns the cumulative scores/
 
 
             case NOOP: {
