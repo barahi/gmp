@@ -14,7 +14,6 @@ public class SubmitAnswersEventPayload implements EventPayload {
   @JsonDeserialize(keyUsing = PlayerSerializer.PlayerIdKeyDeserializer.class)
   private Map<PlayerId, String> playerAnswers;
 
-  public SubmitAnswersEventPayload() {}
   public SubmitAnswersEventPayload(CategoryId categoryId, int roundNumber, Map<PlayerId, String> playerAnswers) {
     this.categoryId = categoryId;
     this.roundNumber = roundNumber;

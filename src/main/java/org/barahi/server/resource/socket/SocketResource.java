@@ -5,10 +5,13 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.barahi.infra.Functional;
 import org.barahi.infra.LoggerFactory;
 import org.barahi.infra.exceptions.ObjectNotFoundException;
+import org.barahi.server.json.BeginVotePayloadEventJson;
 import org.barahi.server.json.RoundScoreEventPayloadJson;
 import org.barahi.server.json.SubmitAnswerPayloadEventJson;
 import org.barahi.server.json.SubmitVoteEventPayloadJson;
 import org.barahi.server.resource.GuiceWebSocketConfigurator;
+import org.barahi.server.resource.socket.events.beginvote.BeginVotePhaseEvent;
+import org.barahi.server.resource.socket.events.beginvote.BeginVotePhasePayload;
 import org.barahi.server.resource.socket.events.noop.NoopEvent;
 import org.barahi.server.resource.socket.events.playerjoined.PlayerJoinedEvent;
 import org.barahi.server.resource.socket.events.roundscore.RoundScoreEvent;
@@ -19,6 +22,7 @@ import org.barahi.server.resource.socket.events.submitanswers.SubmitAnswersEvent
 import org.barahi.server.resource.socket.events.submitanswers.SubmitAnswersEventPayload;
 import org.barahi.server.resource.socket.events.submitvote.SubmitVoteEvent;
 import org.barahi.server.resource.socket.events.submitvote.SubmitVoteEventPayload;
+import org.barahi.server.serializer.BeginVotePayloadEventSerializer;
 import org.barahi.server.serializer.RoundScoreEventPayloadSerializer;
 import org.barahi.server.serializer.SubmitAnswerPayloadEventSerializer;
 import org.barahi.server.serializer.SubmitVoteEventPayloadSerializer;
@@ -54,17 +58,19 @@ public class SocketResource {
     private final GameCoordinator gameCoordinator;
     private final SubmitAnswerPayloadEventSerializer submitAnswerPayloadEventSerializer;
     private final RoundScoreEventPayloadSerializer roundScoreEventPayloadSerializer;
-
     private final SubmitVoteEventPayloadSerializer voteInvalidEventPayloadSerializer;
 
+    private final BeginVotePayloadEventSerializer beginVotePayloadEventSerializer;
+
     @Inject
-    public SocketResource(PlayerService playerService, RoomService roomService, GameCoordinator gameCoordinator, SubmitAnswerPayloadEventSerializer submitAnswerPayloadEventSerializer, RoundScoreEventPayloadSerializer roundScoreEventPayloadSerializer, SubmitVoteEventPayloadSerializer voteInvalidEventPayloadSerializer) {
+    public SocketResource(PlayerService playerService, RoomService roomService, GameCoordinator gameCoordinator, SubmitAnswerPayloadEventSerializer submitAnswerPayloadEventSerializer, RoundScoreEventPayloadSerializer roundScoreEventPayloadSerializer, SubmitVoteEventPayloadSerializer voteInvalidEventPayloadSerializer, BeginVotePayloadEventSerializer beginVotePayloadEventSerializer) {
         this.playerService = playerService;
         this.roomService = roomService;
         this.gameCoordinator = gameCoordinator;
         this.submitAnswerPayloadEventSerializer = submitAnswerPayloadEventSerializer;
         this.roundScoreEventPayloadSerializer = roundScoreEventPayloadSerializer;
         this.voteInvalidEventPayloadSerializer = voteInvalidEventPayloadSerializer;
+        this.beginVotePayloadEventSerializer = beginVotePayloadEventSerializer;
     }
 
     @OnOpen

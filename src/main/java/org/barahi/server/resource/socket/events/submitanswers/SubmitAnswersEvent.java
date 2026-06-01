@@ -8,7 +8,6 @@ import org.barahi.server.resource.socket.EventType;
 public class SubmitAnswersEvent implements Event<SubmitAnswerPayloadEventJson> {
     @JsonProperty("payload")
     private SubmitAnswerPayloadEventJson eventPayloadJson;
-    public SubmitAnswersEvent() {}
 
     public SubmitAnswersEvent(SubmitAnswerPayloadEventJson eventPayloadJson) {
         this.eventPayloadJson = eventPayloadJson;
