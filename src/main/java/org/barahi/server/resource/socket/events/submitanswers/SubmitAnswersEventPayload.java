@@ -1,31 +1,21 @@
 package org.barahi.server.resource.socket.events.submitanswers;
 
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+
 import org.barahi.server.resource.socket.EventPayload;
-import org.barahi.server.serializer.PlayerSerializer;
 import org.barahi.serviceapi.gameSettings.CategoryId;
 import org.barahi.serviceapi.player.Player.PlayerId;
 
 import java.util.Map;
 
 public class SubmitAnswersEventPayload implements EventPayload {
-  private CategoryId categoryId;
   private int roundNumber;
-  @JsonDeserialize(keyUsing = PlayerSerializer.PlayerIdKeyDeserializer.class)
-  private Map<PlayerId, String> playerAnswers;
+  private PlayerId playerId;
+  private Map<CategoryId, String> roundAnswers;
 
-  public SubmitAnswersEventPayload(CategoryId categoryId, int roundNumber, Map<PlayerId, String> playerAnswers) {
-    this.categoryId = categoryId;
+  public SubmitAnswersEventPayload(int roundNumber, PlayerId playerId, Map<CategoryId, String> roundAnswers) {
     this.roundNumber = roundNumber;
-    this.playerAnswers = playerAnswers;
-  }
-
-  public CategoryId getCategoryId() {
-    return categoryId;
-  }
-
-  public void setCategoryId(CategoryId categoryId) {
-    this.categoryId = categoryId;
+    this.playerId = playerId;
+    this.roundAnswers = roundAnswers;
   }
 
   public int getRoundNumber() {
@@ -36,11 +26,19 @@ public class SubmitAnswersEventPayload implements EventPayload {
     this.roundNumber = roundNumber;
   }
 
-  public Map<PlayerId, String> getPlayerAnswers() {
-    return playerAnswers;
+  public PlayerId getPlayerId() {
+    return playerId;
   }
 
-  public void setPlayerAnswers(Map<PlayerId, String> playerAnswers) {
-    this.playerAnswers = playerAnswers;
+  public void setPlayerId(PlayerId playerId) {
+    this.playerId = playerId;
+  }
+
+  public Map<CategoryId, String> getRoundAnswers() {
+    return roundAnswers;
+  }
+
+  public void setRoundAnswers(Map<CategoryId, String> roundAnswers) {
+    this.roundAnswers = roundAnswers;
   }
 }

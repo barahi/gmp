@@ -14,7 +14,7 @@ import org.barahi.server.resource.socket.events.roundscore.RoundScoreEvent;
 import org.barahi.server.resource.socket.events.startround.StartRoundEvent;
 import org.barahi.server.resource.socket.events.submitanswers.SubmitAnswersEvent;
 import org.barahi.server.resource.socket.events.submitvote.SubmitVoteEvent;
-import org.barahi.server.resource.socket.events.voteresult.EndVotePhaseEvent;
+import org.barahi.server.resource.socket.events.voteresult.EndVoteRoundEvent;
 import org.barahi.server.resource.socket.events.voteresult.VoteResultsEvent;
 
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.EXISTING_PROPERTY, property = "type")
@@ -26,7 +26,7 @@ import org.barahi.server.resource.socket.events.voteresult.VoteResultsEvent;
         @JsonSubTypes.Type(value = RoundScoreEvent.class, name = "ROUND_SCORES"),
         @JsonSubTypes.Type(value = BeginVotePhaseEvent.class, name = "BEGIN_VOTE_PHASE"),
         @JsonSubTypes.Type(value = SubmitVoteEvent.class, name = "SUBMIT_VOTE"),
-        @JsonSubTypes.Type(value = EndVotePhaseEvent.class, name = "END_VOTE_ROUND"),
+        @JsonSubTypes.Type(value = EndVoteRoundEvent.class, name = "END_VOTE_ROUND"),
         @JsonSubTypes.Type(value = VoteResultsEvent.class, name = "VOTE_RESULTS"),
         @JsonSubTypes.Type(value = EndRoundEvent.class, name = "END_ROUND"),
         @JsonSubTypes.Type(value = RoundResultsEvent.class, name = "ROUND_RESULTS"),

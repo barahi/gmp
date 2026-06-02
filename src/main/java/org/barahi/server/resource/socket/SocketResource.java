@@ -20,7 +20,7 @@ import org.barahi.server.resource.socket.events.submitanswers.SubmitAnswersEvent
 import org.barahi.server.resource.socket.events.submitanswers.SubmitAnswersEventPayload;
 import org.barahi.server.resource.socket.events.submitvote.SubmitVoteEvent;
 import org.barahi.server.resource.socket.events.submitvote.SubmitVoteEventPayload;
-import org.barahi.server.resource.socket.events.voteresult.EndVotePhaseEvent;
+import org.barahi.server.resource.socket.events.voteresult.EndVoteRoundEvent;
 import org.barahi.server.resource.socket.events.voteresult.VoteResultsEvent;
 import org.barahi.server.serializer.*;
 import org.barahi.service.gamelogic.Dto.VoteRoundResults;
@@ -134,34 +134,43 @@ public class SocketResource {
                 SubmitAnswersEvent submitAnswersEvent = (SubmitAnswersEvent) event;
                 SubmitAnswerPayloadJson jsonIncomingPayload = submitAnswersEvent.getPayload();
                 SubmitAnswersEventPayload serializedPayload = submitAnswerPayloadEventSerializer.fromJson(jsonIncomingPayload);
+                gameCoordinator.storeAnswers(roomId, serializedPayload.getRoundNumber(), serializedPayload.getPlayerId(), serializedPayload.getRoundAnswers());
+                break;
+            }
 
-                gameCoordinator.storeAnswers(roomId, serializedPayload.getCategoryId(), serializedPayload.getRoundNumber(), serializedPayload.getPlayerAnswers());
-                Map<String, Map<PlayerId, Integer>> roundScores = gameCoordinator.calculatePlayerScoreForRound(roomId, serializedPayload.getRoundNumber());
+            case ROUND_SCORES: {
+                int currentRound = gameCoordinator.getCurrentRoundNumber(roomId);
+                Map<String, Map<PlayerId, Integer>> roundScores = gameCoordinator.calculatePlayerScoreForRound(roomId, currentRound);
 
-                RoundScoreEventPayload outgoingPayload = new RoundScoreEventPayload(serializedPayload.getRoundNumber(), roundScores);
+                RoundScoreEventPayload outgoingPayload = new RoundScoreEventPayload(currentRound, roundScores);
                 RoundScorePayloadJson outgoingPayloadJson = roundScoreEventPayloadSerializer.toJson(outgoingPayload);
 
                 RoundScoreEvent roundScoreEvent = new RoundScoreEvent(outgoingPayloadJson);
                 broadcastEventToRoom(roomId, roundScoreEvent);
                 break;
+
             }
+
             case BEGIN_VOTE_PHASE: {
                 gameCoordinator.beginVotePhase(roomId);
+                break;
             }
 
             case SUBMIT_VOTE: {
                 SubmitVoteEvent voteInvalidEvent = (SubmitVoteEvent) event;
                 SubmitVotePayloadJson jsonIncomingPayload = voteInvalidEvent.getPayload();
                 SubmitVoteEventPayload serializedPayload = submitVoteEventPayloadSerializer.fromJson(jsonIncomingPayload);
-                gameCoordinator.submitVote(roomId, serializedPayload.getCategoryId(), serializedPayload.getRoundNumber(), serializedPayload.getTargetPlayerId(), serializedPayload.getVoterId(), serializedPayload.getVote());
+                gameCoordinator.submitVote(roomId, serializedPayload.getCategoryId(), serializedPayload.getRoundNumber(), serializedPayload.getTargetPlayerId(), serializedPayload.getVoterId(),
+                  serializedPayload.getVote());
                 break;
             }
 
-            case END_VOTE_PHASE: {
-                EndVotePhaseEvent endVotePhaseEvent = (EndVotePhaseEvent)event;
-                EndVotePhasePayloadJson incomingJson = endVotePhaseEvent.getPayload();
+            case END_VOTE_ROUND: {
+                EndVoteRoundEvent endVotePhaseEvent = (EndVoteRoundEvent)event;
+                EndVoteRoundPayloadJson incomingJson = endVotePhaseEvent.getPayload();
 
-                VoteRoundResults voteResults = gameCoordinator.getVoteResults(roomId, CategoryId.of(incomingJson.getCategoryId()), incomingJson.getRoundNumber(), PlayerId.of(incomingJson.getTargetPlayerId()));
+                VoteRoundResults voteResults = gameCoordinator.getVoteResults(roomId, CategoryId.of(incomingJson.getCategoryId()), incomingJson.getRoundNumber(),
+                  PlayerId.of(incomingJson.getTargetPlayerId()));
 
                 VoteResultsPayloadJson serializedJson = voteResultsEventPayloadSerializer.toJson(voteResults);
                 VoteResultsEvent outgoingEvent = new VoteResultsEvent(serializedJson);
@@ -194,10 +203,11 @@ public class SocketResource {
             }
 
             case NOOP: {
-                // Do Nothing.
                 break;
             }
+
             case PLAYER_LEFT:
+
             case PLAYER_JOINED:
             default: {
                 throw new IllegalStateException("Unexpected value: " + event.getType());

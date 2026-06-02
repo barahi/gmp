@@ -25,9 +25,14 @@ public class GameCoordinatorImpl implements GameCoordinator {
     roundNumber = 1;
     return roundLogicService.startRound(roomId, roundNumber);
   }
+
   @Override
-  public void storeAnswers(RoomId roomId, CategoryId categoryId, int roundNumber, Map<PlayerId, String> playerAnswers){
-    roundLogicService.storeAnswers(roomId, categoryId, roundNumber, playerAnswers);
+  public int getCurrentRoundNumber(RoomId roomId){
+    return roundLogicService.getCurrentRoundNumber(roomId);
+  }
+  @Override
+  public void storeAnswers(RoomId roomId, int round, PlayerId playerId, Map<CategoryId, String> roundAnswers){
+    roundLogicService.storeAnswers(roomId, round, playerId, roundAnswers);
   }
   @Override
   public Map<String, Map<PlayerId, Integer>>  calculatePlayerScoreForRound(RoomId roomId, int roundNumber) {

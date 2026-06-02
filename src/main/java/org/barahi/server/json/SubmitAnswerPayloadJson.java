@@ -7,35 +7,33 @@ import java.util.Map;
 
 public class SubmitAnswerPayloadJson implements EventPayload {
   @JsonProperty
-  String categoryId;
-  @JsonProperty
   int roundNumber;
   @JsonProperty
-  Map<String, String> playerAnswers;
-
-  public String getCategoryId() {
-    return categoryId;
-  }
-
-  public void setCategoryId(String categoryId) {
-    this.categoryId = categoryId;
-  }
+  String playerId;
+  @JsonProperty
+  Map<String, String> roundAnswers;
 
   public int getRoundNumber() {
     return roundNumber;
-  }
-
-  public Map<String, String> getPlayerAnswers() {
-    return playerAnswers;
-  }
-
-  public void setPlayerAnswers(Map<String, String> playerAnswers) {
-    this.playerAnswers = playerAnswers;
   }
 
   public void setRoundNumber(int roundNumber) {
     this.roundNumber = roundNumber;
   }
 
+  public String getPlayerId() {
+    return playerId;
+  }
 
+  public void setPlayerId(String playerId) {
+    this.playerId = playerId;
+  }
+
+  public Map<String, String> getRoundAnswers() {
+    return roundAnswers;
+  }
+
+  public void setRoundAnswers(Map<String, String> roundAnswers) {
+    this.roundAnswers = roundAnswers;
+  }
 }

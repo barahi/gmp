@@ -8,6 +8,7 @@ import org.barahi.server.resource.socket.EventType;
 public class BeginVotePhaseEvent implements Event<BeginVotePayloadJson> {
   @JsonProperty("payload")
   private BeginVotePayloadJson beginVotePayloadEventJson;
+  public BeginVotePhaseEvent(){}
 
   public BeginVotePhaseEvent(BeginVotePayloadJson beginVotePayloadEventJson) {
     this.beginVotePayloadEventJson = beginVotePayloadEventJson;

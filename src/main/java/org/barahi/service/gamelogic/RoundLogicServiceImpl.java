@@ -39,6 +39,11 @@ public class RoundLogicServiceImpl implements RoundLogicService {
   }
 
   @Override
+  public int getCurrentRoundNumber(RoomId roomId){
+    return gameStateStore.getCurrentRound(roomId);
+  }
+
+  @Override
   public char startRound(RoomId roomId, int roundNumber) {
     gameStateStore.changeGamePhaseAndRound(roomId, RoundPhase.SUBMIT, roundNumber);
     GameSettingsId gameSettingsId = gameSettingsStore.getGameSettingsId(roomId);
@@ -47,10 +52,10 @@ public class RoundLogicServiceImpl implements RoundLogicService {
   }
 
   @Override
-  public void storeAnswers(RoomId roomId, CategoryId categoryId, int roundNumber, Map<PlayerId, String> playerAnswers) {
+  public void storeAnswers(RoomId roomId, int round, PlayerId playerId, Map<CategoryId, String> roundAnswers) {
     gameStateStore.changeGamePhase(roomId, RoundPhase.SUBMIT);
     GameSettingsId gameSettingsId = gameSettingsStore.getGameSettingsId(roomId);
-    playerAnswerStore.storeAnswers(gameSettingsId, categoryId, roundNumber, playerAnswers);
+    playerAnswerStore.storeAnswers(gameSettingsId, round, playerId, roundAnswers);
   }
 
   @Override

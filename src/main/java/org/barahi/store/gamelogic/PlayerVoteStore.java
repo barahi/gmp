@@ -7,6 +7,8 @@ import org.barahi.serviceapi.gameSettings.CategoryId;
 import org.barahi.serviceapi.player.Player.PlayerId;
 import org.barahi.serviceapi.room.Room.RoomId;
 import org.jooq.DSLContext;
+import org.jooq.Record1;
+
 import static org.barahi.generated.Tables.*;
 public class PlayerVoteStore {
   private final DSLContext db;
@@ -35,19 +37,28 @@ public class PlayerVoteStore {
       .and(PLAYER_VOTE.CATEGORY_ID.eq(categoryId.getId().toString()))
       .and(PLAYER_VOTE.ROUND.eq(roundNumber))
       .and(PLAYER_VOTE.IS_VALID.eq(true))
-      .execute();
+      .fetchOptional()
+      .map(Record1::value1)
+      .orElse(0);
 
-    int totalPlayers = db.selectCount()
-      .from(ROOM_PLAYER)
-      .where(ROOM_PLAYER.ROOM_ID.eq(roomId.getId().toString()))
-      .execute();
+    int disapprovingVotes = db.selectCount()
+      .from(PLAYER_VOTE)
+      .where(PLAYER_VOTE.TARGET_PLAYER_ID.eq(targetPlayerId.getId().toString()))
+      .and(PLAYER_VOTE.ROOM_ID.eq(roomId.getId().toString()))
+      .and(PLAYER_VOTE.CATEGORY_ID.eq(categoryId.getId().toString()))
+      .and(PLAYER_VOTE.ROUND.eq(roundNumber))
+      .and(PLAYER_VOTE.IS_VALID.eq(false))
+      .fetchOptional()
+      .map(Record1::value1)
+      .orElse(0);
+
 
     return new VoteRoundResults(
       categoryId,
       roundNumber,
       targetPlayerId,
       approvedVotes,
-      totalPlayers - approvedVotes
+      disapprovingVotes
     );
   }
 

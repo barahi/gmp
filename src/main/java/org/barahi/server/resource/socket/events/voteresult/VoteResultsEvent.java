@@ -1,7 +1,6 @@
 package org.barahi.server.resource.socket.events.voteresult;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import org.barahi.server.json.EndVotePhasePayloadJson;
 import org.barahi.server.json.VoteResultsPayloadJson;
 import org.barahi.server.resource.socket.Event;
 import org.barahi.server.resource.socket.EventType;
@@ -19,7 +18,7 @@ public class VoteResultsEvent implements Event<VoteResultsPayloadJson> {
   @Override
   @JsonProperty("type")
   public String getType(){
-    return EventType.END_VOTE_PHASE.name();
+    return EventType.VOTE_RESULTS.name();
   }
 
   @Override

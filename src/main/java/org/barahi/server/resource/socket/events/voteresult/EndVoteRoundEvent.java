@@ -1,31 +1,33 @@
 package org.barahi.server.resource.socket.events.voteresult;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import org.barahi.server.json.EndVotePhasePayloadJson;
+import org.barahi.server.json.EndVoteRoundPayloadJson;
 import org.barahi.server.resource.socket.Event;
 import org.barahi.server.resource.socket.EventType;
 
-public class EndVotePhaseEvent implements Event<EndVotePhasePayloadJson> {
+public class EndVoteRoundEvent implements Event<EndVoteRoundPayloadJson> {
   @JsonProperty("payload")
-  private EndVotePhasePayloadJson endVoteRoundEventPayloadJson;
+  private EndVoteRoundPayloadJson endVoteRoundEventPayloadJson;
 
-  public EndVotePhaseEvent(EndVotePhasePayloadJson endVoteRoundEventPayloadJson){
+  public EndVoteRoundEvent(){}
+
+  public EndVoteRoundEvent(EndVoteRoundPayloadJson endVoteRoundEventPayloadJson){
     this.endVoteRoundEventPayloadJson = endVoteRoundEventPayloadJson;
   }
 
   @Override
   @JsonProperty("type")
   public String getType(){
-    return EventType.END_VOTE_PHASE.name();
+    return EventType.END_VOTE_ROUND.name();
   }
 
   @Override
-  public EndVotePhasePayloadJson getPayload() {
+  public EndVoteRoundPayloadJson getPayload() {
     return endVoteRoundEventPayloadJson;
   }
 
   @Override
-  public void setPayload(EndVotePhasePayloadJson payload) {
+  public void setPayload(EndVoteRoundPayloadJson payload) {
     this.endVoteRoundEventPayloadJson = payload;
   }
 }

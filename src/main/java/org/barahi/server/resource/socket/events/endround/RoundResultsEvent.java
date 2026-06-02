@@ -26,7 +26,7 @@ public class RoundResultsEvent implements Event<RoundResultsPayloadJson> {
   }
 
   @Override
-  @JsonProperty("type")
+  @JsonProperty("payload")
   public void setPayload(RoundResultsPayloadJson payload){
     this.roundResultsPayloadJson = payload;
   }

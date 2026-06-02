@@ -15,7 +15,6 @@ public class GameStateStore {
   public GameStateStore(DSLContextProvider dbProvider) {
     this.db = dbProvider.get();
   }
-
   public Integer getCurrentRound(RoomId roomId){
     return db.select(GAME_STATE.CURRENT_ROUND)
       .from(GAME_STATE)

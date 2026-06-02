@@ -8,7 +8,7 @@ public enum EventType {
     ROUND_SCORES(false, true),
     BEGIN_VOTE_PHASE(true, false),
     SUBMIT_VOTE(true, false),
-    END_VOTE_PHASE(true, false),
+    END_VOTE_ROUND(true, false),
     VOTE_RESULTS(false, true),
     END_ROUND(true, false),
     ROUND_RESULTS(false, true),

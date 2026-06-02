@@ -11,28 +11,28 @@ import java.util.Map;
 public class SubmitAnswerPayloadEventSerializer {
   public SubmitAnswerPayloadJson toJson(SubmitAnswersEventPayload payload){
     SubmitAnswerPayloadJson json = new SubmitAnswerPayloadJson();
-    json.setCategoryId(payload.getCategoryId().getId().toString());
     json.setRoundNumber(payload.getRoundNumber());
+    json.setPlayerId(payload.getPlayerId().getId().toString());
     Map<String, String> map = new HashMap<>();
-    if (payload.getPlayerAnswers() != null ){
-      payload.getPlayerAnswers().forEach((k, v) -> {
+    if (payload.getRoundAnswers() != null ){
+      payload.getRoundAnswers().forEach((k, v) -> {
         map.put(k.getId().toString(), v);
       });
     }
-    json.setPlayerAnswers(map);
+    json.setRoundAnswers(map);
     return json;
   }
 
   public SubmitAnswersEventPayload fromJson(SubmitAnswerPayloadJson json){
-    Map<PlayerId, String> map = new HashMap<>();
-    if (json.getPlayerAnswers() != null){
-      json.getPlayerAnswers().forEach((k,v) -> {
-        map.put(PlayerId.of(k), v);
+    Map<CategoryId, String> map = new HashMap<>();
+    if (json.getRoundAnswers() != null){
+      json.getRoundAnswers().forEach((k,v) -> {
+        map.put(CategoryId.of(k), v);
       });
     }
     return new SubmitAnswersEventPayload(
-      CategoryId.of(json.getCategoryId()),
       json.getRoundNumber(),
+      PlayerId.of(json.getPlayerId()),
       map
     );
   }

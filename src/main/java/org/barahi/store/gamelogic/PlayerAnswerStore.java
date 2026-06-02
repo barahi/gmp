@@ -43,10 +43,10 @@ public class PlayerAnswerStore {
   }
 
 
-  public void storeAnswers(GameSettingsId gameSettingsId, CategoryId categoryId, int round, Map<PlayerId, String> playerAnswers) {
-    List<PlayerAnswerRecord> records = playerAnswers.entrySet().stream().map(
+  public void storeAnswers(GameSettingsId gameSettingsId, int round, PlayerId playerId, Map<CategoryId, String> roundAnswers) {
+    List<PlayerAnswerRecord> records = roundAnswers.entrySet().stream().map(
       pa ->
-        new PlayerAnswerRecord(pa.getKey().getId().toString(), categoryId.getId().toString(), gameSettingsId.getId().toString(), round, pa.getValue(), 100)
+        new PlayerAnswerRecord(playerId.getId().toString(), pa.getKey().getId().toString(), gameSettingsId.getId().toString(), round, pa.getValue(), 100)
     ).toList();
     db.batchInsert(records).execute();
   }

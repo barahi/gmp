@@ -9,6 +9,8 @@ public class EndRoundEvent implements Event<EndRoundPayloadJson> {
   @JsonProperty("payload")
   private EndRoundPayloadJson endRoundPayloadJson;
 
+  public EndRoundEvent(){}
+
   public EndRoundEvent(EndRoundPayloadJson endRoundPayloadJson) {
     this.endRoundPayloadJson = endRoundPayloadJson;
   }

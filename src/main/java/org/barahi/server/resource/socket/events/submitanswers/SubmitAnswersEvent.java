@@ -9,6 +9,8 @@ public class SubmitAnswersEvent implements Event<SubmitAnswerPayloadJson> {
     @JsonProperty("payload")
     private SubmitAnswerPayloadJson eventPayloadJson;
 
+    public SubmitAnswersEvent(){}
+
     public SubmitAnswersEvent(SubmitAnswerPayloadJson eventPayloadJson) {
         this.eventPayloadJson = eventPayloadJson;
     }
