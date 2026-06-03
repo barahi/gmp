@@ -45,10 +45,12 @@ public class RoundLogicServiceImpl implements RoundLogicService {
 
   @Override
   public char startRound(RoomId roomId, int roundNumber) {
-    gameStateStore.changeGamePhaseAndRound(roomId, RoundPhase.SUBMIT, roundNumber);
     GameSettingsId gameSettingsId = gameSettingsStore.getGameSettingsId(roomId);
     List<Character> excludedLetters = gameSettingsStore.getLetterExclusions(gameSettingsId);
-    return generateRandomCharExcluding(excludedLetters);
+    char letterGenerated = generateRandomCharExcluding(excludedLetters);
+    gameStateStore.changeGamePhaseAndRound(roomId, RoundPhase.SUBMIT, roundNumber, letterGenerated);
+    gameSettingsStore.addNewLetterToExcludedLetters(gameSettingsId, letterGenerated);
+    return letterGenerated;
   }
 
   @Override

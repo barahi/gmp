@@ -21,14 +21,24 @@ public class GameStateStore {
       .where(GAME_STATE.ROOM_ID.eq(roomId.getId().toString()))
       .fetchOne(GAME_STATE.CURRENT_ROUND);
   }
-  public void changeGamePhaseAndRound(RoomId roomId, RoundPhase nextPhase, int roundNumber){
+
+  public char getLetterForCurrentRound(RoomId roomId, int roundNumber){
+    String letter = db.select(GAME_STATE.CURRENT_LETTER)
+      .from(GAME_STATE)
+      .where(GAME_STATE.ROOM_ID.eq(roomId.getId().toString()))
+      .and(GAME_STATE.CURRENT_ROUND.eq(roundNumber))
+      .fetchOne(GAME_STATE.CURRENT_LETTER);
+    return letter != null? letter.charAt(0) : ' ';
+  }
+
+  public void changeGamePhaseAndRound(RoomId roomId, RoundPhase nextPhase, int roundNumber, char letterGenerated){
     db.insertInto(GAME_STATE)
       .set(GAME_STATE.ROOM_ID, roomId.getId().toString())
       .set(GAME_STATE.PHASE, nextPhase.name())
       .set(GAME_STATE.CURRENT_ROUND, roundNumber)
+      .set(GAME_STATE.CURRENT_LETTER,String.valueOf(letterGenerated))
       .onDuplicateKeyUpdate()
-      .set(GAME_STATE.PHASE, nextPhase.name())
-      .set(GAME_STATE.CURRENT_ROUND, roundNumber)
+      .setAllToExcluded()
       .execute();
   }
 

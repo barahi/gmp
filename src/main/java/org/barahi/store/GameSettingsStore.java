@@ -99,6 +99,13 @@ public class GameSettingsStore {
           .fetchOne(GAME_SETTINGS.MAX_PLAYERS);
     }
 
+    public void addNewLetterToExcludedLetters(GameSettingsId gameSettingsId, char c){
+        db.insertInto(EXCLUDED_LETTER)
+          .set(EXCLUDED_LETTER.GAME_SETTINGS_ID, gameSettingsId.getId().toString())
+          .set(EXCLUDED_LETTER.LETTER, String.valueOf(c))
+          .execute();
+    }
+
     private GameSettingsRecord toRecord(GameSettings settings) {
         GameSettingsRecord record = new GameSettingsRecord();
         record.setRoomId(settings.getRoomId().getId().toString());
