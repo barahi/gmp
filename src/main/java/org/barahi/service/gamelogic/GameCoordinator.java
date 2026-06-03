@@ -8,7 +8,8 @@ import org.barahi.serviceapi.room.Room.RoomId;
 import java.util.Map;
 
 public interface GameCoordinator {
- char startNewGame(RoomId roomId);
+ void startNewGame(RoomId roomId);
+ char startRound(RoomId roomId, int roundNumber);
  int getCurrentRoundNumber(RoomId roomId);
  void storeAnswers(RoomId roomId, int round, PlayerId playerId, Map<CategoryId, String> roundAnswers);
  Map<String, Map<PlayerId, Integer>>  calculatePlayerScoreForRound(RoomId roomId, int roundNumber);

@@ -123,8 +123,12 @@ public class SocketResource {
         EventType eventType = EventType.valueOf(event.getType());
         switch (eventType) {
             case START_ROUND: {
-                char letterForRound = gameCoordinator.startNewGame(roomId);
-                StartRoundEventPayload payload = new StartRoundEventPayload(letterForRound, 1);
+                int currRound = gameCoordinator.getCurrentRoundNumber(roomId);
+                if (currRound < 1){
+                    gameCoordinator.startNewGame(roomId);
+                }
+                char letterForRound = gameCoordinator.startRound(roomId, currRound);
+                StartRoundEventPayload payload = new StartRoundEventPayload(letterForRound, currRound);
                 StartRoundEvent startRoundEvent = new StartRoundEvent(payload);
                 broadcastEventToRoom(roomId, startRoundEvent);
                 break;

@@ -20,9 +20,13 @@ public class GameCoordinatorImpl implements GameCoordinator {
   }
 
   @Override
-  public char startNewGame(RoomId roomId){
+  public void startNewGame(RoomId roomId){
     gameLogicService.initGame(roomId);
     roundNumber = 1;
+  }
+
+  @Override
+  public char startRound(RoomId roomId, int roundNumber){
     return roundLogicService.startRound(roomId, roundNumber);
   }
 
