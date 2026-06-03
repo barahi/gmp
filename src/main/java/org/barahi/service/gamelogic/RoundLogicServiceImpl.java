@@ -63,6 +63,7 @@ public class RoundLogicServiceImpl implements RoundLogicService {
   @Override
   public Map<String, Map<PlayerId, Integer>> calculatePlayerScoreForRound(RoomId roomId, int roundNumber) {
     List<PlayerId> playerIds = roomService.getPlayerIdsInRoom(roomId);
+    char currentLetter = gameStateStore.getLetterForCurrentRound(roomId, roundNumber);
     Map<String, Map<PlayerId, String>> categoryIdToPlayerAnswers = playerAnswerStore.getAnswersForRound(playerIds, roundNumber);
     Map<String, Map<PlayerId, Integer>> roundScores = new HashMap<>();
 
@@ -76,7 +77,7 @@ public class RoundLogicServiceImpl implements RoundLogicService {
       });
       Map<PlayerId, Integer> playerScores = new HashMap<>();
       playerAnswer.forEach((playerId, answer) -> {
-        if (!answer.isEmpty()){
+        if (!answer.isEmpty() && answer.startsWith(String.valueOf(currentLetter))){
           String cleanedAnswer = answer.toLowerCase();
           if (answerCount.containsKey(cleanedAnswer)){
             playerScores.put(playerId, CATEGORY_FULL_SCORE/answerCount.get(cleanedAnswer));
