@@ -7,6 +7,7 @@ import org.barahi.serviceapi.gameSettings.CategoryId;
 import org.barahi.serviceapi.gameSettings.GameSettings.GameSettingsId;
 import org.barahi.serviceapi.player.Player.PlayerId;
 import org.jooq.DSLContext;
+import org.jooq.impl.DSL;
 
 import java.util.List;
 import java.util.Map;
@@ -42,6 +43,18 @@ public class PlayerAnswerStore {
       ));
   }
 
+  public Map<PlayerId, Integer> getScoresForRound(GameSettingsId gameSettingsId, int roundNumber){
+    return db.select(PLAYER_ANSWER.PLAYER_ID, DSL.sum(PLAYER_ANSWER.SCORE).cast(Integer.class))
+      .from(PLAYER_ANSWER)
+      .where(PLAYER_ANSWER.GAME_SETTINGS_ID.eq(gameSettingsId.getId().toString()))
+      .and(PLAYER_ANSWER.ROUND.eq(roundNumber))
+      .groupBy(PLAYER_ANSWER.PLAYER_ID)
+      .fetchMap(
+        r -> PlayerId.of(r.get(PLAYER_ANSWER.PLAYER_ID)),
+        r -> r.get(1, Integer.class)
+      );
+  }
+
 
   public void storeAnswers(GameSettingsId gameSettingsId, int round, PlayerId playerId, Map<CategoryId, String> roundAnswers) {
     List<PlayerAnswerRecord> records = roundAnswers.entrySet().stream().map(
@@ -52,11 +65,16 @@ public class PlayerAnswerStore {
   }
 
 
-  public void updateScoreForAnswer(PlayerId playerId, CategoryId categoryId, int roundNum, int newScore){
+  public void updateScoreForAnswer(PlayerId playerId, String category, int roundNum, int newScore){
+    String categoryId = db.select(CATEGORIES.ID)
+      .from(CATEGORIES)
+      .where(CATEGORIES.CATEGORY.eq(category))
+        .fetchOne(CATEGORIES.ID);
+
     db.update(PLAYER_ANSWER)
       .set(PLAYER_ANSWER.SCORE, newScore)
       .where(PLAYER_ANSWER.PLAYER_ID.eq(playerId.getId().toString()))
-      .and(PLAYER_ANSWER.CATEGORY_ID.eq(categoryId.getId().toString()))
+      .and(PLAYER_ANSWER.CATEGORY_ID.eq(categoryId))
       .and(PLAYER_ANSWER.ROUND.eq(roundNum))
       .execute();
   }

@@ -5,7 +5,7 @@ import org.barahi.server.resource.socket.EventPayload;
 
 public class VoteResultsPayloadJson implements EventPayload {
   @JsonProperty
-  private String categoryId;
+  private String category;
 
   @JsonProperty
   private int roundNumber;
@@ -19,12 +19,12 @@ public class VoteResultsPayloadJson implements EventPayload {
   @JsonProperty
   private int invalidAnswerVotes;
 
-  public String getCategoryId() {
-    return categoryId;
+  public String getCategory() {
+    return category;
   }
 
-  public void setCategoryId(String categoryId) {
-    this.categoryId = categoryId;
+  public void setCategory(String category) {
+    this.category = category;
   }
 
   public int getRoundNumber() {

@@ -39,8 +39,8 @@ public class RoundLogicServiceImpl implements RoundLogicService {
   }
 
   @Override
-  public int getCurrentRoundNumber(RoomId roomId){
-    return gameStateStore.getCurrentRound(roomId);
+  public Integer getCurrentRoundNumber(RoomId roomId){
+    return gameStateStore.getCurrentRound(roomId) != null? gameStateStore.getCurrentRound(roomId) : 1;
   }
 
   @Override
@@ -77,14 +77,15 @@ public class RoundLogicServiceImpl implements RoundLogicService {
       });
       Map<PlayerId, Integer> playerScores = new HashMap<>();
       playerAnswer.forEach((playerId, answer) -> {
+        int calculatedScore = 0;
         if (!answer.isEmpty() && answer.startsWith(String.valueOf(currentLetter))){
           String cleanedAnswer = answer.toLowerCase();
           if (answerCount.containsKey(cleanedAnswer)){
-            playerScores.put(playerId, CATEGORY_FULL_SCORE/answerCount.get(cleanedAnswer));
-            return;
+            calculatedScore = CATEGORY_FULL_SCORE / answerCount.get(cleanedAnswer);
           }
         }
-        playerScores.put(playerId, 0);
+        playerScores.put(playerId, calculatedScore);
+        playerAnswerStore.updateScoreForAnswer(playerId, category, roundNumber, calculatedScore);
       });
       roundScores.put(category, playerScores);
     });
@@ -102,25 +103,19 @@ public class RoundLogicServiceImpl implements RoundLogicService {
   }
 
   @Override
-  public VoteRoundResults getVoteRoundResults(RoomId roomId, CategoryId categoryId, int roundNumber, PlayerId targetPlayerId){
-    return playerVoteStore.getVoteRoundResults(roomId, categoryId, roundNumber, targetPlayerId);
+  public VoteRoundResults getVoteRoundResults(RoomId roomId, String category, int roundNumber, PlayerId targetPlayerId){
+    return playerVoteStore.getVoteRoundResults(roomId, category, roundNumber, targetPlayerId);
   }
 
   @Override
-  public void invalidatePlayerAnswer(RoomId roomId, PlayerId playerId, CategoryId categoryId, int roundNum) {
+    public void invalidatePlayerAnswer(RoomId roomId, PlayerId playerId, String categoryId, int roundNum) {
     playerAnswerStore.updateScoreForAnswer(playerId, categoryId, roundNum, -1);
   }
 
   @Override
   public Map<PlayerId, Integer> finalizeRoundScores(RoomId roomId, int roundNumber){
-    Map<String, Map<PlayerId, Integer>> scores = calculatePlayerScoreForRound(roomId, roundNumber);
-    Map<PlayerId, Integer> finalRoundScores = new HashMap<>();
-    scores.forEach((category, playerScore) -> {
-      playerScore.forEach((playerId, score) -> {
-        finalRoundScores.put(playerId, finalRoundScores.getOrDefault(playerId, 0) + score);
-      });
-    });
-    return finalRoundScores;
+    GameSettingsId gameSettingsId = gameSettingsStore.getGameSettingsId(roomId);
+    return playerAnswerStore.getScoresForRound(gameSettingsId, roundNumber);
   }
 
   @Override

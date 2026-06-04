@@ -29,11 +29,16 @@ public class GameLogicServiceImpl implements GameLogicService{
     List<PlayerId> playerIds = roomService.getPlayerIdsInRoom(roomId);
     cumulativeScoreStore.initializeScores(roomId, playerIds);
   }
-
   @Override
   public Map<PlayerId, Integer> updatePlayerScores(RoomId roomId, Map<PlayerId, Integer> finalScores) {
+    System.out.println("sending the following final scores map to update cumulative score table: ");
+    finalScores.forEach((p, score) -> {
+      System.out.println("player id: " + p.getId().toString());
+      System.out.println("score: " + score);
+    });
     return cumulativeScoreStore.updatePlayerScores(roomId, finalScores);
   }
+
 
   @Override
   public int getNumberOfRounds(RoomId roomId){

@@ -25,7 +25,6 @@ import org.barahi.server.resource.socket.events.voteresult.VoteResultsEvent;
 import org.barahi.server.serializer.*;
 import org.barahi.service.gamelogic.Dto.VoteRoundResults;
 import org.barahi.service.gamelogic.GameCoordinator;
-import org.barahi.serviceapi.gameSettings.CategoryId;
 import org.barahi.serviceapi.player.Player;
 import org.barahi.serviceapi.player.Player.PlayerId;
 import org.barahi.serviceapi.player.PlayerService;
@@ -173,14 +172,14 @@ public class SocketResource {
                 EndVoteRoundEvent endVotePhaseEvent = (EndVoteRoundEvent)event;
                 EndVoteRoundPayloadJson incomingJson = endVotePhaseEvent.getPayload();
 
-                VoteRoundResults voteResults = gameCoordinator.getVoteResults(roomId, CategoryId.of(incomingJson.getCategoryId()), incomingJson.getRoundNumber(),
+                VoteRoundResults voteResults = gameCoordinator.getVoteResults(roomId, incomingJson.getCategory(), incomingJson.getRoundNumber(),
                   PlayerId.of(incomingJson.getTargetPlayerId()));
 
                 VoteResultsPayloadJson serializedJson = voteResultsEventPayloadSerializer.toJson(voteResults);
                 VoteResultsEvent outgoingEvent = new VoteResultsEvent(serializedJson);
 
                 broadcastEventToRoom(roomId, outgoingEvent);
-                gameCoordinator.finalizeVotePhase(roomId, voteResults.getCategoryId(), voteResults.getRoundNumber(), voteResults.getTargetPlayerId());
+                gameCoordinator.finalizeVotePhase(roomId, voteResults.getCategory(), voteResults.getRoundNumber(), voteResults.getTargetPlayerId());
                 break;
             }
 

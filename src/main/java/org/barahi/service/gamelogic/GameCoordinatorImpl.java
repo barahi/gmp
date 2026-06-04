@@ -53,18 +53,18 @@ public class GameCoordinatorImpl implements GameCoordinator {
   }
 
   @Override
-  public VoteRoundResults getVoteResults(RoomId roomId, CategoryId categoryId, int roundNumber, PlayerId targetPlayerId){
-    return roundLogicService.getVoteRoundResults(roomId, categoryId, roundNumber, targetPlayerId);
+  public VoteRoundResults getVoteResults(RoomId roomId, String category, int roundNumber, PlayerId targetPlayerId){
+    return roundLogicService.getVoteRoundResults(roomId, category, roundNumber, targetPlayerId);
   }
 
 
   @Override
-  public void finalizeVotePhase(RoomId roomId, CategoryId categoryId, int roundNumber, PlayerId targetPlayerId){
-    VoteRoundResults results  = roundLogicService.getVoteRoundResults(roomId, categoryId, roundNumber, targetPlayerId);
+  public void finalizeVotePhase(RoomId roomId, String category, int roundNumber, PlayerId targetPlayerId){
+    VoteRoundResults results  = roundLogicService.getVoteRoundResults(roomId, category, roundNumber, targetPlayerId);
     int totalVotes = results.getValidAnswerVotes() + results.getInvalidAnswerVotes();
     boolean verdict = results.getValidAnswerVotes() >= (totalVotes-1)/2.0;
     if (!verdict){
-      roundLogicService.invalidatePlayerAnswer(roomId, targetPlayerId, categoryId, roundNumber);
+      roundLogicService.invalidatePlayerAnswer(roomId, targetPlayerId, category, roundNumber);
     }
   }
 

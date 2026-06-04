@@ -29,12 +29,17 @@ public class PlayerVoteStore {
       .execute();
   }
 
-  public VoteRoundResults getVoteRoundResults(RoomId roomId, CategoryId categoryId, int roundNumber, PlayerId targetPlayerId){
+  public VoteRoundResults getVoteRoundResults(RoomId roomId, String category, int roundNumber, PlayerId targetPlayerId){
+    String categoryId = db.select(CATEGORIES.ID)
+      .from(CATEGORIES)
+      .where(CATEGORIES.CATEGORY.eq(category))
+      .fetchOne(CATEGORIES.ID);
+
     int approvedVotes = db.selectCount()
       .from(PLAYER_VOTE)
       .where(PLAYER_VOTE.TARGET_PLAYER_ID.eq(targetPlayerId.getId().toString()))
       .and(PLAYER_VOTE.ROOM_ID.eq(roomId.getId().toString()))
-      .and(PLAYER_VOTE.CATEGORY_ID.eq(categoryId.getId().toString()))
+      .and(PLAYER_VOTE.CATEGORY_ID.eq(categoryId))
       .and(PLAYER_VOTE.ROUND.eq(roundNumber))
       .and(PLAYER_VOTE.IS_VALID.eq(true))
       .fetchOptional()
@@ -45,7 +50,7 @@ public class PlayerVoteStore {
       .from(PLAYER_VOTE)
       .where(PLAYER_VOTE.TARGET_PLAYER_ID.eq(targetPlayerId.getId().toString()))
       .and(PLAYER_VOTE.ROOM_ID.eq(roomId.getId().toString()))
-      .and(PLAYER_VOTE.CATEGORY_ID.eq(categoryId.getId().toString()))
+      .and(PLAYER_VOTE.CATEGORY_ID.eq(categoryId))
       .and(PLAYER_VOTE.ROUND.eq(roundNumber))
       .and(PLAYER_VOTE.IS_VALID.eq(false))
       .fetchOptional()
@@ -54,7 +59,7 @@ public class PlayerVoteStore {
 
 
     return new VoteRoundResults(
-      categoryId,
+      category,
       roundNumber,
       targetPlayerId,
       approvedVotes,

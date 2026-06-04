@@ -6,7 +6,7 @@ import org.barahi.service.gamelogic.Dto.VoteRoundResults;
 public class VoteResultsEventPayloadSerializer {
   public VoteResultsPayloadJson toJson(VoteRoundResults voteRoundResults){
     VoteResultsPayloadJson json = new VoteResultsPayloadJson();
-    json.setCategoryId(voteRoundResults.getCategoryId().getId().toString());
+    json.setCategory(voteRoundResults.getCategory());
     json.setRoundNumber(voteRoundResults.getRoundNumber());
     json.setTargetPlayerId(voteRoundResults.getTargetPlayerId().getId().toString());
     json.setValidAnswerVotes(voteRoundResults.getValidAnswerVotes());

@@ -11,13 +11,13 @@ import static org.barahi.serviceapi.player.Player.*;
 
 public interface RoundLogicService {
     char startRound(RoomId roomId, int roundNumber);
-    int getCurrentRoundNumber(RoomId roomId);
+    Integer getCurrentRoundNumber(RoomId roomId);
     void storeAnswers(RoomId roomId, int round, PlayerId playerId, Map<CategoryId, String> roundAnswers);
     Map<String, Map<PlayerId, Integer>>  calculatePlayerScoreForRound(RoomId roomId, int roundNumber);
     void beginVotePhase(RoomId roomId);
     void submitVote(RoomId roomId, CategoryId categoryId, int roundNumber, PlayerId targetPlayerId, PlayerId voterId, boolean vote);
-    VoteRoundResults getVoteRoundResults(RoomId roomId, CategoryId categoryId, int roundNumber, PlayerId targetPlayerId);
-    void invalidatePlayerAnswer(RoomId roomId, PlayerId playerId, CategoryId category, int roundNum);
+    VoteRoundResults getVoteRoundResults(RoomId roomId, String category, int roundNumber, PlayerId targetPlayerId);
+    void invalidatePlayerAnswer(RoomId roomId, PlayerId playerId, String category, int roundNum);
     Map<PlayerId, Integer> finalizeRoundScores(RoomId roomId, int roundNumber);
     void endRound(RoomId roomId);
 }

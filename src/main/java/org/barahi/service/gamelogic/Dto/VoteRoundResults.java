@@ -1,33 +1,32 @@
 package org.barahi.service.gamelogic.Dto;
 
-import org.barahi.serviceapi.gameSettings.CategoryId;
-import org.barahi.serviceapi.player.Player;
+import org.barahi.serviceapi.player.Player.PlayerId;
 
 public class VoteRoundResults {
-  private CategoryId categoryId;
+  private String category;
 
   private int roundNumber;
 
-  private Player.PlayerId targetPlayerId;
+  private PlayerId targetPlayerId;
 
   private int validAnswerVotes;
 
   private int invalidAnswerVotes;
 
-  public VoteRoundResults(CategoryId categoryId, int roundNumber, Player.PlayerId targetPlayerId, int validAnswerVotes, int invalidAnswerVotes) {
-    this.categoryId = categoryId;
+  public VoteRoundResults(String category, int roundNumber, PlayerId targetPlayerId, int validAnswerVotes, int invalidAnswerVotes) {
+    this.category = category;
     this.roundNumber = roundNumber;
     this.targetPlayerId = targetPlayerId;
     this.validAnswerVotes = validAnswerVotes;
     this.invalidAnswerVotes = invalidAnswerVotes;
   }
 
-  public CategoryId getCategoryId() {
-    return categoryId;
+  public String getCategory() {
+    return category;
   }
 
-  public void setCategoryId(CategoryId categoryId) {
-    this.categoryId = categoryId;
+  public void setCategory(String category) {
+    this.category = category;
   }
 
   public int getRoundNumber() {
@@ -38,11 +37,11 @@ public class VoteRoundResults {
     this.roundNumber = roundNumber;
   }
 
-  public Player.PlayerId getTargetPlayerId() {
+  public PlayerId getTargetPlayerId() {
     return targetPlayerId;
   }
 
-  public void setTargetPlayerId(Player.PlayerId targetPlayerId) {
+  public void setTargetPlayerId(PlayerId targetPlayerId) {
     this.targetPlayerId = targetPlayerId;
   }
 
