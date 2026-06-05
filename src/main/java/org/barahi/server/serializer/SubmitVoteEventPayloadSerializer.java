@@ -8,7 +8,7 @@ import org.barahi.serviceapi.player.Player.PlayerId;
 public class SubmitVoteEventPayloadSerializer {
   public SubmitVoteEventPayload fromJson(SubmitVotePayloadJson json){
     SubmitVoteEventPayload payload = new SubmitVoteEventPayload();
-    payload.setCategoryId(CategoryId.of(json.getCategoryId()));
+    payload.setCategory(json.getCategory());
     payload.setRoundNumber(json.getRoundNumber());
     payload.setTargetPlayerId(PlayerId.of(json.getTargetPlayerId()));
     payload.setVoterId(PlayerId.of(json.getVoterId()));

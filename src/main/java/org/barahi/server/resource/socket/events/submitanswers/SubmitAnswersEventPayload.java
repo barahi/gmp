@@ -10,9 +10,9 @@ import java.util.Map;
 public class SubmitAnswersEventPayload implements EventPayload {
   private int roundNumber;
   private PlayerId playerId;
-  private Map<CategoryId, String> roundAnswers;
+  private Map<String, String> roundAnswers;
 
-  public SubmitAnswersEventPayload(int roundNumber, PlayerId playerId, Map<CategoryId, String> roundAnswers) {
+  public SubmitAnswersEventPayload(int roundNumber, PlayerId playerId, Map<String, String> roundAnswers) {
     this.roundNumber = roundNumber;
     this.playerId = playerId;
     this.roundAnswers = roundAnswers;
@@ -34,11 +34,11 @@ public class SubmitAnswersEventPayload implements EventPayload {
     this.playerId = playerId;
   }
 
-  public Map<CategoryId, String> getRoundAnswers() {
+  public Map<String, String> getRoundAnswers() {
     return roundAnswers;
   }
 
-  public void setRoundAnswers(Map<CategoryId, String> roundAnswers) {
+  public void setRoundAnswers(Map<String, String> roundAnswers) {
     this.roundAnswers = roundAnswers;
   }
 }

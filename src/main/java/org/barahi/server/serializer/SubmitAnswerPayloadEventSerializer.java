@@ -13,27 +13,15 @@ public class SubmitAnswerPayloadEventSerializer {
     SubmitAnswerPayloadJson json = new SubmitAnswerPayloadJson();
     json.setRoundNumber(payload.getRoundNumber());
     json.setPlayerId(payload.getPlayerId().getId().toString());
-    Map<String, String> map = new HashMap<>();
-    if (payload.getRoundAnswers() != null ){
-      payload.getRoundAnswers().forEach((k, v) -> {
-        map.put(k.getId().toString(), v);
-      });
-    }
-    json.setRoundAnswers(map);
+    json.setRoundAnswers(payload.getRoundAnswers());
     return json;
   }
 
   public SubmitAnswersEventPayload fromJson(SubmitAnswerPayloadJson json){
-    Map<CategoryId, String> map = new HashMap<>();
-    if (json.getRoundAnswers() != null){
-      json.getRoundAnswers().forEach((k,v) -> {
-        map.put(CategoryId.of(k), v);
-      });
-    }
     return new SubmitAnswersEventPayload(
       json.getRoundNumber(),
       PlayerId.of(json.getPlayerId()),
-      map
+      json.getRoundAnswers()
     );
   }
 }

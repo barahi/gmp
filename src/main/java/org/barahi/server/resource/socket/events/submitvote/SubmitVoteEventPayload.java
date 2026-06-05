@@ -5,18 +5,18 @@ import org.barahi.serviceapi.gameSettings.CategoryId;
 import org.barahi.serviceapi.player.Player.PlayerId;
 
 public class SubmitVoteEventPayload implements EventPayload {
-  private CategoryId categoryId;
+  private String category;
   private int roundNumber;
   private PlayerId targetPlayerId;
   private PlayerId voterId;
   private boolean vote;
 
-  public CategoryId getCategoryId() {
-    return categoryId;
+  public String getCategory() {
+    return category;
   }
 
-  public void setCategoryId(CategoryId categoryId) {
-    this.categoryId = categoryId;
+  public void setCategory(String category) {
+    this.category = category;
   }
 
   public int getRoundNumber() {

@@ -106,6 +106,14 @@ public class GameSettingsStore {
           .execute();
     }
 
+    public CategoryId getCategoryIdFromName(String categoryName){
+        String categoryId = db.select(CATEGORIES.ID)
+          .from(CATEGORIES)
+          .where(CATEGORIES.CATEGORY.eq(categoryName))
+          .fetchOne(CATEGORIES.ID);
+        return CategoryId.of(categoryId);
+    }
+
     private GameSettingsRecord toRecord(GameSettings settings) {
         GameSettingsRecord record = new GameSettingsRecord();
         record.setRoomId(settings.getRoomId().getId().toString());

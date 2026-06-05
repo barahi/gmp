@@ -27,6 +27,7 @@ public class PlayerVoteStore {
       .set(PLAYER_VOTE.VOTER_ID, voterId.getId().toString())
       .set(PLAYER_VOTE.IS_VALID, isValid)
       .execute();
+    System.out.println("saved vote for playerId: " + targetPlayerId.getId().toString() + " as: " + isValid);
   }
 
   public VoteRoundResults getVoteRoundResults(RoomId roomId, String category, int roundNumber, PlayerId targetPlayerId){
@@ -34,6 +35,7 @@ public class PlayerVoteStore {
       .from(CATEGORIES)
       .where(CATEGORIES.CATEGORY.eq(category))
       .fetchOne(CATEGORIES.ID);
+    System.out.println("category " + category + " gave category id: " + categoryId);
 
     int approvedVotes = db.selectCount()
       .from(PLAYER_VOTE)

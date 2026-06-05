@@ -163,7 +163,7 @@ public class SocketResource {
                 SubmitVoteEvent voteInvalidEvent = (SubmitVoteEvent) event;
                 SubmitVotePayloadJson jsonIncomingPayload = voteInvalidEvent.getPayload();
                 SubmitVoteEventPayload serializedPayload = submitVoteEventPayloadSerializer.fromJson(jsonIncomingPayload);
-                gameCoordinator.submitVote(roomId, serializedPayload.getCategoryId(), serializedPayload.getRoundNumber(), serializedPayload.getTargetPlayerId(), serializedPayload.getVoterId(),
+                gameCoordinator.submitVote(roomId, serializedPayload.getCategory(), serializedPayload.getRoundNumber(), serializedPayload.getTargetPlayerId(), serializedPayload.getVoterId(),
                   serializedPayload.getVote());
                 break;
             }
@@ -193,7 +193,7 @@ public class SocketResource {
                 RoundResultsEvent outgoingEvent = new RoundResultsEvent(serializedJson);
 
                 broadcastEventToRoom(roomId, outgoingEvent);
-                gameCoordinator.endRound(roomId);
+                gameCoordinator.endRound(roomId, incomingJson.getRoundNumber());
                 break;
             }
 

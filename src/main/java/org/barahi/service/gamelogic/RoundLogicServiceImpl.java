@@ -12,7 +12,6 @@ import org.barahi.store.gamelogic.GameStateStore;
 import org.barahi.store.gamelogic.PlayerAnswerStore;
 import org.barahi.store.gamelogic.PlayerVoteStore;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -45,6 +44,7 @@ public class RoundLogicServiceImpl implements RoundLogicService {
 
   @Override
   public char startRound(RoomId roomId, int roundNumber) {
+    System.out.println("got round number " + roundNumber);
     GameSettingsId gameSettingsId = gameSettingsStore.getGameSettingsId(roomId);
     List<Character> excludedLetters = gameSettingsStore.getLetterExclusions(gameSettingsId);
     char letterGenerated = generateRandomCharExcluding(excludedLetters);
@@ -54,20 +54,25 @@ public class RoundLogicServiceImpl implements RoundLogicService {
   }
 
   @Override
-  public void storeAnswers(RoomId roomId, int round, PlayerId playerId, Map<CategoryId, String> roundAnswers) {
+  public void storeAnswers(RoomId roomId, int round, PlayerId playerId, Map<String, String> roundAnswers) {
     gameStateStore.changeGamePhase(roomId, RoundPhase.SUBMIT);
     GameSettingsId gameSettingsId = gameSettingsStore.getGameSettingsId(roomId);
-    playerAnswerStore.storeAnswers(gameSettingsId, round, playerId, roundAnswers);
+    Map<CategoryId,String> categoryIdStringMap = new HashMap<>();
+    roundAnswers.forEach((categoryStr, answer) -> {
+      CategoryId categoryId = gameSettingsStore.getCategoryIdFromName(categoryStr);
+      categoryIdStringMap.put(categoryId, answer);
+    });
+    playerAnswerStore.storeAnswers(gameSettingsId, round, playerId, categoryIdStringMap);
   }
 
   @Override
   public Map<String, Map<PlayerId, Integer>> calculatePlayerScoreForRound(RoomId roomId, int roundNumber) {
     List<PlayerId> playerIds = roomService.getPlayerIdsInRoom(roomId);
     char currentLetter = gameStateStore.getLetterForCurrentRound(roomId, roundNumber);
-    Map<String, Map<PlayerId, String>> categoryIdToPlayerAnswers = playerAnswerStore.getAnswersForRound(playerIds, roundNumber);
+    Map<String, Map<PlayerId, String>> categoryToPlayerAnswers = playerAnswerStore.getAnswersForRound(playerIds, roundNumber);
     Map<String, Map<PlayerId, Integer>> roundScores = new HashMap<>();
 
-    categoryIdToPlayerAnswers.forEach((category, playerAnswer) -> {
+    categoryToPlayerAnswers.forEach((category, playerAnswer) -> {
       Map<String, Integer> answerCount = new HashMap<>();
       playerAnswer.forEach((playerId, answer) -> {
         if (answer != null && !answer.isEmpty()){
@@ -98,7 +103,8 @@ public class RoundLogicServiceImpl implements RoundLogicService {
   }
 
   @Override
-  public void submitVote(RoomId roomId, CategoryId categoryId, int roundNumber, PlayerId targetPlayerId, PlayerId voterId, boolean vote){
+  public void submitVote(RoomId roomId, String category, int roundNumber, PlayerId targetPlayerId, PlayerId voterId, boolean vote){
+    CategoryId categoryId = gameSettingsStore.getCategoryIdFromName(category);
     playerVoteStore.savePlayerVote(roomId, categoryId, roundNumber, targetPlayerId, voterId, vote);
   }
 

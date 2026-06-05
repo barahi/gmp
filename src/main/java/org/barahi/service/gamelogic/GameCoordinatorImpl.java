@@ -2,7 +2,6 @@ package org.barahi.service.gamelogic;
 
 import jakarta.inject.Inject;
 import org.barahi.service.gamelogic.Dto.VoteRoundResults;
-import org.barahi.serviceapi.gameSettings.CategoryId;
 import org.barahi.serviceapi.player.Player.PlayerId;
 import org.barahi.serviceapi.room.Room.RoomId;
 
@@ -11,7 +10,6 @@ import java.util.Map;
 public class GameCoordinatorImpl implements GameCoordinator {
   private final GameLogicService gameLogicService;
   private final RoundLogicService roundLogicService;
-  private int roundNumber;
 
   @Inject
   public GameCoordinatorImpl(GameLogicService gameLogicService, RoundLogicService roundLogicService){
@@ -22,7 +20,6 @@ public class GameCoordinatorImpl implements GameCoordinator {
   @Override
   public void startNewGame(RoomId roomId){
     gameLogicService.initGame(roomId);
-    roundNumber = 1;
   }
 
   @Override
@@ -35,7 +32,7 @@ public class GameCoordinatorImpl implements GameCoordinator {
     return roundLogicService.getCurrentRoundNumber(roomId);
   }
   @Override
-  public void storeAnswers(RoomId roomId, int round, PlayerId playerId, Map<CategoryId, String> roundAnswers){
+  public void storeAnswers(RoomId roomId, int round, PlayerId playerId, Map<String, String> roundAnswers){
     roundLogicService.storeAnswers(roomId, round, playerId, roundAnswers);
   }
   @Override
@@ -48,8 +45,8 @@ public class GameCoordinatorImpl implements GameCoordinator {
   }
 
   @Override
-  public void submitVote(RoomId roomId, CategoryId categoryId, int roundNumber, PlayerId targetPlayerId, PlayerId voterId, boolean vote){
-    roundLogicService.submitVote(roomId, categoryId, roundNumber, targetPlayerId, voterId, vote);
+  public void submitVote(RoomId roomId, String category, int roundNumber, PlayerId targetPlayerId, PlayerId voterId, boolean vote){
+    roundLogicService.submitVote(roomId, category, roundNumber, targetPlayerId, voterId, vote);
   }
 
   @Override
@@ -74,16 +71,16 @@ public class GameCoordinatorImpl implements GameCoordinator {
     return gameLogicService.updatePlayerScores(roomId, finalScores);
   }
   @Override
-  public void endRound(RoomId roomId) {
+  public void endRound(RoomId roomId, int roundNumber) {
     roundLogicService.endRound(roomId);
-    startNextRound(roomId);
+    startNextRound(roomId, roundNumber);
   }
 
   @Override
-  public void startNextRound(RoomId roomId) {
+  public void startNextRound(RoomId roomId, int roundNumber) {
     int numberOfRounds = gameLogicService.getNumberOfRounds(roomId);
     if (roundNumber < numberOfRounds){
-      roundNumber++;
+      roundNumber+=1;
       roundLogicService.startRound(roomId, roundNumber);
     } else {
       endGame(roomId);
