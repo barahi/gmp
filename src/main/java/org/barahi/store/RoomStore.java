@@ -1,9 +1,9 @@
 package org.barahi.store;
 
 import jakarta.inject.Inject;
-import javassist.tools.rmi.ObjectNotFoundException;
 
 import org.barahi.infra.DSLContextProvider;
+import org.barahi.service.room.RoomDto;
 import org.barahi.serviceapi.player.Player;
 import org.barahi.serviceapi.player.Player.PlayerId;
 import org.barahi.serviceapi.room.Room;
@@ -11,6 +11,7 @@ import org.barahi.serviceapi.room.Room.RoomId;
 import org.barahi.serviceapi.room.RoomImpl;
 import org.jooq.DSLContext;
 import org.barahi.generated.tables.records.RoomRecord;
+import org.jooq.Record1;
 
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
@@ -18,6 +19,8 @@ import java.util.List;
 import java.util.UUID;
 
 import static org.barahi.generated.Tables.*;
+import static org.jooq.impl.DSL.multiset;
+import static org.jooq.impl.DSL.select;
 
 public class RoomStore {
     private final DSLContext db;
@@ -25,6 +28,37 @@ public class RoomStore {
     @Inject
     public RoomStore(DSLContextProvider dbProvider) {
         this.db = dbProvider.get();
+    }
+
+    public RoomDto getRoomSettings(RoomId roomId){
+        return db.select(ROOM.ID,
+          ROOM.HOST_PLAYER_ID,
+          GAME_SETTINGS.MAX_PLAYERS,
+          GAME_SETTINGS.ROUND_DURATION,
+          GAME_SETTINGS.NUMBER_OF_ROUNDS,
+          multiset(
+            select(CATEGORIES.CATEGORY)
+              .from(CATEGORIES)
+              .where(CATEGORIES.GAME_SETTINGS_ID.eq(GAME_SETTINGS.ID))
+          ).convertFrom(record -> record.map(Record1::value1)),
+          multiset(
+            select(EXCLUDED_LETTER.LETTER)
+              .from(EXCLUDED_LETTER)
+              .where(EXCLUDED_LETTER.GAME_SETTINGS_ID.eq(GAME_SETTINGS.ID))
+          ).convertFrom(record -> record.map(Record1::value1))
+        ).from(ROOM)
+          .join(GAME_SETTINGS).on(ROOM.ID.eq(GAME_SETTINGS.ROOM_ID))
+          .where(ROOM.ID.eq(roomId.getId().toString()))
+          .fetchOne(
+            record -> new RoomDto(
+              RoomId.of(record.get(ROOM.ID)),
+              PlayerId.of(record.get(ROOM.HOST_PLAYER_ID)),
+              record.get(GAME_SETTINGS.MAX_PLAYERS),
+              record.get(GAME_SETTINGS.ROUND_DURATION),
+              record.get(GAME_SETTINGS.NUMBER_OF_ROUNDS),
+              record.value6(),
+              record.value7()
+            ));
     }
 
     public void createRoom(Room room) {

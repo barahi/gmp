@@ -47,7 +47,6 @@ public class GameSettingsStore {
 
             for (String category : settings.getCategories()) {
                 CategoryId categoryId = new CategoryId(UUID.randomUUID());
-                System.out.println("Category: " + category + " -> ID: " + categoryId.getId().toString());
                 createCategory(tx, categoryId, formattedId, category);
             }
     });

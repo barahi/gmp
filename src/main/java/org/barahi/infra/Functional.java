@@ -43,4 +43,8 @@ public class Functional {
         inputCollection.stream().map(mappingFunc).forEach(outputCollection::add);
         return outputCollection;
     }
+
+    public static <T> boolean contains(Collection<T> coll, T item) {
+        return coll.stream().anyMatch(e -> e.equals(item));
+    }
 }

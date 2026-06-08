@@ -40,6 +40,7 @@ public class RoomsResource {
         }
     }
 
+    // to do: Delete this and add it socket level
     @POST
     @Path("/{roomId}/join")
     public Response addPlayerToRoom(

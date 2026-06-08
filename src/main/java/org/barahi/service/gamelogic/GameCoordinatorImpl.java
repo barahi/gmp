@@ -24,6 +24,10 @@ public class GameCoordinatorImpl implements GameCoordinator {
 
   @Override
   public char startRound(RoomId roomId, int roundNumber){
+    // TODO: needs to take in a third parameter: Runnable endSubmitAnswersPhaseCallback
+    // TODO: Start new thread
+    // TODO: Thread wait for x time according to room settings
+    // TODO: Call endSubmitAnswersPhaseCallback
     return roundLogicService.startRound(roomId, roundNumber);
   }
 

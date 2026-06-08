@@ -83,6 +83,11 @@ public class RoomServiceImpl implements RoomService {
     }
 
     @Override
+    public RoomDto getRoomSettings(RoomId roomId){
+        return roomStore.getRoomSettings(roomId);
+    }
+
+    @Override
     public void addPlayerToRoom(String roomId, JoinRoomJson joinRoomJson) throws IllegalArgumentException {
         PlayerId playerId;
         RoomId roomUUID;

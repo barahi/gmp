@@ -2,6 +2,7 @@ package org.barahi.server.resource.socket;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.collect.Iterables;
 import org.barahi.infra.Functional;
 import org.barahi.infra.LoggerFactory;
 import org.barahi.infra.exceptions.ObjectNotFoundException;
@@ -12,6 +13,7 @@ import org.barahi.server.resource.socket.events.endround.EndRoundEvent;
 import org.barahi.server.resource.socket.events.endround.RoundResultsEvent;
 import org.barahi.server.resource.socket.events.noop.NoopEvent;
 import org.barahi.server.resource.socket.events.playerjoined.PlayerJoinedEvent;
+import org.barahi.server.resource.socket.events.playerjoined.PlayerJoinedEventPayload;
 import org.barahi.server.resource.socket.events.roundscore.RoundScoreEvent;
 import org.barahi.server.resource.socket.events.roundscore.RoundScoreEventPayload;
 import org.barahi.server.resource.socket.events.startround.StartRoundEvent;
@@ -95,14 +97,25 @@ public class SocketResource {
         }
 
         PLAYER_SESSIONS.put(player.getId(), session);
-        RoomId roomId = null;
-        try {
-            roomId = roomService.getRoomIdForPlayer(playerId);
-        } catch (ObjectNotFoundException e) {
-            broadcastErrorAndCloseSession(session, "Player not in any room: " + playerId);
+        Map<String, List<String>> queryParams = session.getRequestParameterMap();
+        String rawRoomId = Iterables.getOnlyElement(queryParams.get("roomId"));
+        List<String> rpl = queryParams.get("roomPassword");
+        String roomPassword = rpl == null ? null : Iterables.getOnlyElement(rpl);
+
+        RoomId roomId = RoomId.of(rawRoomId);
+        System.out.println("player with id: " + rawPlayerId + " joined room " + rawRoomId);
+
+        if (!Functional.contains(roomService.getPlayerIdsInRoom(roomId), playerId)) {
+            roomService.addPlayerToRoom(rawRoomId, new JoinRoomJson().setPlayerId(rawPlayerId).setPassword(roomPassword));
         }
-        List<Player> players = roomService.getPlayersInRoom(roomId);
-        broadcastEventToRoom(roomId, PlayerJoinedEvent.withListOfPlayers(players));
+
+        PlayerJoinedEventPayload payload = new PlayerJoinedEventPayload();
+        payload.setPlayers(roomService.getPlayersInRoom(roomId));
+        payload.setSettings(roomService.getRoomSettings(roomId));
+        PlayerJoinedEvent playerJoinedEvent = new PlayerJoinedEvent();
+        playerJoinedEvent.setPayload(payload);
+
+        broadcastEventToRoom(roomId, playerJoinedEvent);
     }
 
     @OnMessage
@@ -211,7 +224,7 @@ public class SocketResource {
 
             case PLAYER_LEFT:
 
-            case PLAYER_JOINED:
+
             default: {
                 throw new IllegalStateException("Unexpected value: " + event.getType());
             }
@@ -222,8 +235,11 @@ public class SocketResource {
     public void onClose(Session session, @PathParam("playerId") String rawPlayerId) {
         PlayerId playerId = PlayerId.of(rawPlayerId);
         PLAYER_SESSIONS.remove(playerId);
+        // TODO: Remove player from room?
         LOGGER.info("WebSocket connection closed: " + session.getId());
     }
+
+
 
     public void broadcastEventToRoom(RoomId roomId, Event<?> event) {
         List<Player> players = roomService.getPlayersInRoom(roomId);
