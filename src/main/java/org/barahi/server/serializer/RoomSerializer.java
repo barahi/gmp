@@ -7,15 +7,17 @@ import org.barahi.serviceapi.room.Room;
 
 public class RoomSerializer {
     public RoomJson toJson(Room room, GameSettings gameSettings) {
-        return new RoomJson()
-                .setId(room.getId().getId().toString())
-                .setHostPlayerId(room.getHostPlayerId().getId().toString())
-                .setMaxPlayers(gameSettings.getMaxPlayers())
-                .setRoundDuration(gameSettings.getRoundDuration())
-                .setNumberOfRounds(gameSettings.getNumberOfRounds())
-                .setCategories(gameSettings.getCategories())
-                .setExcludedLetters(gameSettings.getExcludedLetters())
-                .setGameStarted(room.isGameStarted());
+        RoomJson json = new RoomJson();
+        json.setId(room.getId().getId().toString());
+        json.setHostPlayerId(room.getHostPlayerId().getId().toString());
+        json.setMaxPlayers(gameSettings.getMaxPlayers());
+        json.setRoundDuration(gameSettings.getRoundDuration());
+        json.setNumberOfRounds(gameSettings.getNumberOfRounds());
+        json.setPassword(gameSettings.getPassword());
+        json.setCategories(gameSettings.getCategories());
+        json.setExcludedLetters(gameSettings.getExcludedLetters());
+        json.setGameStarted(room.isGameStarted());
+        return json;
     }
 
     public RoomJson toJson(RoomDto roomDto){
@@ -25,6 +27,7 @@ public class RoomSerializer {
         json.setMaxPlayers(roomDto.getMaxPlayers());
         json.setRoundDuration(roomDto.getRoundDuration());
         json.setNumberOfRounds(roomDto.getNumberOfRounds());
+        json.setPassword(roomDto.getPassword());
         json.setCategories(roomDto.getCategories());
         json.setExcludedLetters(roomDto.getExcludedLetters());
         return json;

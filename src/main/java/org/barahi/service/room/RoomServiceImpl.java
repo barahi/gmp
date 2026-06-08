@@ -64,10 +64,10 @@ public class RoomServiceImpl implements RoomService {
                 createJson.getMaxPlayers(),
                 createJson.getRoundDuration(),
                 createJson.getNumberOfRounds(),
-                createJson.getLanguage(),
-                createJson.getPassword(),
                 createJson.getCategories(),
-                createJson.getExcludedLetters()
+                createJson.getExcludedLetters(),
+                createJson.getLanguage(),
+                createJson.getPassword()
         );
 
         // persist room and add host as participant

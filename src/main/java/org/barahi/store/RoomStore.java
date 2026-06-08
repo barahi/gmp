@@ -36,6 +36,7 @@ public class RoomStore {
           GAME_SETTINGS.MAX_PLAYERS,
           GAME_SETTINGS.ROUND_DURATION,
           GAME_SETTINGS.NUMBER_OF_ROUNDS,
+          GAME_SETTINGS.PASSWORD,
           multiset(
             select(CATEGORIES.CATEGORY)
               .from(CATEGORIES)
@@ -56,8 +57,9 @@ public class RoomStore {
               record.get(GAME_SETTINGS.MAX_PLAYERS),
               record.get(GAME_SETTINGS.ROUND_DURATION),
               record.get(GAME_SETTINGS.NUMBER_OF_ROUNDS),
-              record.value6(),
-              record.value7()
+              record.get(GAME_SETTINGS.PASSWORD),
+              record.value7(),
+              record.value8()
             ));
     }
 

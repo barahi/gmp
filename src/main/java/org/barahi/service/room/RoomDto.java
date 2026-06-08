@@ -11,17 +11,27 @@ public class RoomDto {
   private int maxPlayers;
   private int roundDuration;
   private int numberOfRounds;
+  private String password;
   private List<String> categories;
   private List<String> excludedLetters;
 
-  public RoomDto(RoomId roomId, PlayerId hostPlayerId, int maxPlayers, int roundDuration, int numberOfRounds, List<String> categories, List<String> excludedLetters) {
+  public RoomDto(RoomId roomId, PlayerId hostPlayerId, int maxPlayers, int roundDuration, int numberOfRounds, String password, List<String> categories, List<String> excludedLetters) {
     this.roomId = roomId;
     this.hostPlayerId = hostPlayerId;
     this.maxPlayers = maxPlayers;
     this.roundDuration = roundDuration;
     this.numberOfRounds = numberOfRounds;
+    this.password = password;
     this.categories = categories;
     this.excludedLetters = excludedLetters;
+  }
+
+  public String getPassword() {
+    return password;
+  }
+
+  public void setPassword(String password) {
+    this.password = password;
   }
 
   public RoomId getRoomId() {

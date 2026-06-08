@@ -49,6 +49,7 @@ public class GameSettingsStore {
                 CategoryId categoryId = new CategoryId(UUID.randomUUID());
                 createCategory(tx, categoryId, formattedId, category);
             }
+
     });
 }
 

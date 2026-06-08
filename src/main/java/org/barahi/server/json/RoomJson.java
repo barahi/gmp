@@ -12,9 +12,6 @@ public class RoomJson {
     private String hostPlayerId;
 
     @JsonProperty
-    private boolean isGameStarted;
-
-    @JsonProperty
     private int maxPlayers;
 
     @JsonProperty
@@ -24,10 +21,16 @@ public class RoomJson {
     private int numberOfRounds;
 
     @JsonProperty
+    private String password;
+
+    @JsonProperty
     private List<String> categories;
 
     @JsonProperty
     private List<String> excludedLetters;
+
+    @JsonProperty
+    private boolean isGameStarted;
 
     public String getId() {
         return id;
@@ -61,6 +64,15 @@ public class RoomJson {
 
     public int getNumberOfRounds() {
         return numberOfRounds;
+    }
+
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
     }
 
     public List<String> getCategories() {
