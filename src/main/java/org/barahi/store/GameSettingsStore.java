@@ -1,9 +1,5 @@
 package org.barahi.store;
 
-import static org.barahi.generated.Tables.CATEGORIES;
-import static org.barahi.generated.Tables.EXCLUDED_LETTER;
-import static org.barahi.generated.Tables.GAME_SETTINGS;
-
 
 import org.barahi.generated.tables.records.GameSettingsRecord;
 import org.barahi.infra.DSLContextProvider;
@@ -15,10 +11,11 @@ import org.jooq.DSLContext;
 import org.jooq.impl.DSL;
 
 import jakarta.inject.Inject;
-import javassist.tools.rmi.ObjectNotFoundException;
 
 import java.util.List;
 import java.util.UUID;
+
+import static org.barahi.generated.Tables.*;
 
 public class GameSettingsStore {
     private final DSLContext db;
@@ -59,6 +56,12 @@ public class GameSettingsStore {
           .set(CATEGORIES.GAME_SETTINGS_ID, gameSettingsId)
           .set(CATEGORIES.CATEGORY, category)
           .execute();
+    }
+
+    public boolean requiresPassword(RoomId roomId){
+        return db.selectFrom(GAME_SETTINGS)
+          .where(GAME_SETTINGS.ROOM_ID.eq(roomId.getId().toString()))
+          .fetchOne() != null;
     }
 
 

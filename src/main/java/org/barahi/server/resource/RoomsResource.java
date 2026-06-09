@@ -1,6 +1,5 @@
 package org.barahi.server.resource;
 
-import org.barahi.server.json.JoinRoomJson;
 import jakarta.ws.rs.*;
 import org.barahi.infra.exceptions.ObjectNotFoundException;
 import org.barahi.server.json.RoomCreateJson;
@@ -40,20 +39,6 @@ public class RoomsResource {
         }
     }
 
-    // to do: Delete this and add it socket level
-    @POST
-    @Path("/{roomId}/join")
-    public Response addPlayerToRoom(
-            @PathParam("roomId") String roomId,
-            JoinRoomJson joinRoomJson
-    ) {
-        try {
-          roomService.addPlayerToRoom(roomId, joinRoomJson);
-          return Response.ok().build();
-        } catch (IllegalArgumentException e) {
-            throw new BadRequestException("Failed to add player to room");
-        }
-    }
 
     @DELETE
     @Path("/{roomId}/")

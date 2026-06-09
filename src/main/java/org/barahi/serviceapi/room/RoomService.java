@@ -1,5 +1,6 @@
 package org.barahi.serviceapi.room;
 
+import org.barahi.infra.exceptions.RoomAuthenticationException;
 import org.barahi.server.json.JoinRoomJson;
 import org.barahi.infra.exceptions.ObjectNotFoundException;
 import org.barahi.server.json.RoomCreateJson;
@@ -14,7 +15,7 @@ import java.util.List;
 public interface RoomService {
     RoomJson createRoom(RoomCreateJson createJson) throws ObjectNotFoundException;
     RoomDto getRoomSettings(RoomId roomId);
-    void addPlayerToRoom(String roomId, JoinRoomJson joinRoomJson) throws IllegalArgumentException;
+    void addPlayerToRoom(String roomId, JoinRoomJson joinRoomJson) throws IllegalArgumentException, RoomAuthenticationException;
     List<PlayerId> getPlayerIdsInRoom(RoomId roomId);
     List<Player> getPlayersInRoom(RoomId roomId);
     RoomId getRoomIdForPlayer(PlayerId playerId) throws ObjectNotFoundException;

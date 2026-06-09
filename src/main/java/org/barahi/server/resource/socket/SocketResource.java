@@ -6,6 +6,8 @@ import com.google.common.collect.Iterables;
 import org.barahi.infra.Functional;
 import org.barahi.infra.LoggerFactory;
 import org.barahi.infra.exceptions.ObjectNotFoundException;
+import org.barahi.infra.exceptions.RoomAuthenticationException;
+import org.barahi.infra.exceptions.RoomFullException;
 import org.barahi.server.json.*;
 import org.barahi.server.resource.GuiceWebSocketConfigurator;
 import org.barahi.server.resource.socket.events.endgame.EndGameEvent;
@@ -35,10 +37,7 @@ import jakarta.inject.Inject;
 import org.barahi.serviceapi.room.Room.RoomId;
 import org.barahi.serviceapi.room.RoomService;
 
-import javax.websocket.OnClose;
-import javax.websocket.OnMessage;
-import javax.websocket.OnOpen;
-import javax.websocket.Session;
+import javax.websocket.*;
 import javax.websocket.server.PathParam;
 import javax.websocket.server.ServerEndpoint;
 import java.io.IOException;
@@ -103,19 +102,35 @@ public class SocketResource {
         String roomPassword = rpl == null ? null : Iterables.getOnlyElement(rpl);
 
         RoomId roomId = RoomId.of(rawRoomId);
-        System.out.println("player with id: " + rawPlayerId + " joined room " + rawRoomId);
-
-        if (!Functional.contains(roomService.getPlayerIdsInRoom(roomId), playerId)) {
-            roomService.addPlayerToRoom(rawRoomId, new JoinRoomJson().setPlayerId(rawPlayerId).setPassword(roomPassword));
-        }
-
         PlayerJoinedEventPayload payload = new PlayerJoinedEventPayload();
         payload.setPlayers(roomService.getPlayersInRoom(roomId));
         payload.setSettings(roomService.getRoomSettings(roomId));
         PlayerJoinedEvent playerJoinedEvent = new PlayerJoinedEvent();
         playerJoinedEvent.setPayload(payload);
-
+        System.out.println("player with id: " + rawPlayerId + " joined room " + rawRoomId);
         broadcastEventToRoom(roomId, playerJoinedEvent);
+
+        try {
+            if (!Functional.contains(roomService.getPlayerIdsInRoom(roomId), playerId)) {
+                roomService.addPlayerToRoom(rawRoomId, new JoinRoomJson().setPlayerId(rawPlayerId).setPassword(roomPassword));
+            }
+
+            PLAYER_SESSIONS.put(playerId, session);
+            broadcastEventToRoom(roomId, playerJoinedEvent);
+
+        } catch (RoomAuthenticationException e) {
+            System.out.println("Lobby Join Rejected: " + e.getMessage());
+            closeSessionGracefully(session, 4001, e.getMessage());
+
+        } catch (RoomFullException e) {
+            System.out.println("Lobby Join Rejected: Room is full.");
+            closeSessionGracefully(session, 4002, "This game lobby is full.");
+
+        } catch (Exception e) {
+            System.err.println("Unexpected system error during connection handling: " + e.getMessage());
+            closeSessionGracefully(session, 1011, "Internal server error.");
+        }
+
     }
 
     @OnMessage
@@ -237,6 +252,20 @@ public class SocketResource {
         PLAYER_SESSIONS.remove(playerId);
         // TODO: Remove player from room?
         LOGGER.info("WebSocket connection closed: " + session.getId());
+    }
+
+    private void closeSessionGracefully(Session session, int statusCode, String reasonMessage) {
+        try {
+            if (session.isOpen()) {
+                CloseReason reason = new CloseReason(
+                  CloseReason.CloseCodes.getCloseCode(statusCode),
+                  reasonMessage.length() > 123 ? reasonMessage.substring(0, 120) + "..." : reasonMessage
+                );
+                session.close(reason);
+            }
+        } catch (IOException e) {
+            System.err.println("Failed to cleanly disconnect session: " + e.getMessage());
+        }
     }
 
 

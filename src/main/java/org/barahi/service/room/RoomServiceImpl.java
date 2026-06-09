@@ -2,8 +2,10 @@ package org.barahi.service.room;
 
 import java.time.Instant;
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 
+import org.barahi.infra.exceptions.RoomAuthenticationException;
 import org.barahi.server.json.JoinRoomJson;
 import org.barahi.infra.exceptions.ObjectNotFoundException;
 import org.barahi.infra.exceptions.RoomFullException;
@@ -88,13 +90,13 @@ public class RoomServiceImpl implements RoomService {
     }
 
     @Override
-    public void addPlayerToRoom(String roomId, JoinRoomJson joinRoomJson) throws IllegalArgumentException {
+    public void addPlayerToRoom(String roomId, JoinRoomJson joinRoomJson) throws RoomFullException, IllegalArgumentException, RoomAuthenticationException {
         PlayerId playerId;
         RoomId roomUUID;
         roomUUID = Room.RoomId.of(roomId);
         Integer currentPlayersInRoom = roomStore.getCurrentPlayersInRoomCount(roomUUID);
         Integer maxPlayersForRoom = gameSettingsStore.getMaxPlayers(roomUUID);
-        if (currentPlayersInRoom == maxPlayersForRoom) {
+        if (Objects.equals(currentPlayersInRoom, maxPlayersForRoom)) {
             throw new RoomFullException();
         }
 
@@ -116,13 +118,17 @@ public class RoomServiceImpl implements RoomService {
             throw new IllegalArgumentException(String.format("Invalid Resource %s", e));
         }
 
-        // check if the given password matches the room's password
-        if (joinRoomJson.getPassword() != null) {
-            String password = gameSettingsStore.getPasswordByRoomId(room.getId());
-
-            if (!password.equals(joinRoomJson.getPassword())) {
-                throw new IllegalArgumentException(
-                        String.format("The Password Does Not Match For The Given Room ID: %s", roomUUID));
+        System.out.println("password provided " + joinRoomJson.getPassword());
+        // check if room requires password
+        if (gameSettingsStore.requiresPassword(roomUUID)) {
+            if (joinRoomJson.getPassword() != null) {
+                String password = gameSettingsStore.getPasswordByRoomId(room.getId());
+                if (!password.equals(joinRoomJson.getPassword())) {
+                    throw new RoomAuthenticationException(
+                      String.format("The Password Does Not Match For The Given Room ID: %s", roomUUID));
+                }
+            } else {
+                throw new RoomAuthenticationException("Please provide password");
             }
         }
 
