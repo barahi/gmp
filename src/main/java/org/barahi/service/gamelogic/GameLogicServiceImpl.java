@@ -34,7 +34,10 @@ public class GameLogicServiceImpl implements GameLogicService{
     return cumulativeScoreStore.updatePlayerScores(roomId, finalScores);
   }
 
-
+  @Override
+  public int getRoundDuration(RoomId roomId){
+    return gameSettingsStore.getRoundDuration(roomId);
+  }
   @Override
   public int getNumberOfRounds(RoomId roomId){
     return gameSettingsStore.getNumberOfRounds(roomId);

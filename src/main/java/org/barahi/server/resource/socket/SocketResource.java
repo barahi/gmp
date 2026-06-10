@@ -154,7 +154,11 @@ public class SocketResource {
                 if (currRound < 1){
                     gameCoordinator.startNewGame(roomId);
                 }
-                char letterForRound = gameCoordinator.startRound(roomId, currRound);
+                char letterForRound = gameCoordinator.startRound(roomId, currRound, () -> {
+                    // trigger the event to "TimeUp" that will freeze inputs from users"
+                    System.out.println("oops time expired, freezing players from submitting answers");
+
+                });
                 StartRoundEventPayload payload = new StartRoundEventPayload(letterForRound, currRound);
                 StartRoundEvent startRoundEvent = new StartRoundEvent(payload);
                 broadcastEventToRoom(roomId, startRoundEvent);

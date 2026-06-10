@@ -87,6 +87,13 @@ public class GameSettingsStore {
           .fetchOne(GAME_SETTINGS.NUMBER_OF_ROUNDS);
     }
 
+    public Integer getRoundDuration(RoomId roomId){
+        return db.select(GAME_SETTINGS.ROUND_DURATION)
+          .from(GAME_SETTINGS)
+          .where(GAME_SETTINGS.ROOM_ID.eq(roomId.getId().toString()))
+          .fetchOne(GAME_SETTINGS.ROUND_DURATION);
+    }
+
     public List<Character> getLetterExclusions(GameSettingsId gameSettingsId) {
         return db.select(EXCLUDED_LETTER.LETTER)
           .from(EXCLUDED_LETTER)

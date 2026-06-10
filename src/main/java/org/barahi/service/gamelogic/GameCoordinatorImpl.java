@@ -11,10 +11,13 @@ public class GameCoordinatorImpl implements GameCoordinator {
   private final GameLogicService gameLogicService;
   private final RoundLogicService roundLogicService;
 
+  private final GameScheduler gameScheduler;
+
   @Inject
-  public GameCoordinatorImpl(GameLogicService gameLogicService, RoundLogicService roundLogicService){
+  public GameCoordinatorImpl(GameLogicService gameLogicService, RoundLogicService roundLogicService, GameScheduler gameScheduler){
     this.gameLogicService = gameLogicService;
     this.roundLogicService = roundLogicService;
+    this.gameScheduler = gameScheduler;
   }
 
   @Override
@@ -23,12 +26,11 @@ public class GameCoordinatorImpl implements GameCoordinator {
   }
 
   @Override
-  public char startRound(RoomId roomId, int roundNumber){
-    // TODO: needs to take in a third parameter: Runnable endSubmitAnswersPhaseCallback
-    // TODO: Start new thread
-    // TODO: Thread wait for x time according to room settings
-    // TODO: Call endSubmitAnswersPhaseCallback
-    return roundLogicService.startRound(roomId, roundNumber);
+  public char startRound(RoomId roomId, int roundNumber, Runnable onRoundTimeout){
+    char roundLetter = roundLogicService.startRound(roomId, roundNumber);
+    int roundDuration = roundLogicService.getCurrentRoundNumber(roomId);
+    gameScheduler.startRoundTimer(roomId, roundDuration, onRoundTimeout);
+    return roundLetter;
   }
 
   @Override

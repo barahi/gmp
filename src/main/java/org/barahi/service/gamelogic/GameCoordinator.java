@@ -8,7 +8,7 @@ import java.util.Map;
 
 public interface GameCoordinator {
  void startNewGame(RoomId roomId);
- char startRound(RoomId roomId, int roundNumber);
+ char startRound(RoomId roomId, int roundNumber, Runnable onRoundTimeout);
  int getCurrentRoundNumber(RoomId roomId);
  void storeAnswers(RoomId roomId, int round, PlayerId playerId, Map<String, String> roundAnswers);
  Map<String, Map<PlayerId, Integer>>  calculatePlayerScoreForRound(RoomId roomId, int roundNumber);
