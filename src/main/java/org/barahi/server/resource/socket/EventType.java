@@ -4,6 +4,7 @@ public enum EventType {
     NOOP(false, false),
     PLAYER_JOINED(false, true),
     START_ROUND(true, true),
+    TIME_UP(false, true),
     SUBMIT_ANSWERS(true, false),
     ROUND_SCORES(false, true),
     BEGIN_VOTE_PHASE(true, false),

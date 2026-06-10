@@ -28,7 +28,7 @@ public class GameCoordinatorImpl implements GameCoordinator {
   @Override
   public char startRound(RoomId roomId, int roundNumber, Runnable onRoundTimeout){
     char roundLetter = roundLogicService.startRound(roomId, roundNumber);
-    int roundDuration = roundLogicService.getCurrentRoundNumber(roomId);
+    int roundDuration = gameLogicService.getRoundDuration(roomId);
     gameScheduler.startRoundTimer(roomId, roundDuration, onRoundTimeout);
     return roundLetter;
   }

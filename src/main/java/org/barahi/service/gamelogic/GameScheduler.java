@@ -10,7 +10,6 @@ public class GameScheduler {
 
   public void startRoundTimer(RoomId roomId, int roundDuration, Runnable timeOverCallback){
     cancelTimer(roomId);
-    System.out.println("scheduling round timer thread for room: " + roomId.getId().toString());
     ScheduledFuture<?> task = scheduler.schedule(() -> {
       try {
         timeOverCallback.run();
@@ -26,7 +25,6 @@ public class GameScheduler {
   public void cancelTimer(RoomId roomId){
     ScheduledFuture<?> activeTask = activeTimers.get(roomId);
     if (activeTask != null && !activeTask.isDone()){
-      System.out.println("Stopping timer for roomId: " + roomId.getId().toString());
       activeTask.cancel(true);
     }
   }

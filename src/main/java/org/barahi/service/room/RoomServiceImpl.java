@@ -117,8 +117,6 @@ public class RoomServiceImpl implements RoomService {
         } catch (IllegalAccessException e) {
             throw new IllegalArgumentException(String.format("Invalid Resource %s", e));
         }
-
-        System.out.println("password provided " + joinRoomJson.getPassword());
         // check if room requires password
         if (gameSettingsStore.requiresPassword(roomUUID)) {
             if (joinRoomJson.getPassword() != null) {

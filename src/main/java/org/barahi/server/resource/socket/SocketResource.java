@@ -24,6 +24,7 @@ import org.barahi.server.resource.socket.events.submitanswers.SubmitAnswersEvent
 import org.barahi.server.resource.socket.events.submitanswers.SubmitAnswersEventPayload;
 import org.barahi.server.resource.socket.events.submitvote.SubmitVoteEvent;
 import org.barahi.server.resource.socket.events.submitvote.SubmitVoteEventPayload;
+import org.barahi.server.resource.socket.events.timeupevent.TimeUpEvent;
 import org.barahi.server.resource.socket.events.voteresult.EndVoteRoundEvent;
 import org.barahi.server.resource.socket.events.voteresult.VoteResultsEvent;
 import org.barahi.server.serializer.*;
@@ -95,20 +96,11 @@ public class SocketResource {
             return;
         }
 
-        PLAYER_SESSIONS.put(player.getId(), session);
         Map<String, List<String>> queryParams = session.getRequestParameterMap();
         String rawRoomId = Iterables.getOnlyElement(queryParams.get("roomId"));
         List<String> rpl = queryParams.get("roomPassword");
         String roomPassword = rpl == null ? null : Iterables.getOnlyElement(rpl);
-
         RoomId roomId = RoomId.of(rawRoomId);
-        PlayerJoinedEventPayload payload = new PlayerJoinedEventPayload();
-        payload.setPlayers(roomService.getPlayersInRoom(roomId));
-        payload.setSettings(roomService.getRoomSettings(roomId));
-        PlayerJoinedEvent playerJoinedEvent = new PlayerJoinedEvent();
-        playerJoinedEvent.setPayload(payload);
-        System.out.println("player with id: " + rawPlayerId + " joined room " + rawRoomId);
-        broadcastEventToRoom(roomId, playerJoinedEvent);
 
         try {
             if (!Functional.contains(roomService.getPlayerIdsInRoom(roomId), playerId)) {
@@ -116,18 +108,20 @@ public class SocketResource {
             }
 
             PLAYER_SESSIONS.put(playerId, session);
+            PlayerJoinedEventPayload payload = new PlayerJoinedEventPayload();
+            payload.setPlayers(roomService.getPlayersInRoom(roomId));
+            payload.setSettings(roomService.getRoomSettings(roomId));
+            PlayerJoinedEvent playerJoinedEvent = new PlayerJoinedEvent();
+            playerJoinedEvent.setPayload(payload);
             broadcastEventToRoom(roomId, playerJoinedEvent);
 
         } catch (RoomAuthenticationException e) {
-            System.out.println("Lobby Join Rejected: " + e.getMessage());
             closeSessionGracefully(session, 4001, e.getMessage());
 
         } catch (RoomFullException e) {
-            System.out.println("Lobby Join Rejected: Room is full.");
             closeSessionGracefully(session, 4002, "This game lobby is full.");
 
         } catch (Exception e) {
-            System.err.println("Unexpected system error during connection handling: " + e.getMessage());
             closeSessionGracefully(session, 1011, "Internal server error.");
         }
 
@@ -155,9 +149,7 @@ public class SocketResource {
                     gameCoordinator.startNewGame(roomId);
                 }
                 char letterForRound = gameCoordinator.startRound(roomId, currRound, () -> {
-                    // trigger the event to "TimeUp" that will freeze inputs from users"
-                    System.out.println("oops time expired, freezing players from submitting answers");
-
+                    broadcastEventToRoom(roomId, new TimeUpEvent());
                 });
                 StartRoundEventPayload payload = new StartRoundEventPayload(letterForRound, currRound);
                 StartRoundEvent startRoundEvent = new StartRoundEvent(payload);

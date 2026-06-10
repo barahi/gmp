@@ -15,5 +15,6 @@ public class ServiceBinder extends AbstractBinder {
         bind(RoundLogicServiceImpl.class).to(RoundLogicService.class);
         bind(GameLogicServiceImpl.class).to(GameLogicService.class);
         bind(GameCoordinatorImpl.class).to(GameCoordinator.class);
+        bind(GameScheduler.class).to(GameScheduler.class);
     }
 }
