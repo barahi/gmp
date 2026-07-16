@@ -61,6 +61,7 @@ public class GameSettingsStore {
     public boolean requiresPassword(RoomId roomId){
         return db.selectFrom(GAME_SETTINGS)
           .where(GAME_SETTINGS.ROOM_ID.eq(roomId.getId().toString()))
+          .and(GAME_SETTINGS.PASSWORD.ne(""))
           .fetchOne() != null;
     }
 

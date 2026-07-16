@@ -3,7 +3,7 @@ package org.barahi.server.json;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import org.barahi.server.resource.socket.EventPayload;
 
-public class SubmitVotePayloadJson implements EventPayload {
+public class   SubmitVotePayloadJson implements EventPayload {
   @JsonProperty
   String category;
 

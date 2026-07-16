@@ -1,6 +1,7 @@
 package org.barahi.service.gamelogic;
 
 import jakarta.inject.Inject;
+import org.barahi.service.gamelogic.Dto.PlayerAnswer;
 import org.barahi.service.gamelogic.Dto.VoteRoundResults;
 import org.barahi.serviceapi.player.Player.PlayerId;
 import org.barahi.serviceapi.room.Room.RoomId;
@@ -41,8 +42,13 @@ public class GameCoordinatorImpl implements GameCoordinator {
   public void storeAnswers(RoomId roomId, int round, PlayerId playerId, Map<String, String> roundAnswers){
     roundLogicService.storeAnswers(roomId, round, playerId, roundAnswers);
   }
+
   @Override
-  public Map<String, Map<PlayerId, Integer>>  calculatePlayerScoreForRound(RoomId roomId, int roundNumber) {
+  public Integer getNumberOfSubmittedAnswersInRound(int roundNumber, RoomId roomId){
+    return roundLogicService.getNumberOfSubmittedAnswers(roundNumber, roomId);
+  }
+  @Override
+  public Map<String, Map<String, PlayerAnswer>>  calculatePlayerScoreForRound(RoomId roomId, int roundNumber) {
     return roundLogicService.calculatePlayerScoreForRound(roomId, roundNumber);
   }
   @Override

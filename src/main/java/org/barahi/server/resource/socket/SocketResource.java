@@ -10,6 +10,8 @@ import org.barahi.infra.exceptions.RoomAuthenticationException;
 import org.barahi.infra.exceptions.RoomFullException;
 import org.barahi.server.json.*;
 import org.barahi.server.resource.GuiceWebSocketConfigurator;
+import org.barahi.server.resource.socket.events.beginvote.BeginVotePhaseEvent;
+import org.barahi.server.resource.socket.events.beginvote.BeginVotePhasePayload;
 import org.barahi.server.resource.socket.events.endgame.EndGameEvent;
 import org.barahi.server.resource.socket.events.endround.EndRoundEvent;
 import org.barahi.server.resource.socket.events.endround.RoundResultsEvent;
@@ -28,6 +30,7 @@ import org.barahi.server.resource.socket.events.timeupevent.TimeUpEvent;
 import org.barahi.server.resource.socket.events.voteresult.EndVoteRoundEvent;
 import org.barahi.server.resource.socket.events.voteresult.VoteResultsEvent;
 import org.barahi.server.serializer.*;
+import org.barahi.service.gamelogic.Dto.PlayerAnswer;
 import org.barahi.service.gamelogic.Dto.VoteRoundResults;
 import org.barahi.service.gamelogic.GameCoordinator;
 import org.barahi.serviceapi.player.Player;
@@ -42,6 +45,7 @@ import javax.websocket.*;
 import javax.websocket.server.PathParam;
 import javax.websocket.server.ServerEndpoint;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -58,6 +62,7 @@ public class SocketResource {
     private final GameCoordinator gameCoordinator;
     private final SubmitAnswerPayloadEventSerializer submitAnswerPayloadEventSerializer;
     private final RoundScoreEventPayloadSerializer roundScoreEventPayloadSerializer;
+    private final BeginVotePayloadEventSerializer beginVotePayloadEventSerializer;
     private final SubmitVoteEventPayloadSerializer submitVoteEventPayloadSerializer;
     private final VoteResultsEventPayloadSerializer voteResultsEventPayloadSerializer;
     private final PlayerScoresPayloadEventSerializer playerScoresPayloadEventSerializer;
@@ -66,13 +71,14 @@ public class SocketResource {
 
     @Inject
     public SocketResource(PlayerService playerService, RoomService roomService, GameCoordinator gameCoordinator, SubmitAnswerPayloadEventSerializer submitAnswerPayloadEventSerializer,
-                          RoundScoreEventPayloadSerializer roundScoreEventPayloadSerializer, SubmitVoteEventPayloadSerializer submitVoteEventPayloadSerializer, VoteResultsEventPayloadSerializer
+                          RoundScoreEventPayloadSerializer roundScoreEventPayloadSerializer, BeginVotePayloadEventSerializer beginVotePayloadEventSerializer, SubmitVoteEventPayloadSerializer submitVoteEventPayloadSerializer, VoteResultsEventPayloadSerializer
                                 voteResultsEventPayloadSerializer, PlayerScoresPayloadEventSerializer playerScoresPayloadEventSerializer, EndGamePayloadEventSerializer endGamePayloadEventSerializer) {
         this.playerService = playerService;
         this.roomService = roomService;
         this.gameCoordinator = gameCoordinator;
         this.submitAnswerPayloadEventSerializer = submitAnswerPayloadEventSerializer;
         this.roundScoreEventPayloadSerializer = roundScoreEventPayloadSerializer;
+        this.beginVotePayloadEventSerializer = beginVotePayloadEventSerializer;
         this.submitVoteEventPayloadSerializer = submitVoteEventPayloadSerializer;
         this.voteResultsEventPayloadSerializer = voteResultsEventPayloadSerializer;
         this.playerScoresPayloadEventSerializer = playerScoresPayloadEventSerializer;
@@ -116,12 +122,16 @@ public class SocketResource {
             broadcastEventToRoom(roomId, playerJoinedEvent);
 
         } catch (RoomAuthenticationException e) {
+            broadcastError(session, e.getMessage());
             closeSessionGracefully(session, 4001, e.getMessage());
 
         } catch (RoomFullException e) {
+            broadcastError(session,"This game lobby is full");
             closeSessionGracefully(session, 4002, "This game lobby is full.");
 
         } catch (Exception e) {
+            broadcastError(session,"Internal server error.");
+            System.out.println("internal server error: " + e.getMessage());
             closeSessionGracefully(session, 1011, "Internal server error.");
         }
 
@@ -130,7 +140,6 @@ public class SocketResource {
     @OnMessage
     public void onMessage(String message, Session session, @PathParam("playerId") String rawPlayerId) {
         LOGGER.info("Received message from " + session.getId() + ": " + message);
-
         PlayerId playerId = PlayerId.of(rawPlayerId);
         RoomId roomId;
         try {
@@ -142,14 +151,17 @@ public class SocketResource {
 
         Event<?> event = getEventFromString(message);
         EventType eventType = EventType.valueOf(event.getType());
+        System.out.println("got message: " + eventType.toString());
         switch (eventType) {
             case START_ROUND: {
                 int currRound = gameCoordinator.getCurrentRoundNumber(roomId);
                 if (currRound < 1){
                     gameCoordinator.startNewGame(roomId);
                 }
+                List<Player> playersToAlert = getConnectedPlayersInRoom(roomId);
+                System.out.println("players to update "  + playersToAlert);
                 char letterForRound = gameCoordinator.startRound(roomId, currRound, () -> {
-                    broadcastEventToRoom(roomId, new TimeUpEvent());
+                    broadcastEventToRoom(playersToAlert, new TimeUpEvent());
                 });
                 StartRoundEventPayload payload = new StartRoundEventPayload(letterForRound, currRound);
                 StartRoundEvent startRoundEvent = new StartRoundEvent(payload);
@@ -162,23 +174,26 @@ public class SocketResource {
                 SubmitAnswerPayloadJson jsonIncomingPayload = submitAnswersEvent.getPayload();
                 SubmitAnswersEventPayload serializedPayload = submitAnswerPayloadEventSerializer.fromJson(jsonIncomingPayload);
                 gameCoordinator.storeAnswers(roomId, serializedPayload.getRoundNumber(), serializedPayload.getPlayerId(), serializedPayload.getRoundAnswers());
-                break;
-            }
 
-            case ROUND_SCORES: {
                 int currentRound = gameCoordinator.getCurrentRoundNumber(roomId);
-                Map<String, Map<PlayerId, Integer>> roundScores = gameCoordinator.calculatePlayerScoreForRound(roomId, currentRound);
+                int totalConnectedPlayers = getConnectedPlayersInRoom(roomId).size();
+                int numberOfSubmittedAnswers = gameCoordinator.getNumberOfSubmittedAnswersInRound(currentRound, roomId);
 
-                RoundScoreEventPayload outgoingPayload = new RoundScoreEventPayload(currentRound, roundScores);
-                RoundScorePayloadJson outgoingPayloadJson = roundScoreEventPayloadSerializer.toJson(outgoingPayload);
-
-                RoundScoreEvent roundScoreEvent = new RoundScoreEvent(outgoingPayloadJson);
-                broadcastEventToRoom(roomId, roundScoreEvent);
+                if (numberOfSubmittedAnswers >= totalConnectedPlayers){
+                    System.out.println("round scores called!");
+                    Map<String, Map<String, PlayerAnswer>> roundScores = gameCoordinator.calculatePlayerScoreForRound(roomId, currentRound);
+                    RoundScoreEventPayload outgoingPayload = new RoundScoreEventPayload(currentRound, roundScores);
+                    RoundScorePayloadJson outgoingPayloadJson = roundScoreEventPayloadSerializer.toJson(outgoingPayload);
+                    RoundScoreEvent roundScoreEvent = new RoundScoreEvent(outgoingPayloadJson);
+                    broadcastEventToRoom(roomId, roundScoreEvent);
+                }
                 break;
-
             }
 
             case BEGIN_VOTE_PHASE: {
+                BeginVotePhaseEvent beginVotePhaseEvent = (BeginVotePhaseEvent) event;
+                BeginVotePayloadJson incomingPayload = beginVotePhaseEvent.getPayload();
+                BeginVotePhasePayload serializedPayload = beginVotePayloadEventSerializer.fromJson(incomingPayload);
                 gameCoordinator.beginVotePhase(roomId);
                 break;
             }
@@ -234,7 +249,7 @@ public class SocketResource {
             }
 
             case PLAYER_LEFT:
-
+                break;
 
             default: {
                 throw new IllegalStateException("Unexpected value: " + event.getType());
@@ -247,7 +262,20 @@ public class SocketResource {
         PlayerId playerId = PlayerId.of(rawPlayerId);
         PLAYER_SESSIONS.remove(playerId);
         // TODO: Remove player from room?
-        LOGGER.info("WebSocket connection closed: " + session.getId());
+        LOGGER.info("WebSocket connection closed: " + session.getId() + " for player " + playerId.getId().toString());
+    }
+
+    private List<Player> getConnectedPlayersInRoom(RoomId roomId){
+        List<Player> dbPlayers = roomService.getPlayersInRoom(roomId);
+        List<Player> activePlayers = new ArrayList<>();
+        dbPlayers.forEach(p -> {
+            System.out.println("player: " + p.getUsername());
+            Session s = PLAYER_SESSIONS.get(p.getId());
+            if (s!=null && s.isOpen()) {
+                activePlayers.add(p);
+            }
+        });
+        return activePlayers;
     }
 
     private void closeSessionGracefully(Session session, int statusCode, String reasonMessage) {
@@ -265,7 +293,6 @@ public class SocketResource {
     }
 
 
-
     public void broadcastEventToRoom(RoomId roomId, Event<?> event) {
         List<Player> players = roomService.getPlayersInRoom(roomId);
         broadcastEventToRoom(players, event);
@@ -274,22 +301,22 @@ public class SocketResource {
     public void broadcastEventToRoom(List<Player> players, Event<?> event) {
         String eventDetails = writeEventAsString(event);
         List<Session> sessions = Functional.map(players, player -> PLAYER_SESSIONS.get(player.getId()));
+
         List<Session> validSessions = Functional.filter(sessions, session -> session != null && session.isOpen());
         validSessions.forEach(session -> {
-            try {
-                session.getBasicRemote().sendText(eventDetails);
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
+            session.getAsyncRemote().sendText(eventDetails, result -> {
+                if (!result.isOK()){
+                    LOGGER.severe("Failed to send asynchronous message to session " + session.getId());
+                }
+            });
         });
     }
 
     private void broadcastError(Session session, String message) {
         LOGGER.severe(message);
-        try {
-            session.getBasicRemote().sendText("Error: " + message);
-        } catch (IOException e) {
-            LOGGER.severe("Failed to send error message to " + session.getId() + ": " + e.getMessage());
+        String jsonError = String.format("{\"type\":\"ERROR\", \"payload\":{\"message\":\"%s\"}}", message);
+        if (session.isOpen()){
+            session.getAsyncRemote().sendText(jsonError);
         }
     }
 
@@ -301,6 +328,7 @@ public class SocketResource {
             LOGGER.severe("Failed to close session " + session.getId() + ": " + e.getMessage());
         }
     }
+
 
     private String writeEventAsString(Event<?> event) {
         try {
@@ -318,5 +346,11 @@ public class SocketResource {
             LOGGER.log(Level.SEVERE, "Jackson parsing failed!", e);
             return new NoopEvent();
         }
+    }
+
+    @OnError
+    private void onError(Session session, Throwable throwable, @PathParam("playerId") String rawPlayerId){
+        LOGGER.severe("websocket error for player " + rawPlayerId + " on session " + session.getId());
+        throwable.printStackTrace();
     }
 }

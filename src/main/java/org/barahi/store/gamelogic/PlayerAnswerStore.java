@@ -4,6 +4,7 @@ import jakarta.inject.Inject;
 import org.barahi.generated.tables.records.PlayerAnswerRecord;
 import org.barahi.infra.DSLContextProvider;
 import org.barahi.serviceapi.gameSettings.CategoryId;
+import org.barahi.serviceapi.gameSettings.GameSettings;
 import org.barahi.serviceapi.gameSettings.GameSettings.GameSettingsId;
 import org.barahi.serviceapi.player.Player.PlayerId;
 import org.jooq.DSLContext;
@@ -53,6 +54,13 @@ public class PlayerAnswerStore {
         r -> PlayerId.of(r.get(PLAYER_ANSWER.PLAYER_ID)),
         r -> r.get(1, Integer.class)
       );
+  }
+
+  public Integer getPlayerAnswersForRound(int roundNumber, GameSettingsId gameSettingsId){
+    return db.selectCount()
+      .from(PLAYER_ANSWER)
+      .where(PLAYER_ANSWER.ROUND.eq(roundNumber))
+      .and(PLAYER_ANSWER.GAME_SETTINGS_ID.eq(gameSettingsId.getId().toString())).fetchOne(0, int.class);
   }
 
 

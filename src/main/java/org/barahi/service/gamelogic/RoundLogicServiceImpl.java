@@ -1,10 +1,12 @@
 package org.barahi.service.gamelogic;
 
 import jakarta.inject.Inject;
+import org.barahi.service.gamelogic.Dto.PlayerAnswer;
 import org.barahi.service.gamelogic.Dto.VoteRoundResults;
 import org.barahi.serviceapi.gameSettings.CategoryId;
 import org.barahi.serviceapi.gameSettings.GameSettings.GameSettingsId;
 import org.barahi.serviceapi.player.Player.PlayerId;
+import org.barahi.serviceapi.player.PlayerService;
 import org.barahi.serviceapi.room.Room.RoomId;
 import org.barahi.serviceapi.room.RoomService;
 import org.barahi.store.GameSettingsStore;
@@ -20,7 +22,7 @@ import static org.barahi.service.gamelogic.RoundLogicHelper.generateRandomCharEx
 
 public class RoundLogicServiceImpl implements RoundLogicService {
   private static final int CATEGORY_FULL_SCORE = 100;
-
+  private final PlayerService playerService;
   private final RoomService roomService;
   private final PlayerAnswerStore playerAnswerStore;
   private final GameStateStore gameStateStore;
@@ -29,7 +31,8 @@ public class RoundLogicServiceImpl implements RoundLogicService {
   private final PlayerVoteStore playerVoteStore;
 
   @Inject
-  public RoundLogicServiceImpl(RoomService roomService, PlayerAnswerStore playerAnswerStore, GameStateStore gameStateStore, GameSettingsStore gameSettingsStore, PlayerVoteStore playerVoteStore){
+  public RoundLogicServiceImpl(PlayerService playerService, RoomService roomService, PlayerAnswerStore playerAnswerStore, GameStateStore gameStateStore, GameSettingsStore gameSettingsStore, PlayerVoteStore playerVoteStore){
+    this.playerService = playerService;
     this.roomService = roomService;
     this.playerAnswerStore = playerAnswerStore;
     this.gameStateStore = gameStateStore;
@@ -66,30 +69,42 @@ public class RoundLogicServiceImpl implements RoundLogicService {
   }
 
   @Override
-  public Map<String, Map<PlayerId, Integer>> calculatePlayerScoreForRound(RoomId roomId, int roundNumber) {
+  public Integer getNumberOfSubmittedAnswers(int roundNumber, RoomId roomId){
+    GameSettingsId gameSettingsId = gameSettingsStore.getGameSettingsId(roomId);
+    return playerAnswerStore.getPlayerAnswersForRound(roundNumber, gameSettingsId);
+  }
+
+  @Override
+  public Map<String, Map<String, PlayerAnswer>> calculatePlayerScoreForRound(RoomId roomId, int roundNumber) {
     List<PlayerId> playerIds = roomService.getPlayerIdsInRoom(roomId);
     char currentLetter = gameStateStore.getLetterForCurrentRound(roomId, roundNumber);
     Map<String, Map<PlayerId, String>> categoryToPlayerAnswers = playerAnswerStore.getAnswersForRound(playerIds, roundNumber);
-    Map<String, Map<PlayerId, Integer>> roundScores = new HashMap<>();
+
+    Map<String, Map<String, PlayerAnswer>> roundScores = new HashMap<>();
 
     categoryToPlayerAnswers.forEach((category, playerAnswer) -> {
       Map<String, Integer> answerCount = new HashMap<>();
       playerAnswer.forEach((playerId, answer) -> {
         if (answer != null && !answer.isEmpty()){
           String cleanedAnswer = answer.toLowerCase();
-          answerCount.put(cleanedAnswer, answerCount.getOrDefault(cleanedAnswer,0) + 1);
-        }
-      });
-      Map<PlayerId, Integer> playerScores = new HashMap<>();
-      playerAnswer.forEach((playerId, answer) -> {
-        int calculatedScore = 0;
-        if (!answer.isEmpty() && answer.startsWith(String.valueOf(currentLetter))){
-          String cleanedAnswer = answer.toLowerCase();
-          if (answerCount.containsKey(cleanedAnswer)){
-            calculatedScore = CATEGORY_FULL_SCORE / answerCount.get(cleanedAnswer);
+          if (cleanedAnswer.startsWith(String.valueOf(currentLetter))){
+            answerCount.put(cleanedAnswer, answerCount.getOrDefault(cleanedAnswer,0) + 1);
           }
         }
-        playerScores.put(playerId, calculatedScore);
+      });
+
+      Map<String, PlayerAnswer> playerScores = new HashMap<>();
+      playerAnswer.forEach((playerId, answer) -> {
+        int calculatedScore = 0;
+        String rawAnswer = (answer == null) ? "" : answer.trim();
+        String cleanedAnswer = rawAnswer.toLowerCase();
+        if (cleanedAnswer.startsWith(String.valueOf(currentLetter)) && answerCount.containsKey(cleanedAnswer)){
+          calculatedScore = CATEGORY_FULL_SCORE / answerCount.get(cleanedAnswer);
+        }
+
+        String username = playerService.getUsernameFromId(playerId);
+        PlayerAnswer playerAnswerScore = new PlayerAnswer(answer, calculatedScore);
+        playerScores.put(username, playerAnswerScore);
         playerAnswerStore.updateScoreForAnswer(playerId, category, roundNumber, calculatedScore);
       });
       roundScores.put(category, playerScores);

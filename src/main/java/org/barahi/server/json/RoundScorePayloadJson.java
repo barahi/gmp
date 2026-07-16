@@ -2,6 +2,7 @@ package org.barahi.server.json;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import org.barahi.server.resource.socket.EventPayload;
+import org.barahi.service.gamelogic.Dto.PlayerAnswer;
 
 import java.util.Map;
 
@@ -10,7 +11,7 @@ public class RoundScorePayloadJson implements EventPayload {
   private int roundNumber;
 
   @JsonProperty("roundScoreMap")
-  private Map<String, Map<String, Integer>> roundScoreMap;
+  private Map<String, Map<String, PlayerAnswer>> roundScoreMap;
 
   public int getRoundNumber() {
     return roundNumber;
@@ -20,11 +21,11 @@ public class RoundScorePayloadJson implements EventPayload {
     this.roundNumber = roundNumber;
   }
 
-  public Map<String, Map<String, Integer>> getRoundScoreMap() {
+  public Map<String, Map<String, PlayerAnswer>> getRoundScoreMap() {
     return roundScoreMap;
   }
 
-  public void setRoundScoreMap(Map<String, Map<String, Integer>> roundScoreMap) {
+  public void setRoundScoreMap(Map<String, Map<String, PlayerAnswer>> roundScoreMap) {
     this.roundScoreMap = roundScoreMap;
   }
 }

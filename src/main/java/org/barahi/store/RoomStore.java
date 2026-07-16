@@ -2,6 +2,7 @@ package org.barahi.store;
 
 import jakarta.inject.Inject;
 
+import org.barahi.generated.tables.records.RoomPlayerRecord;
 import org.barahi.infra.DSLContextProvider;
 import org.barahi.service.room.RoomDto;
 import org.barahi.serviceapi.player.Player;
@@ -28,6 +29,12 @@ public class RoomStore {
     @Inject
     public RoomStore(DSLContextProvider dbProvider) {
         this.db = dbProvider.get();
+    }
+
+    public boolean isPlayerInRoom(RoomId roomId, PlayerId playerId){
+         return db.fetchExists(db.selectFrom(ROOM_PLAYER)
+           .where(ROOM_PLAYER.ROOM_ID.eq(roomId.getId().toString()))
+           .and(ROOM_PLAYER.PLAYER_ID.eq(playerId.getId().toString())));
     }
 
     public RoomDto getRoomSettings(RoomId roomId){
@@ -74,6 +81,7 @@ public class RoomStore {
         db.insertInto(ROOM_PLAYER)
                 .set(ROOM_PLAYER.ROOM_ID, roomId.getId().toString())
                 .set(ROOM_PLAYER.PLAYER_ID, playerId.getId().toString())
+                .onDuplicateKeyIgnore()
                 .execute();
     }
 

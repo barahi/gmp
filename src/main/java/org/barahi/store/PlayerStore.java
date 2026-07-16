@@ -79,6 +79,13 @@ public void deletePlayer(List<Player.PlayerId> ids) {
           });
     }
 
+    public String getUsernameFromId(PlayerId playerId){
+        return db.select(PLAYER.USERNAME)
+          .from(PLAYER)
+          .where(PLAYER.ID.eq(playerId.getId().toString()))
+          .fetchOne(PLAYER.USERNAME);
+    }
+
 
     private PlayerRecord toRecord(Player player) {
         PlayerRecord record = new PlayerRecord();

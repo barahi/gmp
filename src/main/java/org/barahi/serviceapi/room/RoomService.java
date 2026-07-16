@@ -13,6 +13,7 @@ import org.barahi.serviceapi.room.Room.RoomId;
 import java.util.List;
 
 public interface RoomService {
+    boolean isPlayerInRoom(RoomId roomId, PlayerId playerId);
     RoomJson createRoom(RoomCreateJson createJson) throws ObjectNotFoundException;
     RoomDto getRoomSettings(RoomId roomId);
     void addPlayerToRoom(String roomId, JoinRoomJson joinRoomJson) throws IllegalArgumentException, RoomAuthenticationException;

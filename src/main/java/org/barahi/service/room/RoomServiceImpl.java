@@ -90,6 +90,11 @@ public class RoomServiceImpl implements RoomService {
     }
 
     @Override
+    public boolean isPlayerInRoom(RoomId roomId, PlayerId playerId){
+        return roomStore.isPlayerInRoom(roomId, playerId);
+    }
+
+    @Override
     public void addPlayerToRoom(String roomId, JoinRoomJson joinRoomJson) throws RoomFullException, IllegalArgumentException, RoomAuthenticationException {
         PlayerId playerId;
         RoomId roomUUID;
@@ -106,28 +111,33 @@ public class RoomServiceImpl implements RoomService {
             throw new IllegalArgumentException(String.format("Invalid Id Format %s ", e));
         }
 
-        // check if valid room and player
         Room room;
         Player player;
         try {
             room = roomStore.getRoomWithId(roomUUID);
             player = playerService.getPlayer(playerId);
+            System.out.println("got player: " + player);
         } catch (ObjectNotFoundException e){
             throw new NotFoundException("Could not find player with id: " + playerId);
         } catch (IllegalAccessException e) {
             throw new IllegalArgumentException(String.format("Invalid Resource %s", e));
         }
-        // check if room requires password
+
+        String providedPassword = joinRoomJson.getPassword() == null? "" : joinRoomJson.getPassword().trim();
+
         if (gameSettingsStore.requiresPassword(roomUUID)) {
-            if (joinRoomJson.getPassword() != null) {
-                String password = gameSettingsStore.getPasswordByRoomId(room.getId());
-                if (!password.equals(joinRoomJson.getPassword())) {
-                    throw new RoomAuthenticationException(
-                      String.format("The Password Does Not Match For The Given Room ID: %s", roomUUID));
-                }
-            } else {
-                throw new RoomAuthenticationException("Please provide password");
+            String password = gameSettingsStore.getPasswordByRoomId(room.getId());
+            if (providedPassword.isEmpty()){
+                throw new RoomAuthenticationException("Room requires password");
             }
+            if (!password.equals(providedPassword)){
+                throw new RoomAuthenticationException("Password does not match");
+            }
+        }
+        boolean checkPlayer = isPlayerInRoom(roomUUID, playerId);
+        if (checkPlayer ){
+            System.out.println("player in room already");
+            return;
         }
 
         // add player to the room

@@ -1,5 +1,6 @@
 package org.barahi.service.gamelogic;
 
+import org.barahi.service.gamelogic.Dto.PlayerAnswer;
 import org.barahi.service.gamelogic.Dto.VoteRoundResults;
 import org.barahi.serviceapi.room.Room.RoomId;
 
@@ -12,7 +13,8 @@ public interface RoundLogicService {
     char startRound(RoomId roomId, int roundNumber);
     Integer getCurrentRoundNumber(RoomId roomId);
     void storeAnswers(RoomId roomId, int round, PlayerId playerId, Map<String, String> roundAnswers);
-    Map<String, Map<PlayerId, Integer>>  calculatePlayerScoreForRound(RoomId roomId, int roundNumber);
+    Integer getNumberOfSubmittedAnswers(int roundNumber, RoomId roomId);
+    Map<String, Map<String, PlayerAnswer>> calculatePlayerScoreForRound(RoomId roomId, int roundNumber);
     void beginVotePhase(RoomId roomId);
     void submitVote(RoomId roomId,  String category, int roundNumber, PlayerId targetPlayerId, PlayerId voterId, boolean vote);
     VoteRoundResults getVoteRoundResults(RoomId roomId, String category, int roundNumber, PlayerId targetPlayerId);

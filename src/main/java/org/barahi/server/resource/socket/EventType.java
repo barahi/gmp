@@ -2,6 +2,7 @@ package org.barahi.server.resource.socket;
 
 public enum EventType {
     NOOP(false, false),
+    ERROR_MESSAGE(false, true),
     PLAYER_JOINED(false, true),
     START_ROUND(true, true),
     TIME_UP(false, true),

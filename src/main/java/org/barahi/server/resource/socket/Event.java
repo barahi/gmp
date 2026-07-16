@@ -7,6 +7,7 @@ import org.barahi.server.resource.socket.events.beginvote.BeginVotePhaseEvent;
 import org.barahi.server.resource.socket.events.endgame.EndGameEvent;
 import org.barahi.server.resource.socket.events.endround.EndRoundEvent;
 import org.barahi.server.resource.socket.events.endround.RoundResultsEvent;
+import org.barahi.server.resource.socket.events.errormessage.ErrorMessageEvent;
 import org.barahi.server.resource.socket.events.noop.NoopEvent;
 import org.barahi.server.resource.socket.events.playerjoined.PlayerJoinedEvent;
 import org.barahi.server.resource.socket.events.playerleft.PlayerLeftEvent;
@@ -22,6 +23,7 @@ import org.barahi.server.resource.socket.events.voteresult.VoteResultsEvent;
 @JsonSubTypes({
         @JsonSubTypes.Type(value = PlayerJoinedEvent.class, name = "PLAYER_JOINED"),
         @JsonSubTypes.Type(value = NoopEvent.class, name = "NOOP"),
+        @JsonSubTypes.Type(value = ErrorMessageEvent.class, name="ERROR_MESSAGE"),
         @JsonSubTypes.Type(value = StartRoundEvent.class, name = "START_ROUND"),
         @JsonSubTypes.Type(value = SubmitAnswersEvent.class, name = "SUBMIT_ANSWERS"),
         @JsonSubTypes.Type(value = TimeUpEvent.class, name="TIME_UP"),
