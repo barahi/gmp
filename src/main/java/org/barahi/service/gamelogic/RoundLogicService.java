@@ -1,6 +1,8 @@
 package org.barahi.service.gamelogic;
 
-import org.barahi.serviceapi.gameSettings.CategoryId;
+import org.barahi.service.gamelogic.Dto.FlaggedAnswer;
+import org.barahi.service.gamelogic.Dto.PlayerAnswer;
+import org.barahi.service.gamelogic.Dto.VoteRoundResults;
 import org.barahi.serviceapi.room.Room.RoomId;
 
 import java.util.Map;
@@ -9,9 +11,14 @@ import static org.barahi.serviceapi.player.Player.*;
 
 public interface RoundLogicService {
     char startRound(RoomId roomId, int roundNumber);
-    void storeAnswers(RoomId roomId, CategoryId categoryId, int roundNumber, Map<PlayerId, String> playerAnswers);
-    Map<PlayerId, Integer> calculatePlayerScoreForRound(RoomId roomId, int roundNumber);
-    void beginVotePhase(RoomId roomId);
-    void invalidatePlayerAnswer(RoomId roomId, PlayerId playerId, CategoryId category, int roundNum);
+    Integer getCurrentRoundNumber(RoomId roomId);
+    void storeAnswers(RoomId roomId, int round, PlayerId playerId, Map<String, String> roundAnswers);
+    Integer getNumberOfSubmittedAnswers(int roundNumber, RoomId roomId);
+    Map<String, Map<String, PlayerAnswer>> calculatePlayerScoreForRound(RoomId roomId, int roundNumber);
+    FlaggedAnswer beginVotePhase(RoomId roomId, PlayerId targetPlayerId, PlayerId voterPlayerId, String category, int roundNumber, String answer);
+    void submitVote(RoomId roomId,  String category, int roundNumber, PlayerId targetPlayerId, PlayerId voterId, boolean vote);
+    VoteRoundResults getVoteRoundResults(RoomId roomId, String category, int roundNumber, PlayerId targetPlayerId);
+    void invalidatePlayerAnswer(RoomId roomId, PlayerId playerId, String category, int roundNum);
+    Map<PlayerId, Integer> finalizeRoundScores(RoomId roomId, int roundNumber);
     void endRound(RoomId roomId);
 }

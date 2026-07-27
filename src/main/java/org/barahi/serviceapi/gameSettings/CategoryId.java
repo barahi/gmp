@@ -1,5 +1,6 @@
 package org.barahi.serviceapi.gameSettings;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
 import org.barahi.infra.TypedUUID;
 
 import java.util.UUID;
@@ -9,10 +10,15 @@ public class CategoryId extends TypedUUID<CategoryId> {
     super(uuid);
   }
 
+  public CategoryId (String id) throws IllegalArgumentException {
+    super(UUID.fromString(id));
+  }
+
   public static CategoryId of(UUID id) {
     return new CategoryId(id);
   }
 
+  @JsonCreator
   public static CategoryId of(String id) throws IllegalArgumentException {
     return CategoryId.of(UUID.fromString(id));
   }

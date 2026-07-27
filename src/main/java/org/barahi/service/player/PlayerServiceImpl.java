@@ -36,4 +36,9 @@ public class PlayerServiceImpl implements PlayerService {
     public Player getPlayer(PlayerId playerId) throws ObjectNotFoundException {
         return playerStore.getPlayer(playerId);
     }
+
+    @Override
+    public String getUsernameFromId(PlayerId playerId){
+        return playerStore.getUsernameFromId(playerId);
+    }
 }

@@ -2,15 +2,16 @@ package org.barahi.service.room;
 
 import java.time.Instant;
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 
+import org.barahi.infra.exceptions.RoomAuthenticationException;
 import org.barahi.server.json.JoinRoomJson;
 import org.barahi.infra.exceptions.ObjectNotFoundException;
 import org.barahi.infra.exceptions.RoomFullException;
 import org.barahi.server.json.RoomCreateJson;
 import org.barahi.server.json.RoomJson;
 import org.barahi.server.serializer.RoomSerializer;
-import org.barahi.serviceapi.gameSettings.CategoryId;
 import org.barahi.serviceapi.gameSettings.GameSettings;
 import org.barahi.serviceapi.gameSettings.GameSettingsImpl;
 import org.barahi.serviceapi.player.Player;
@@ -65,10 +66,10 @@ public class RoomServiceImpl implements RoomService {
                 createJson.getMaxPlayers(),
                 createJson.getRoundDuration(),
                 createJson.getNumberOfRounds(),
-                createJson.getLanguage(),
-                createJson.getPassword(),
                 createJson.getCategories(),
-                createJson.getExcludedLetters()
+                createJson.getExcludedLetters(),
+                createJson.getLanguage(),
+                createJson.getPassword()
         );
 
         // persist room and add host as participant
@@ -76,7 +77,6 @@ public class RoomServiceImpl implements RoomService {
             roomStore.createRoom(room);
             roomStore.addPlayerToRoom(room.getId(), host.getId());
             gameSettingsStore.createGameSettings(settings);
-            createCategories(gameSettingsId, createJson.getCategories());
         } catch (RuntimeException e) {
             throw new RuntimeException("Failed to create room", e);
         }
@@ -85,13 +85,23 @@ public class RoomServiceImpl implements RoomService {
     }
 
     @Override
-    public void addPlayerToRoom(String roomId, JoinRoomJson joinRoomJson) throws IllegalArgumentException {
+    public RoomDto getRoomSettings(RoomId roomId){
+        return roomStore.getRoomSettings(roomId);
+    }
+
+    @Override
+    public boolean isPlayerInRoom(RoomId roomId, PlayerId playerId){
+        return roomStore.isPlayerInRoom(roomId, playerId);
+    }
+
+    @Override
+    public void addPlayerToRoom(String roomId, JoinRoomJson joinRoomJson) throws RoomFullException, IllegalArgumentException, RoomAuthenticationException {
         PlayerId playerId;
         RoomId roomUUID;
         roomUUID = Room.RoomId.of(roomId);
         Integer currentPlayersInRoom = roomStore.getCurrentPlayersInRoomCount(roomUUID);
         Integer maxPlayersForRoom = gameSettingsStore.getMaxPlayers(roomUUID);
-        if (currentPlayersInRoom == maxPlayersForRoom) {
+        if (Objects.equals(currentPlayersInRoom, maxPlayersForRoom)) {
             throw new RoomFullException();
         }
 
@@ -101,26 +111,33 @@ public class RoomServiceImpl implements RoomService {
             throw new IllegalArgumentException(String.format("Invalid Id Format %s ", e));
         }
 
-        // check if valid room and player
         Room room;
         Player player;
         try {
             room = roomStore.getRoomWithId(roomUUID);
             player = playerService.getPlayer(playerId);
+            System.out.println("got player: " + player);
         } catch (ObjectNotFoundException e){
             throw new NotFoundException("Could not find player with id: " + playerId);
         } catch (IllegalAccessException e) {
             throw new IllegalArgumentException(String.format("Invalid Resource %s", e));
         }
 
-        // check if the given password matches the room's password
-        if (joinRoomJson.getPassword() != null) {
-            String password = gameSettingsStore.getPasswordByRoomId(room.getId());
+        String providedPassword = joinRoomJson.getPassword() == null? "" : joinRoomJson.getPassword().trim();
 
-            if (!password.equals(joinRoomJson.getPassword())) {
-                throw new IllegalArgumentException(
-                        String.format("The Password Does Not Match For The Given Room ID: %s", roomUUID));
+        if (gameSettingsStore.requiresPassword(roomUUID)) {
+            String password = gameSettingsStore.getPasswordByRoomId(room.getId());
+            if (providedPassword.isEmpty()){
+                throw new RoomAuthenticationException("Room requires password");
             }
+            if (!password.equals(providedPassword)){
+                throw new RoomAuthenticationException("Password does not match");
+            }
+        }
+        boolean checkPlayer = isPlayerInRoom(roomUUID, playerId);
+        if (checkPlayer ){
+            System.out.println("player in room already");
+            return;
         }
 
         // add player to the room
@@ -134,20 +151,14 @@ public class RoomServiceImpl implements RoomService {
 
     @Override
     public List<Player> getPlayersInRoom(RoomId roomId) {
-        throw new UnsupportedOperationException("getPlayersInRoom is not yet implemented");
+        return playerStore.getPlayersInRoom(roomId);
     }
 
     @Override
     public RoomId getRoomIdForPlayer(PlayerId playerId) {
-        throw new UnsupportedOperationException("getRoomIdForPlayer is not yet implemented");
+        return playerStore.getRoomIdForPlayer(playerId);
     }
 
-    private void createCategories(UUID gameSettingsId, List<String> categories){
-        for (String category: categories){
-            CategoryId categoryId = CategoryId.newId();
-            gameSettingsStore.createCategory(categoryId, UUID.fromString(gameSettingsId.toString()), category);
-        }
-    }
     
     @Override
     public void removeRoomAndAllItsResources(String roomId) {

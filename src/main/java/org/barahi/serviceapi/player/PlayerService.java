@@ -9,6 +9,7 @@ public interface PlayerService {
     Player getPlayer(PlayerId id) throws ObjectNotFoundException;
 
     Player storePlayer(Player unsavedPlayer);
+    String getUsernameFromId(PlayerId playerId);
 
     void removePlayer(List<PlayerId> ids);
 }

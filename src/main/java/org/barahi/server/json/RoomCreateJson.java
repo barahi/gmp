@@ -47,7 +47,7 @@ public class RoomCreateJson {
         return maxPlayers;
     }
 
-    public void setMaxPlayesr(int maxPlayer) {
+    public void setMaxPlayers(int maxPlayer) {
         this.maxPlayers = maxPlayer;
     }
 

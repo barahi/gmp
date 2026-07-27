@@ -12,10 +12,10 @@ public interface GameSettings {
     int getMaxPlayers();
     int getRoundDuration();
     int getNumberOfRounds();
-    String getLanguage();
-    String getPassword();
     List<String> getCategories();
     List<String> getExcludedLetters();
+    String getLanguage();
+    String getPassword();
 
     class GameSettingsId extends TypedUUID<GameSettings> {
         public GameSettingsId(java.util.UUID id) {
@@ -26,6 +26,11 @@ public interface GameSettings {
         }
         public static GameSettingsId of(String id) throws IllegalArgumentException {
             return GameSettingsId.of(UUID.fromString(id));
+        }
+
+        @Override
+        public String toString() {
+            return this.getId().toString();
         }
     }
 }

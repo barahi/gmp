@@ -2,10 +2,20 @@ package org.barahi.server.resource.socket;
 
 public enum EventType {
     NOOP(false, false),
+    ERROR_MESSAGE(false, true),
     PLAYER_JOINED(false, true),
     START_ROUND(true, true),
+    TIME_UP(false, true),
     SUBMIT_ANSWERS(true, false),
-    VOTE_INVALID(true, false),
+    ROUND_SCORES(false, true),
+    BEGIN_VOTE_PHASE(true, false),
+    FLAGGED_ANSWER(false, true),
+    SUBMIT_VOTE(true, false),
+    END_VOTE_ROUND(true, false),
+    VOTE_RESULTS(false, true),
+    END_ROUND(true, false),
+    ROUND_RESULTS(false, true),
+    END_GAME(false, true),
     PLAYER_LEFT(false, true);
 
     private final boolean isIncoming;

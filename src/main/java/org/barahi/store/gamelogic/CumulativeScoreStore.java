@@ -1,18 +1,16 @@
 package org.barahi.store.gamelogic;
 
 import jakarta.inject.Inject;
-import org.barahi.generated.tables.records.CumulativeScoreRecord;
 import org.barahi.infra.DSLContextProvider;
 import org.barahi.serviceapi.player.Player.PlayerId;
 import org.barahi.serviceapi.room.Room.RoomId;
 import org.jooq.DSLContext;
 import org.jooq.Query;
 
-import java.sql.Array;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import static org.barahi.generated.Tables.CUMULATIVE_SCORE;
 
@@ -23,40 +21,48 @@ public class CumulativeScoreStore {
     this.db = dbProvider.get();
   }
 
-  public void initializeScores(RoomId roomId, List<PlayerId> playerIds){
-    List<CumulativeScoreRecord> records = new ArrayList<>();
+  public void initializeScores(RoomId roomId, List<PlayerId> playerIds) {
+    List<Query> queries = new ArrayList<>();
     playerIds.forEach(playerId -> {
-      CumulativeScoreRecord record =
-        new CumulativeScoreRecord(playerId.toString(), roomId.getId().toString(), 0);
-      records.add(record);
+      queries.add(
+        db.insertInto(CUMULATIVE_SCORE)
+          .set(CUMULATIVE_SCORE.PLAYER_ID, playerId.getId().toString())
+          .set(CUMULATIVE_SCORE.ROOM_ID, roomId.getId().toString())
+          .set(CUMULATIVE_SCORE.SCORE, 0)
+          .onDuplicateKeyUpdate()
+          .set(CUMULATIVE_SCORE.ROOM_ID, roomId.getId().toString())
+          .set(CUMULATIVE_SCORE.SCORE, 0)
+      );
     });
-    db.batchInsert(records).execute();
+
+    db.batch(queries).execute();
   }
 
   public Map<PlayerId, Integer> getPlayerScores(RoomId roomId){
-    Map<String, Integer> map =
-      db.select(CUMULATIVE_SCORE.PLAYER_ID, CUMULATIVE_SCORE.SCORE)
-        .from(CUMULATIVE_SCORE)
-        .where(CUMULATIVE_SCORE.ROOM_ID.eq(roomId.getId().toString()))
-        .fetchMap(CUMULATIVE_SCORE.PLAYER_ID, CUMULATIVE_SCORE.SCORE);
+    Map<PlayerId, Integer> playerScoreMap = new HashMap<>();
 
-    return map.entrySet().stream().collect(Collectors.toMap(
-      entry -> PlayerId.of(entry.getKey()),
-      Map.Entry::getValue
-    ));
+    db.select(CUMULATIVE_SCORE.PLAYER_ID, CUMULATIVE_SCORE.SCORE)
+      .from(CUMULATIVE_SCORE)
+      .where(CUMULATIVE_SCORE.ROOM_ID.eq(roomId.getId().toString()))
+      .fetch()
+        .forEach(r -> {
+          String playerId = r.get(CUMULATIVE_SCORE.PLAYER_ID);
+          Integer score = r.get(CUMULATIVE_SCORE.SCORE);
+          playerScoreMap.put(PlayerId.of(playerId), score != null ? score : 0);
+        });
+    return playerScoreMap;
   }
 
-  public Map<PlayerId, Integer> updatePlayerScores(RoomId roomId, Map<PlayerId, Integer> prevRoundScoreMap){
+  public Map<PlayerId, Integer> updatePlayerScores(RoomId roomId, Map<PlayerId, Integer> prevRoundScoreMap) {
     List<Query> queries = new ArrayList<>();
     for (Map.Entry<PlayerId, Integer> entry : prevRoundScoreMap.entrySet()) {
       queries.add(
         db.update(CUMULATIVE_SCORE)
           .set(CUMULATIVE_SCORE.SCORE, CUMULATIVE_SCORE.SCORE.plus(entry.getValue()))
-          .where(CUMULATIVE_SCORE.ROOM_ID.eq(roomId.getId().toString()))
-          .and(CUMULATIVE_SCORE.PLAYER_ID.eq(entry.getKey().toString()))
+          .where(CUMULATIVE_SCORE.PLAYER_ID.eq(entry.getKey().getId().toString())) // Filter strictly by player PK
       );
     }
     db.batch(queries).execute();
-    return this.getPlayerScores(roomId);
+    return prevRoundScoreMap;
   }
 }

@@ -1,9 +1,5 @@
 package org.barahi.store;
 
-import static org.barahi.generated.Tables.CATEGORIES;
-import static org.barahi.generated.Tables.EXCLUDED_LETTER;
-import static org.barahi.generated.Tables.GAME_SETTINGS;
-
 
 import org.barahi.generated.tables.records.GameSettingsRecord;
 import org.barahi.infra.DSLContextProvider;
@@ -15,10 +11,11 @@ import org.jooq.DSLContext;
 import org.jooq.impl.DSL;
 
 import jakarta.inject.Inject;
-import javassist.tools.rmi.ObjectNotFoundException;
 
 import java.util.List;
 import java.util.UUID;
+
+import static org.barahi.generated.Tables.*;
 
 public class GameSettingsStore {
     private final DSLContext db;
@@ -32,29 +29,44 @@ public class GameSettingsStore {
         db.transaction(cfg -> {
             DSLContext tx = DSL.using(cfg);
 
+            String formattedId = settings.getId().toString();
             tx.insertInto(GAME_SETTINGS)
-                    .set(toRecord(settings))
-                    .execute();
+              .set(toRecord(settings))
+              .set(GAME_SETTINGS.ID, formattedId)
+              .execute();
 
             for (String letter : settings.getExcludedLetters()) {
                 tx.insertInto(EXCLUDED_LETTER)
-                        .set(EXCLUDED_LETTER.GAME_SETTINGS_ID, settings.getId().getId().toString())
-                        .set(EXCLUDED_LETTER.LETTER, letter)
-                        .execute();
+                  .set(EXCLUDED_LETTER.GAME_SETTINGS_ID, formattedId)
+                  .set(EXCLUDED_LETTER.LETTER, letter)
+                  .execute();
             }
-        });
 
-    }
+            for (String category : settings.getCategories()) {
+                CategoryId categoryId = new CategoryId(UUID.randomUUID());
+                createCategory(tx, categoryId, formattedId, category);
+            }
 
-    public void createCategory(CategoryId categoryId, UUID gameSettingsId, String category) {
-        db.insertInto(CATEGORIES)
+    });
+}
+
+    public void createCategory(DSLContext tx, CategoryId categoryId, String gameSettingsId, String category) {
+        tx.insertInto(CATEGORIES)
           .set(CATEGORIES.ID, categoryId.getId().toString())
-          .set(CATEGORIES.GAME_SETTINGS_ID, gameSettingsId.toString())
+          .set(CATEGORIES.GAME_SETTINGS_ID, gameSettingsId)
           .set(CATEGORIES.CATEGORY, category)
           .execute();
     }
 
-    public GameSettingsId getGameSettingsId(RoomId roomId){
+    public boolean requiresPassword(RoomId roomId){
+        return db.selectFrom(GAME_SETTINGS)
+          .where(GAME_SETTINGS.ROOM_ID.eq(roomId.getId().toString()))
+          .and(GAME_SETTINGS.PASSWORD.ne(""))
+          .fetchOne() != null;
+    }
+
+
+    public GameSettingsId getGameSettingsId(RoomId roomId) {
         String id = db.select(GAME_SETTINGS.ID)
           .from(GAME_SETTINGS)
           .where(GAME_SETTINGS.ROOM_ID.eq(roomId.getId().toString()))
@@ -64,19 +76,26 @@ public class GameSettingsStore {
 
     public String getPasswordByRoomId(RoomId roomId) {
         return db.select(GAME_SETTINGS.PASSWORD)
-                .from(GAME_SETTINGS)
-                .where(GAME_SETTINGS.ROOM_ID.eq(roomId.getId().toString()))
-                .fetchOneInto(String.class);
+          .from(GAME_SETTINGS)
+          .where(GAME_SETTINGS.ROOM_ID.eq(roomId.getId().toString()))
+          .fetchOneInto(String.class);
     }
 
-    public Integer getNumberOfRounds(RoomId roomId){
+    public Integer getNumberOfRounds(RoomId roomId) {
         return db.select(GAME_SETTINGS.NUMBER_OF_ROUNDS)
           .from(GAME_SETTINGS)
           .where(GAME_SETTINGS.ROOM_ID.eq(roomId.getId().toString()))
           .fetchOne(GAME_SETTINGS.NUMBER_OF_ROUNDS);
     }
 
-    public List<Character> getLetterExclusions(GameSettingsId gameSettingsId){
+    public Integer getRoundDuration(RoomId roomId){
+        return db.select(GAME_SETTINGS.ROUND_DURATION)
+          .from(GAME_SETTINGS)
+          .where(GAME_SETTINGS.ROOM_ID.eq(roomId.getId().toString()))
+          .fetchOne(GAME_SETTINGS.ROUND_DURATION);
+    }
+
+    public List<Character> getLetterExclusions(GameSettingsId gameSettingsId) {
         return db.select(EXCLUDED_LETTER.LETTER)
           .from(EXCLUDED_LETTER)
           .where(EXCLUDED_LETTER.GAME_SETTINGS_ID.eq(gameSettingsId.getId().toString()))
@@ -86,10 +105,25 @@ public class GameSettingsStore {
 
     public Integer getMaxPlayers(RoomId roomId) {
         return db.select(GAME_SETTINGS.MAX_PLAYERS)
-        .from(GAME_SETTINGS)
-        .where(GAME_SETTINGS.ROOM_ID.eq(roomId.getId().toString()))
-        .fetchOne(GAME_SETTINGS.MAX_PLAYERS);
-    } 
+          .from(GAME_SETTINGS)
+          .where(GAME_SETTINGS.ROOM_ID.eq(roomId.getId().toString()))
+          .fetchOne(GAME_SETTINGS.MAX_PLAYERS);
+    }
+
+    public void addNewLetterToExcludedLetters(GameSettingsId gameSettingsId, char c){
+        db.insertInto(EXCLUDED_LETTER)
+          .set(EXCLUDED_LETTER.GAME_SETTINGS_ID, gameSettingsId.getId().toString())
+          .set(EXCLUDED_LETTER.LETTER, String.valueOf(c))
+          .execute();
+    }
+
+    public CategoryId getCategoryIdFromName(String categoryName){
+        String categoryId = db.select(CATEGORIES.ID)
+          .from(CATEGORIES)
+          .where(CATEGORIES.CATEGORY.eq(categoryName))
+          .fetchOne(CATEGORIES.ID);
+        return CategoryId.of(categoryId);
+    }
 
     private GameSettingsRecord toRecord(GameSettings settings) {
         GameSettingsRecord record = new GameSettingsRecord();
@@ -101,4 +135,5 @@ public class GameSettingsStore {
         record.setPassword(settings.getPassword());
         return record;
     }
+
 }

@@ -1,5 +1,6 @@
 package org.barahi;
 
+import org.barahi.infra.CorsFilter;
 import org.barahi.infra.InfraBinder;
 import org.barahi.server.resource.DummyResource;
 import org.barahi.server.resource.PlayerResource;
@@ -37,7 +38,8 @@ public class ApiServer {
                 .register(ServiceLocatorFeature.class)  // Capture ServiceLocator for WebSocket DI
                 .register(DummyResource.class)
                 .register(PlayerResource.class)
-                .register(RoomsResource.class);
+                .register(RoomsResource.class)
+                .register(CorsFilter.class);
         return GrizzlyHttpServerFactory.createHttpServer(URI.create(BASE_URI), resourceConfig);
     }
 
