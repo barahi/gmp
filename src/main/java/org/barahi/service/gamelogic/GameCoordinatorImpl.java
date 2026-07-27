@@ -53,8 +53,9 @@ public class GameCoordinatorImpl implements GameCoordinator {
     return roundLogicService.calculatePlayerScoreForRound(roomId, roundNumber);
   }
   @Override
-  public FlaggedAnswer beginVotePhase(RoomId roomId, PlayerId targetPlayerId, PlayerId voterPlayerId, String category, int roundNumber, String answer){
-    return roundLogicService.beginVotePhase(roomId, targetPlayerId, voterPlayerId, category, roundNumber, answer);
+  public FlaggedAnswer beginVotePhase(RoomId roomId, String targetedPlayer, String triggeredByPlayer, String category, int roundNumber, String answer){
+    System.out.println("got targeted player: " + targetedPlayer + " , triggered by: " + triggeredByPlayer + " for category "+ category + " in round " + roundNumber + " with answer: " + answer);
+    return roundLogicService.beginVotePhase(roomId, targetedPlayer, triggeredByPlayer, category, roundNumber, answer);
   }
 
   @Override

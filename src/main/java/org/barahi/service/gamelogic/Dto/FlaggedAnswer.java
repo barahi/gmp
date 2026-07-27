@@ -4,15 +4,15 @@ import org.barahi.serviceapi.player.Player.PlayerId;
 
 public class FlaggedAnswer {
   private String category;
-  private PlayerId flaggedPlayerId;
-  private PlayerId flaggerPlayerId;
+  private String targetedPlayer;
+  private String triggeredByPlayer;
   private String answer;
   private int score;
 
-  public FlaggedAnswer(String category, PlayerId flaggedPlayerId, PlayerId flaggerPlayerId, String answer, int score) {
+  public FlaggedAnswer(String category, String targetedPlayer, String triggeredByPlayer, String answer, int score) {
     this.category = category;
-    this.flaggedPlayerId = flaggedPlayerId;
-    this.flaggerPlayerId = flaggerPlayerId;
+    this.targetedPlayer = targetedPlayer;
+    this.triggeredByPlayer = triggeredByPlayer;
     this.answer = answer;
     this.score = score;
   }
@@ -25,20 +25,20 @@ public class FlaggedAnswer {
     this.category = category;
   }
 
-  public PlayerId getFlaggedPlayerId() {
-    return flaggedPlayerId;
+  public String getTargetedPlayer() {
+    return targetedPlayer;
   }
 
-  public void setFlaggedPlayerId(PlayerId flaggedPlayerId) {
-    this.flaggedPlayerId = flaggedPlayerId;
+  public void setTargetedPlayer(String targetedPlayer) {
+    this.targetedPlayer = targetedPlayer;
   }
 
-  public PlayerId getFlaggerPlayerId() {
-    return flaggerPlayerId;
+  public String getTriggeredByPlayer() {
+    return triggeredByPlayer;
   }
 
-  public void setFlaggerPlayerId(PlayerId flaggerPlayerId) {
-    this.flaggerPlayerId = flaggerPlayerId;
+  public void setTriggeredByPlayer(String triggeredByPlayer) {
+    this.triggeredByPlayer = triggeredByPlayer;
   }
 
   public String getAnswer() {

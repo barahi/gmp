@@ -190,11 +190,11 @@ public class SocketResource {
             }
 
             case BEGIN_VOTE_PHASE: {
+                int currentRound = gameCoordinator.getCurrentRoundNumber(roomId);
                 BeginVotePhaseEvent beginVotePhaseEvent = (BeginVotePhaseEvent) event;
                 BeginVotePayloadJson incomingPayload = beginVotePhaseEvent.getPayload();
                 BeginVotePhasePayload serializedPayload = beginVotePayloadEventSerializer.fromJson(incomingPayload);
-                // produce flaggedAnswer and broadcast it in the server room
-                FlaggedAnswer flaggedAnswer = gameCoordinator.beginVotePhase(roomId, serializedPayload.getTargetPlayerId(), serializedPayload.getVoterId(), serializedPayload.getCategory(), serializedPayload.getRoundNumber(), serializedPayload.getAnswer());
+                FlaggedAnswer flaggedAnswer = gameCoordinator.beginVotePhase(roomId, serializedPayload.getTargetedPlayer(), serializedPayload.getTriggeredByPlayer(), serializedPayload.getCategory(), currentRound, serializedPayload.getAnswer());
                 FlaggedAnswerPayloadJson outgoingJson = beginVotePayloadEventSerializer.toJson(flaggedAnswer);
                 FlaggedAnswerEvent flaggedAnswerEvent = new FlaggedAnswerEvent(outgoingJson);
                 broadcastEventToRoom(roomId, flaggedAnswerEvent);

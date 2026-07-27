@@ -10,6 +10,6 @@ public interface PlayerService {
 
     Player storePlayer(Player unsavedPlayer);
     String getUsernameFromId(PlayerId playerId);
-
+    PlayerId getIdFromUsername(String username);
     void removePlayer(List<PlayerId> ids);
 }
