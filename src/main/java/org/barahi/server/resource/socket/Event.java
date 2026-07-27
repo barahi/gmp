@@ -18,6 +18,7 @@ import org.barahi.server.resource.socket.events.submitvote.SubmitVoteEvent;
 import org.barahi.server.resource.socket.events.timeupevent.TimeUpEvent;
 import org.barahi.server.resource.socket.events.voteresult.EndVoteRoundEvent;
 import org.barahi.server.resource.socket.events.voteresult.VoteResultsEvent;
+import org.barahi.service.gamelogic.Dto.FlaggedAnswer;
 
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.EXISTING_PROPERTY, property = "type")
 @JsonSubTypes({
@@ -29,6 +30,7 @@ import org.barahi.server.resource.socket.events.voteresult.VoteResultsEvent;
         @JsonSubTypes.Type(value = TimeUpEvent.class, name="TIME_UP"),
         @JsonSubTypes.Type(value = RoundScoreEvent.class, name = "ROUND_SCORES"),
         @JsonSubTypes.Type(value = BeginVotePhaseEvent.class, name = "BEGIN_VOTE_PHASE"),
+        @JsonSubTypes.Type(value = FlaggedAnswer.class, name = "FLAGGED_ANSWER"),
         @JsonSubTypes.Type(value = SubmitVoteEvent.class, name = "SUBMIT_VOTE"),
         @JsonSubTypes.Type(value = EndVoteRoundEvent.class, name = "END_VOTE_ROUND"),
         @JsonSubTypes.Type(value = VoteResultsEvent.class, name = "VOTE_RESULTS"),

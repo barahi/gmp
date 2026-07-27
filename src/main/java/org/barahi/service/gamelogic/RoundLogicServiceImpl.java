@@ -1,6 +1,7 @@
 package org.barahi.service.gamelogic;
 
 import jakarta.inject.Inject;
+import org.barahi.service.gamelogic.Dto.FlaggedAnswer;
 import org.barahi.service.gamelogic.Dto.PlayerAnswer;
 import org.barahi.service.gamelogic.Dto.VoteRoundResults;
 import org.barahi.serviceapi.gameSettings.CategoryId;
@@ -105,7 +106,8 @@ public class RoundLogicServiceImpl implements RoundLogicService {
         String username = playerService.getUsernameFromId(playerId);
         PlayerAnswer playerAnswerScore = new PlayerAnswer(answer, calculatedScore);
         playerScores.put(username, playerAnswerScore);
-        playerAnswerStore.updateScoreForAnswer(playerId, category, roundNumber, calculatedScore);
+        CategoryId categoryId = gameSettingsStore.getCategoryIdFromName(category);
+        playerAnswerStore.updateScoreForAnswer(playerId, categoryId, roundNumber, calculatedScore);
       });
       roundScores.put(category, playerScores);
     });
@@ -113,8 +115,20 @@ public class RoundLogicServiceImpl implements RoundLogicService {
   }
 
   @Override
-  public void beginVotePhase(RoomId roomId){
+  public FlaggedAnswer beginVotePhase(RoomId roomId, PlayerId targetPlayerId, PlayerId voterPlayerId, String category, int roundNumber, String answer){
+    GameSettingsId gameSettingsId = gameSettingsStore.getGameSettingsId(roomId);
+    CategoryId categoryId = gameSettingsStore.getCategoryIdFromName(category);
+    String playerAnswerId = playerAnswerStore.findPlayerAnswerId(gameSettingsId, roundNumber, categoryId, targetPlayerId, answer);
+    playerVoteStore.flagPlayerAnswer(roomId, playerAnswerId, targetPlayerId);
     gameStateStore.changeGamePhase(roomId, RoundPhase.VOTE);
+    // return an object that includes info: Category, Answer, PlayerId, FlaggerPlayerId, Score
+    return new FlaggedAnswer(
+      category,
+      targetPlayerId,
+      voterPlayerId,
+      answer,
+      playerAnswerStore.getPlayerAnswerScore(playerAnswerId)
+    );
   }
 
   @Override
@@ -129,7 +143,8 @@ public class RoundLogicServiceImpl implements RoundLogicService {
   }
 
   @Override
-    public void invalidatePlayerAnswer(RoomId roomId, PlayerId playerId, String categoryId, int roundNum) {
+    public void invalidatePlayerAnswer(RoomId roomId, PlayerId playerId, String category, int roundNum) {
+    CategoryId categoryId = gameSettingsStore.getCategoryIdFromName(category);
     playerAnswerStore.updateScoreForAnswer(playerId, categoryId, roundNum, -1);
   }
 

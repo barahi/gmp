@@ -1,6 +1,7 @@
 package org.barahi.service.gamelogic;
 
 import jakarta.inject.Inject;
+import org.barahi.service.gamelogic.Dto.FlaggedAnswer;
 import org.barahi.service.gamelogic.Dto.PlayerAnswer;
 import org.barahi.service.gamelogic.Dto.VoteRoundResults;
 import org.barahi.serviceapi.player.Player.PlayerId;
@@ -52,8 +53,8 @@ public class GameCoordinatorImpl implements GameCoordinator {
     return roundLogicService.calculatePlayerScoreForRound(roomId, roundNumber);
   }
   @Override
-  public void beginVotePhase(RoomId roomId){
-    roundLogicService.beginVotePhase(roomId);
+  public FlaggedAnswer beginVotePhase(RoomId roomId, PlayerId targetPlayerId, PlayerId voterPlayerId, String category, int roundNumber, String answer){
+    return roundLogicService.beginVotePhase(roomId, targetPlayerId, voterPlayerId, category, roundNumber, answer);
   }
 
   @Override

@@ -1,30 +1,29 @@
 package org.barahi.server.resource.socket.events.beginvote;
 
 import org.barahi.server.resource.socket.EventPayload;
-import org.barahi.serviceapi.gameSettings.CategoryId;
 import org.barahi.serviceapi.player.Player.PlayerId;
 
 public class BeginVotePhasePayload implements EventPayload {
-  private CategoryId categoryId;
+  private String category;
   private int roundNumber;
   private PlayerId targetPlayerId;
   private PlayerId voterId;
   private String answer;
 
-  public BeginVotePhasePayload(CategoryId categoryId, int roundNumber, PlayerId targetPlayerId, PlayerId voterId, String answer) {
-    this.categoryId = categoryId;
+  public BeginVotePhasePayload(String category, int roundNumber, PlayerId targetPlayerId, PlayerId voterId, String answer) {
+    this.category = category;
     this.roundNumber = roundNumber;
     this.targetPlayerId = targetPlayerId;
     this.voterId = voterId;
     this.answer = answer;
   }
 
-  public CategoryId getCategoryId() {
-    return categoryId;
+  public String getCategory() {
+    return category;
   }
 
-  public void setCategoryId(CategoryId categoryId) {
-    this.categoryId = categoryId;
+  public void setCategory(String category) {
+    this.category = category;
   }
 
   public int getRoundNumber() {

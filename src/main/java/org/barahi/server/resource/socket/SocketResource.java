@@ -15,6 +15,7 @@ import org.barahi.server.resource.socket.events.beginvote.BeginVotePhasePayload;
 import org.barahi.server.resource.socket.events.endgame.EndGameEvent;
 import org.barahi.server.resource.socket.events.endround.EndRoundEvent;
 import org.barahi.server.resource.socket.events.endround.RoundResultsEvent;
+import org.barahi.server.resource.socket.events.flaggedanswer.FlaggedAnswerEvent;
 import org.barahi.server.resource.socket.events.noop.NoopEvent;
 import org.barahi.server.resource.socket.events.playerjoined.PlayerJoinedEvent;
 import org.barahi.server.resource.socket.events.playerjoined.PlayerJoinedEventPayload;
@@ -30,6 +31,7 @@ import org.barahi.server.resource.socket.events.timeupevent.TimeUpEvent;
 import org.barahi.server.resource.socket.events.voteresult.EndVoteRoundEvent;
 import org.barahi.server.resource.socket.events.voteresult.VoteResultsEvent;
 import org.barahi.server.serializer.*;
+import org.barahi.service.gamelogic.Dto.FlaggedAnswer;
 import org.barahi.service.gamelogic.Dto.PlayerAnswer;
 import org.barahi.service.gamelogic.Dto.VoteRoundResults;
 import org.barahi.service.gamelogic.GameCoordinator;
@@ -151,7 +153,6 @@ public class SocketResource {
 
         Event<?> event = getEventFromString(message);
         EventType eventType = EventType.valueOf(event.getType());
-        System.out.println("got message: " + eventType.toString());
         switch (eventType) {
             case START_ROUND: {
                 int currRound = gameCoordinator.getCurrentRoundNumber(roomId);
@@ -159,7 +160,6 @@ public class SocketResource {
                     gameCoordinator.startNewGame(roomId);
                 }
                 List<Player> playersToAlert = getConnectedPlayersInRoom(roomId);
-                System.out.println("players to update "  + playersToAlert);
                 char letterForRound = gameCoordinator.startRound(roomId, currRound, () -> {
                     broadcastEventToRoom(playersToAlert, new TimeUpEvent());
                 });
@@ -180,7 +180,6 @@ public class SocketResource {
                 int numberOfSubmittedAnswers = gameCoordinator.getNumberOfSubmittedAnswersInRound(currentRound, roomId);
 
                 if (numberOfSubmittedAnswers >= totalConnectedPlayers){
-                    System.out.println("round scores called!");
                     Map<String, Map<String, PlayerAnswer>> roundScores = gameCoordinator.calculatePlayerScoreForRound(roomId, currentRound);
                     RoundScoreEventPayload outgoingPayload = new RoundScoreEventPayload(currentRound, roundScores);
                     RoundScorePayloadJson outgoingPayloadJson = roundScoreEventPayloadSerializer.toJson(outgoingPayload);
@@ -194,7 +193,11 @@ public class SocketResource {
                 BeginVotePhaseEvent beginVotePhaseEvent = (BeginVotePhaseEvent) event;
                 BeginVotePayloadJson incomingPayload = beginVotePhaseEvent.getPayload();
                 BeginVotePhasePayload serializedPayload = beginVotePayloadEventSerializer.fromJson(incomingPayload);
-                gameCoordinator.beginVotePhase(roomId);
+                // produce flaggedAnswer and broadcast it in the server room
+                FlaggedAnswer flaggedAnswer = gameCoordinator.beginVotePhase(roomId, serializedPayload.getTargetPlayerId(), serializedPayload.getVoterId(), serializedPayload.getCategory(), serializedPayload.getRoundNumber(), serializedPayload.getAnswer());
+                FlaggedAnswerPayloadJson outgoingJson = beginVotePayloadEventSerializer.toJson(flaggedAnswer);
+                FlaggedAnswerEvent flaggedAnswerEvent = new FlaggedAnswerEvent(outgoingJson);
+                broadcastEventToRoom(roomId, flaggedAnswerEvent);
                 break;
             }
 

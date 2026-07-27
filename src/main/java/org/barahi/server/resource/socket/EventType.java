@@ -9,6 +9,7 @@ public enum EventType {
     SUBMIT_ANSWERS(true, false),
     ROUND_SCORES(false, true),
     BEGIN_VOTE_PHASE(true, false),
+    FLAGGED_ANSWER(false, true),
     SUBMIT_VOTE(true, false),
     END_VOTE_ROUND(true, false),
     VOTE_RESULTS(false, true),
