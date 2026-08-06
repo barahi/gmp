@@ -8,7 +8,7 @@ public class VoteResultsEventPayloadSerializer {
     VoteResultsPayloadJson json = new VoteResultsPayloadJson();
     json.setCategory(voteRoundResults.getCategory());
     json.setRoundNumber(voteRoundResults.getRoundNumber());
-    json.setTargetPlayerId(voteRoundResults.getTargetPlayerId().getId().toString());
+    json.setTargetPlayer(voteRoundResults.getTargetPlayer());
     json.setValidAnswerVotes(voteRoundResults.getValidAnswerVotes());
     json.setInvalidAnswerVotes(voteRoundResults.getInvalidAnswerVotes());
     return json;

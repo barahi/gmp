@@ -41,4 +41,9 @@ public class PlayerServiceImpl implements PlayerService {
     public String getUsernameFromId(PlayerId playerId){
         return playerStore.getUsernameFromId(playerId);
     }
+
+    @Override
+    public PlayerId getIdFromUsername(String username){
+        return playerStore.getIdFromUsername(username);
+    }
 }

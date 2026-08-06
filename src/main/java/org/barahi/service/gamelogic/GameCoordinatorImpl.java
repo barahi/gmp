@@ -12,7 +12,6 @@ import java.util.Map;
 public class GameCoordinatorImpl implements GameCoordinator {
   private final GameLogicService gameLogicService;
   private final RoundLogicService roundLogicService;
-
   private final GameScheduler gameScheduler;
 
   @Inject
@@ -53,28 +52,38 @@ public class GameCoordinatorImpl implements GameCoordinator {
     return roundLogicService.calculatePlayerScoreForRound(roomId, roundNumber);
   }
   @Override
-  public FlaggedAnswer beginVotePhase(RoomId roomId, PlayerId targetPlayerId, PlayerId voterPlayerId, String category, int roundNumber, String answer){
-    return roundLogicService.beginVotePhase(roomId, targetPlayerId, voterPlayerId, category, roundNumber, answer);
+  public FlaggedAnswer beginVotePhase(RoomId roomId, String targetedPlayer, String triggeredByPlayer, String category, int roundNumber, String answer){
+    return roundLogicService.beginVotePhase(roomId, targetedPlayer, triggeredByPlayer, category, roundNumber, answer);
   }
 
   @Override
-  public void submitVote(RoomId roomId, String category, int roundNumber, PlayerId targetPlayerId, PlayerId voterId, boolean vote){
-    roundLogicService.submitVote(roomId, category, roundNumber, targetPlayerId, voterId, vote);
+  public void startVotingRoundTimer(RoomId roomId, int time, Runnable onTimeout){
+    gameScheduler.startRoundTimer(roomId, time, onTimeout);
   }
 
   @Override
-  public VoteRoundResults getVoteResults(RoomId roomId, String category, int roundNumber, PlayerId targetPlayerId){
-    return roundLogicService.getVoteRoundResults(roomId, category, roundNumber, targetPlayerId);
+  public void cancelVotingRoundTimer(RoomId roomId) {
+    gameScheduler.cancelTimer(roomId);
+  }
+
+  @Override
+  public void submitVote(RoomId roomId, String category, int roundNumber, String targetPlayer, String voterPlayer, boolean vote){
+    roundLogicService.submitVote(roomId, category, roundNumber, targetPlayer, voterPlayer, vote);
+  }
+
+  @Override
+  public VoteRoundResults getVoteResults(RoomId roomId, String category, int roundNumber, String targetPlayer){
+    return roundLogicService.getVoteRoundResults(roomId, category, roundNumber, targetPlayer);
   }
 
 
   @Override
-  public void finalizeVotePhase(RoomId roomId, String category, int roundNumber, PlayerId targetPlayerId){
-    VoteRoundResults results  = roundLogicService.getVoteRoundResults(roomId, category, roundNumber, targetPlayerId);
+  public void finalizeVotePhase(RoomId roomId, String category, int roundNumber, String targetPlayer){
+    VoteRoundResults results  = roundLogicService.getVoteRoundResults(roomId, category, roundNumber, targetPlayer);
     int totalVotes = results.getValidAnswerVotes() + results.getInvalidAnswerVotes();
     boolean verdict = results.getValidAnswerVotes() >= (totalVotes-1)/2.0;
     if (!verdict){
-      roundLogicService.invalidatePlayerAnswer(roomId, targetPlayerId, category, roundNumber);
+      roundLogicService.invalidatePlayerAnswer(roomId, targetPlayer, category, roundNumber);
     }
   }
 

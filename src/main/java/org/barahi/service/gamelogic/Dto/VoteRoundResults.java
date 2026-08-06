@@ -7,16 +7,16 @@ public class VoteRoundResults {
 
   private int roundNumber;
 
-  private PlayerId targetPlayerId;
+  private String targetPlayer;
 
   private int validAnswerVotes;
 
   private int invalidAnswerVotes;
 
-  public VoteRoundResults(String category, int roundNumber, PlayerId targetPlayerId, int validAnswerVotes, int invalidAnswerVotes) {
+  public VoteRoundResults(String category, int roundNumber, String targetPlayer, int validAnswerVotes, int invalidAnswerVotes) {
     this.category = category;
     this.roundNumber = roundNumber;
-    this.targetPlayerId = targetPlayerId;
+    this.targetPlayer = targetPlayer;
     this.validAnswerVotes = validAnswerVotes;
     this.invalidAnswerVotes = invalidAnswerVotes;
   }
@@ -37,12 +37,12 @@ public class VoteRoundResults {
     this.roundNumber = roundNumber;
   }
 
-  public PlayerId getTargetPlayerId() {
-    return targetPlayerId;
+  public String getTargetPlayer() {
+    return targetPlayer;
   }
 
-  public void setTargetPlayerId(PlayerId targetPlayerId) {
-    this.targetPlayerId = targetPlayerId;
+  public void setTargetPlayer(String targetPlayer) {
+    this.targetPlayer = targetPlayer;
   }
 
   public int getValidAnswerVotes() {

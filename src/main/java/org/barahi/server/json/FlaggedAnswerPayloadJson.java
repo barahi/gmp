@@ -7,10 +7,10 @@ public class FlaggedAnswerPayloadJson implements EventPayload {
   @JsonProperty
   String category;
   @JsonProperty
-  String flaggedPlayerId;
+  String targetedPlayer;
 
   @JsonProperty
-  String flaggerPlayerId;
+  String triggeredByPlayer;
 
   @JsonProperty
   String answer;
@@ -26,20 +26,20 @@ public class FlaggedAnswerPayloadJson implements EventPayload {
     this.category = category;
   }
 
-  public String getFlaggedPlayerId() {
-    return flaggedPlayerId;
+  public String getTargetedPlayer() {
+    return targetedPlayer;
   }
 
-  public void setFlaggedPlayerId(String flaggedPlayerId) {
-    this.flaggedPlayerId = flaggedPlayerId;
+  public void setTargetedPlayer(String targetedPlayer) {
+    this.targetedPlayer = targetedPlayer;
   }
 
-  public String getFlaggerPlayerId() {
-    return flaggerPlayerId;
+  public String getTriggeredByPlayer() {
+    return triggeredByPlayer;
   }
 
-  public void setFlaggerPlayerId(String flaggerPlayerId) {
-    this.flaggerPlayerId = flaggerPlayerId;
+  public void setTriggeredByPlayer(String triggeredByPlayer) {
+    this.triggeredByPlayer = triggeredByPlayer;
   }
 
   public String getAnswer() {

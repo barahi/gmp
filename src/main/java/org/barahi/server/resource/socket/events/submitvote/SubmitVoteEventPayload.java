@@ -6,9 +6,8 @@ import org.barahi.serviceapi.player.Player.PlayerId;
 
 public class SubmitVoteEventPayload implements EventPayload {
   private String category;
-  private int roundNumber;
-  private PlayerId targetPlayerId;
-  private PlayerId voterId;
+  private String targetPlayer;
+  private String voterPlayer;
   private boolean vote;
 
   public String getCategory() {
@@ -19,28 +18,20 @@ public class SubmitVoteEventPayload implements EventPayload {
     this.category = category;
   }
 
-  public int getRoundNumber() {
-    return roundNumber;
+  public String getTargetPlayer() {
+    return targetPlayer;
   }
 
-  public void setRoundNumber(int roundNumber) {
-    this.roundNumber = roundNumber;
+  public void setTargetPlayer(String targetPlayer) {
+    this.targetPlayer = targetPlayer;
   }
 
-  public PlayerId getTargetPlayerId() {
-    return targetPlayerId;
+  public String getVoterPlayer() {
+    return voterPlayer;
   }
 
-  public void setTargetPlayerId(PlayerId targetPlayerId) {
-    this.targetPlayerId = targetPlayerId;
-  }
-
-  public PlayerId getVoterId() {
-    return voterId;
-  }
-
-  public void setVoterId(PlayerId voterId) {
-    this.voterId = voterId;
+  public void setVoterPlayer(String voterPlayer) {
+    this.voterPlayer = voterPlayer;
   }
 
   public boolean getVote() {

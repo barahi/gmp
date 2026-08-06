@@ -1,20 +1,17 @@
 package org.barahi.server.resource.socket.events.beginvote;
 
 import org.barahi.server.resource.socket.EventPayload;
-import org.barahi.serviceapi.player.Player.PlayerId;
 
 public class BeginVotePhasePayload implements EventPayload {
   private String category;
-  private int roundNumber;
-  private PlayerId targetPlayerId;
-  private PlayerId voterId;
+  private String targetedPlayer;
+  private String triggeredByPlayer;
   private String answer;
 
-  public BeginVotePhasePayload(String category, int roundNumber, PlayerId targetPlayerId, PlayerId voterId, String answer) {
+  public BeginVotePhasePayload(String category, String targetedPlayer, String triggeredByPlayer, String answer) {
     this.category = category;
-    this.roundNumber = roundNumber;
-    this.targetPlayerId = targetPlayerId;
-    this.voterId = voterId;
+    this.targetedPlayer = targetedPlayer;
+    this.triggeredByPlayer = triggeredByPlayer;
     this.answer = answer;
   }
 
@@ -26,28 +23,20 @@ public class BeginVotePhasePayload implements EventPayload {
     this.category = category;
   }
 
-  public int getRoundNumber() {
-    return roundNumber;
+  public String getTargetedPlayer() {
+    return targetedPlayer;
   }
 
-  public void setRoundNumber(int roundNumber) {
-    this.roundNumber = roundNumber;
+  public void setTargetedPlayer(String targetedPlayer) {
+    this.targetedPlayer = targetedPlayer;
   }
 
-  public PlayerId getTargetPlayerId() {
-    return targetPlayerId;
+  public String getTriggeredByPlayer() {
+    return triggeredByPlayer;
   }
 
-  public void setTargetPlayerId(PlayerId targetPlayerId) {
-    this.targetPlayerId = targetPlayerId;
-  }
-
-  public PlayerId getVoterId() {
-    return voterId;
-  }
-
-  public void setVoterId(PlayerId voterId) {
-    this.voterId = voterId;
+  public void setTriggeredByPlayer(String triggeredByPlayer) {
+    this.triggeredByPlayer = triggeredByPlayer;
   }
 
   public String getAnswer() {

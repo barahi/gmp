@@ -83,11 +83,11 @@ public class PlayerAnswerStore {
 
 
   public void storeAnswers(GameSettingsId gameSettingsId, int round, PlayerId playerId, Map<CategoryId, String> roundAnswers) {
-    String playerAnswerId = UUID.randomUUID().toString();
     List<PlayerAnswerRecord> records = roundAnswers.entrySet().stream().map(
       pa ->
-        new PlayerAnswerRecord(playerAnswerId, playerId.getId().toString(), pa.getKey().getId().toString(), gameSettingsId.getId().toString(), round, pa.getValue(), 100)
+        new PlayerAnswerRecord(UUID.randomUUID().toString(), playerId.getId().toString(), pa.getKey().getId().toString(), gameSettingsId.getId().toString(), round, pa.getValue(), 100)
     ).toList();
+    System.out.println(records);
     db.batchInsert(records).execute();
   }
 

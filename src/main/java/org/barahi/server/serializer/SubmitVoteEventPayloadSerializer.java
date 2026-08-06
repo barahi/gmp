@@ -9,9 +9,8 @@ public class SubmitVoteEventPayloadSerializer {
   public SubmitVoteEventPayload fromJson(SubmitVotePayloadJson json){
     SubmitVoteEventPayload payload = new SubmitVoteEventPayload();
     payload.setCategory(json.getCategory());
-    payload.setRoundNumber(json.getRoundNumber());
-    payload.setTargetPlayerId(PlayerId.of(json.getTargetPlayerId()));
-    payload.setVoterId(PlayerId.of(json.getVoterId()));
+    payload.setTargetPlayer(json.getTargetPlayer());
+    payload.setVoterPlayer(json.getVoterPlayer());
     payload.setVote(json.getVote());
     return payload;
   }

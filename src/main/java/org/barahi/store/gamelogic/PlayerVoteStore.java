@@ -38,18 +38,16 @@ public class PlayerVoteStore {
               .and(PLAYER_ANSWER.PLAYER_ID.eq(targetPlayerId.getId().toString()))
                 .fetchOne(PLAYER_ANSWER.ID);
 
-    System.out.println("player answer id for player: " + targetPlayerId.getId().toString() + " found as: " + playerAnswerId);
-
-    db.insertInto(PLAYER_VOTE)
+      db.insertInto(PLAYER_VOTE)
+      .set(PLAYER_VOTE.ID, UUID.randomUUID().toString())
       .set(PLAYER_VOTE.ROOM_ID, roomId.getId().toString())
       .set(PLAYER_VOTE.PLAYER_ANSWER_ID, playerAnswerId)
       .set(PLAYER_VOTE.VOTER_ID, voterId.getId().toString())
       .set(PLAYER_VOTE.IS_VALID, isValid)
       .execute();
-    System.out.println("saved vote for playerId: " + targetPlayerId.getId().toString() + " as: " + isValid);
   }
 
-  public VoteRoundResults getVoteRoundResults(RoomId roomId, String category, int roundNumber, PlayerId targetPlayerId){
+  public VoteRoundResults getVoteRoundResults(RoomId roomId, String category, int roundNumber, PlayerId targetPlayerId, String targetPlayer){
     String categoryId = db.select(CATEGORIES.ID)
       .from(CATEGORIES)
       .where(CATEGORIES.CATEGORY.eq(category))
@@ -85,7 +83,7 @@ public class PlayerVoteStore {
     return new VoteRoundResults(
       category,
       roundNumber,
-      targetPlayerId,
+      targetPlayer,
       approvedVotes,
       disapprovingVotes
     );

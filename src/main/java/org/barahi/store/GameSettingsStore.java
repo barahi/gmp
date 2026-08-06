@@ -117,10 +117,11 @@ public class GameSettingsStore {
           .execute();
     }
 
-    public CategoryId getCategoryIdFromName(String categoryName){
+    public CategoryId getCategoryIdFromName(String categoryName, GameSettingsId gameSettingsId){
         String categoryId = db.select(CATEGORIES.ID)
           .from(CATEGORIES)
           .where(CATEGORIES.CATEGORY.eq(categoryName))
+          .and(CATEGORIES.GAME_SETTINGS_ID.eq(gameSettingsId.getId().toString()))
           .fetchOne(CATEGORIES.ID);
         return CategoryId.of(categoryId);
     }
