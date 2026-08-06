@@ -11,7 +11,7 @@ public class VoteResultsPayloadJson implements EventPayload {
   private int roundNumber;
 
   @JsonProperty
-  private String targetPlayerId;
+  private String targetPlayer;
 
   @JsonProperty
   private int validAnswerVotes;
@@ -35,12 +35,12 @@ public class VoteResultsPayloadJson implements EventPayload {
     this.roundNumber = roundNumber;
   }
 
-  public String getTargetPlayerId() {
-    return targetPlayerId;
+  public String getTargetPlayer() {
+    return targetPlayer;
   }
 
-  public void setTargetPlayerId(String targetPlayerId) {
-    this.targetPlayerId = targetPlayerId;
+  public void setTargetPlayer(String targetPlayer) {
+    this.targetPlayer = targetPlayer;
   }
 
   public int getValidAnswerVotes() {

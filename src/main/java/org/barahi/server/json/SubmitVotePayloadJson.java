@@ -3,18 +3,15 @@ package org.barahi.server.json;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import org.barahi.server.resource.socket.EventPayload;
 
-public class   SubmitVotePayloadJson implements EventPayload {
+public class  SubmitVotePayloadJson implements EventPayload {
   @JsonProperty
   String category;
 
   @JsonProperty
-  int roundNumber;
+  String targetPlayer;
 
   @JsonProperty
-  String targetPlayerId;
-
-  @JsonProperty
-  String voterId;
+  String voterPlayer;
 
   @JsonProperty
   boolean vote;
@@ -26,28 +23,20 @@ public class   SubmitVotePayloadJson implements EventPayload {
     this.category = category;
   }
 
-  public int getRoundNumber() {
-    return roundNumber;
+  public String getTargetPlayer() {
+    return targetPlayer;
   }
 
-  public void setRoundNumber(int roundNumber) {
-    this.roundNumber = roundNumber;
+  public void setTargetPlayer(String targetPlayer) {
+    this.targetPlayer = targetPlayer;
   }
 
-  public String getTargetPlayerId() {
-    return targetPlayerId;
+  public String getVoterPlayer() {
+    return voterPlayer;
   }
 
-  public void setTargetPlayerId(String targetPlayerId) {
-    this.targetPlayerId = targetPlayerId;
-  }
-
-  public String getVoterId() {
-    return voterId;
-  }
-
-  public void setVoterId(String voterId) {
-    this.voterId = voterId;
+  public void setVoterPlayer(String voterPlayer) {
+    this.voterPlayer = voterPlayer;
   }
 
   public boolean getVote() {

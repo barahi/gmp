@@ -8,10 +8,7 @@ public class EndVoteRoundPayloadJson implements EventPayload {
   private String category;
 
   @JsonProperty
-  private int roundNumber;
-
-  @JsonProperty
-  private String targetPlayerId;
+  private String targetPlayer;
 
   public String getCategory() {
     return category;
@@ -21,20 +18,11 @@ public class EndVoteRoundPayloadJson implements EventPayload {
     this.category = category;
   }
 
-  public int getRoundNumber() {
-    return roundNumber;
+  public String getTargetPlayer() {
+    return targetPlayer;
   }
 
-  public void setRoundNumber(int roundNumber) {
-    this.roundNumber = roundNumber;
+  public void setTargetPlayer(String targetPlayer) {
+    this.targetPlayer = targetPlayer;
   }
-
-  public String getTargetPlayerId() {
-    return targetPlayerId;
-  }
-
-  public void setTargetPlayerId(String targetPlayerId) {
-    this.targetPlayerId = targetPlayerId;
-  }
-
 }
