@@ -156,7 +156,7 @@ public class SocketResource {
         switch (eventType) {
             case START_ROUND: {
                 int currRound = gameCoordinator.getCurrentRoundNumber(roomId);
-                if (currRound < 1){
+                if (currRound < 2){
                     gameCoordinator.startNewGame(roomId);
                 }
                 List<Player> playersToAlert = getConnectedPlayersInRoom(roomId);
@@ -228,7 +228,6 @@ public class SocketResource {
             case END_ROUND: {
                 EndRoundEvent endRoundEvent = (EndRoundEvent) event;
                 int currRound = gameCoordinator.getCurrentRoundNumber(roomId);
-
                 Map<String, Integer> playerScores = gameCoordinator.updatePlayerScores(roomId, currRound);
 
                 RoundResultsPayloadJson serializedJson = playerScoresPayloadEventSerializer.toJson(currRound, playerScores);
@@ -305,7 +304,6 @@ public class SocketResource {
         VoteRoundResults voteResults = gameCoordinator.getVoteResults(roomId, category, roundNumber, targetPlayer);
         VoteResultsPayloadJson serializedJson = voteResultsEventPayloadSerializer.toJson(voteResults);
         VoteResultsEvent outgoingEvent = new VoteResultsEvent(serializedJson);
-        System.out.println("broadcasting vote results");
         broadcastEventToRoom(roomId, outgoingEvent);
         gameCoordinator.finalizeVotePhase(roomId, category, roundNumber, targetPlayer);
     }

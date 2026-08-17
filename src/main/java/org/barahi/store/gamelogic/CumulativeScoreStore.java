@@ -7,10 +7,8 @@ import org.barahi.serviceapi.room.Room.RoomId;
 import org.jooq.DSLContext;
 import org.jooq.Query;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Collectors;
 
 import static org.barahi.generated.Tables.*;
 
@@ -29,26 +27,23 @@ public class CumulativeScoreStore {
           .set(CUMULATIVE_SCORE.PLAYER_ID, playerId.getId().toString())
           .set(CUMULATIVE_SCORE.ROOM_ID, roomId.getId().toString())
           .set(CUMULATIVE_SCORE.SCORE, 0)
-          .onDuplicateKeyUpdate()
-          .set(CUMULATIVE_SCORE.ROOM_ID, roomId.getId().toString())
-          .set(CUMULATIVE_SCORE.SCORE, 0)
+          .onDuplicateKeyIgnore()
       );
     });
-
-    db.batch(queries).execute();
   }
 
   public Map<String, Integer> getPlayerScores(RoomId roomId) {
-    Map<String, Integer> updatedScores = new HashMap<>();
-    db.select(PLAYER.USERNAME, CUMULATIVE_SCORE.SCORE)
-      .from(PLAYER)
-      .join(CUMULATIVE_SCORE).on(CUMULATIVE_SCORE.PLAYER_ID.eq(PLAYER.ID))
-      .where(CUMULATIVE_SCORE.ROOM_ID.eq(roomId.getId().toString()))
-      .fetch().forEach(r -> {
-        updatedScores.put(r.get(PLAYER.USERNAME), r.get(CUMULATIVE_SCORE.SCORE) != null ? r.get(CUMULATIVE_SCORE.SCORE) : 0);
-      });
-    return updatedScores;
+      Map<String, Integer> roundResults =  db.select(PLAYER.USERNAME, CUMULATIVE_SCORE.SCORE, CUMULATIVE_SCORE.PLAYER_ID)
+        .from(CUMULATIVE_SCORE)
+        .join(PLAYER).on(CUMULATIVE_SCORE.PLAYER_ID.eq(PLAYER.ID))
+        .where(CUMULATIVE_SCORE.ROOM_ID.eq(roomId.getId().toString()))
+        .fetchMap(
+          r -> r.get(PLAYER.USERNAME),
+          r -> r.get(CUMULATIVE_SCORE.SCORE) != null ? r.get(CUMULATIVE_SCORE.SCORE) : 0
+        );
+      return roundResults;
   }
+
 
   public void updatePlayerScores(RoomId roomId, Map<PlayerId, Integer> prevRoundScoreMap) {
     List<Query> queries = new ArrayList<>();
@@ -57,9 +52,9 @@ public class CumulativeScoreStore {
         db.update(CUMULATIVE_SCORE)
           .set(CUMULATIVE_SCORE.SCORE, CUMULATIVE_SCORE.SCORE.plus(entry.getValue()))
           .where(CUMULATIVE_SCORE.PLAYER_ID.eq(entry.getKey().getId().toString()))
+          .and(CUMULATIVE_SCORE.ROOM_ID.eq(roomId.getId().toString()))
       );
     }
-    db.batch(queries).execute();
   }
 
 }

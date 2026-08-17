@@ -92,6 +92,7 @@ public class GameCoordinatorImpl implements GameCoordinator {
     Map<PlayerId, Integer> finalScores = roundLogicService.finalizeRoundScores(roomId, roundNumber);
     return gameLogicService.updatePlayerScores(roomId, finalScores);
   }
+
   @Override
   public void endRound(RoomId roomId, int roundNumber) {
     roundLogicService.endRound(roomId);
