@@ -21,8 +21,8 @@ public interface GameCoordinator {
  void submitVote(RoomId roomId, String category, int roundNumber, String targetPlayer, String voterPlayer, boolean vote);
  VoteRoundResults getVoteResults(RoomId roomId, String category, int roundNumber, String targetPlayer);
  void finalizeVotePhase(RoomId roomId, String category, int roundNumber, String targetPlayer);
- Map<PlayerId, Integer> updatePlayerScores(RoomId roomId, int currRound);
+ Map<String, Integer> updatePlayerScores(RoomId roomId, int currRound);
  void endRound(RoomId roomId, int roundNumber);
  void startNextRound(RoomId roomId, int roundNumber);
- Map<PlayerId, Integer> endGame(RoomId roomId);
+ Map<String, Integer> endGame(RoomId roomId);
 }

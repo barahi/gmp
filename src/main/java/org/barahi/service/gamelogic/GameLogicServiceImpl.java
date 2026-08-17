@@ -9,6 +9,7 @@ import org.barahi.store.gamelogic.CumulativeScoreStore;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 public class GameLogicServiceImpl implements GameLogicService{
 
@@ -30,8 +31,9 @@ public class GameLogicServiceImpl implements GameLogicService{
     cumulativeScoreStore.initializeScores(roomId, playerIds);
   }
   @Override
-  public Map<PlayerId, Integer> updatePlayerScores(RoomId roomId, Map<PlayerId, Integer> finalScores) {
-    return cumulativeScoreStore.updatePlayerScores(roomId, finalScores);
+  public Map<String, Integer> updatePlayerScores(RoomId roomId, Map<PlayerId, Integer> finalScores) {
+    cumulativeScoreStore.updatePlayerScores(roomId, finalScores);
+    return cumulativeScoreStore.getPlayerScores(roomId);
   }
 
   @Override
@@ -43,9 +45,8 @@ public class GameLogicServiceImpl implements GameLogicService{
     return gameSettingsStore.getNumberOfRounds(roomId);
   }
 
-
   @Override
-  public Map<PlayerId, Integer> endGame(RoomId roomId) {
+  public Map<String, Integer> endGame(RoomId roomId) {
     return cumulativeScoreStore.getPlayerScores(roomId);
   }
 }
