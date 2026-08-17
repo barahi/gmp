@@ -7,12 +7,10 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class PlayerScoresPayloadEventSerializer {
-  public RoundResultsPayloadJson toJson(Map<PlayerId, Integer> playerScores){
+  public RoundResultsPayloadJson toJson(int roundNumber, Map<String, Integer> playerScores){
     RoundResultsPayloadJson json = new RoundResultsPayloadJson();
-    Map<String, Integer> jsonMap = new HashMap<>();
-    playerScores.forEach((player, score) -> {
-      jsonMap.put(player.getId().toString(), score);
-    });
+    Map<String, Integer> jsonMap = new HashMap<>(playerScores);
+    json.setRoundNumber(roundNumber);
     json.setPlayerScores(jsonMap);
     return json;
   }

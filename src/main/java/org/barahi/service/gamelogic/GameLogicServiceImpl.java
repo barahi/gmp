@@ -30,8 +30,9 @@ public class GameLogicServiceImpl implements GameLogicService{
     cumulativeScoreStore.initializeScores(roomId, playerIds);
   }
   @Override
-  public Map<PlayerId, Integer> updatePlayerScores(RoomId roomId, Map<PlayerId, Integer> finalScores) {
-    return cumulativeScoreStore.updatePlayerScores(roomId, finalScores);
+  public Map<String, Integer> updatePlayerScores(RoomId roomId, Map<PlayerId, Integer> finalScores) {
+    cumulativeScoreStore.updatePlayerScores(roomId, finalScores);
+    return cumulativeScoreStore.getPlayerScores(roomId);
   }
 
   @Override
@@ -45,7 +46,7 @@ public class GameLogicServiceImpl implements GameLogicService{
 
 
   @Override
-  public Map<PlayerId, Integer> endGame(RoomId roomId) {
+  public Map<String, Integer> endGame(RoomId roomId) {
     return cumulativeScoreStore.getPlayerScores(roomId);
   }
 }

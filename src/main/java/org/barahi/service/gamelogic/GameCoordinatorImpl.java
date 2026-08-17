@@ -88,7 +88,7 @@ public class GameCoordinatorImpl implements GameCoordinator {
   }
 
   @Override
-  public Map<PlayerId, Integer> updatePlayerScores(RoomId roomId, int roundNumber) {
+  public Map<String, Integer> updatePlayerScores(RoomId roomId, int roundNumber) {
     Map<PlayerId, Integer> finalScores = roundLogicService.finalizeRoundScores(roomId, roundNumber);
     return gameLogicService.updatePlayerScores(roomId, finalScores);
   }
@@ -109,7 +109,7 @@ public class GameCoordinatorImpl implements GameCoordinator {
     }
   }
   @Override
-  public Map<PlayerId, Integer> endGame(RoomId roomId) {
+  public Map<String, Integer> endGame(RoomId roomId) {
     return gameLogicService.endGame(roomId);
   }
   }

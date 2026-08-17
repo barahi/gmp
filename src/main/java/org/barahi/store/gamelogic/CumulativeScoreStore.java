@@ -12,7 +12,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static org.barahi.generated.Tables.CUMULATIVE_SCORE;
+import static org.barahi.generated.Tables.*;
 
 public class CumulativeScoreStore {
   private final DSLContext db;
@@ -38,31 +38,28 @@ public class CumulativeScoreStore {
     db.batch(queries).execute();
   }
 
-  public Map<PlayerId, Integer> getPlayerScores(RoomId roomId){
-    Map<PlayerId, Integer> playerScoreMap = new HashMap<>();
-
-    db.select(CUMULATIVE_SCORE.PLAYER_ID, CUMULATIVE_SCORE.SCORE)
-      .from(CUMULATIVE_SCORE)
+  public Map<String, Integer> getPlayerScores(RoomId roomId) {
+    Map<String, Integer> updatedScores = new HashMap<>();
+    db.select(PLAYER.USERNAME, CUMULATIVE_SCORE.SCORE)
+      .from(PLAYER)
+      .join(CUMULATIVE_SCORE).on(CUMULATIVE_SCORE.PLAYER_ID.eq(PLAYER.ID))
       .where(CUMULATIVE_SCORE.ROOM_ID.eq(roomId.getId().toString()))
-      .fetch()
-        .forEach(r -> {
-          String playerId = r.get(CUMULATIVE_SCORE.PLAYER_ID);
-          Integer score = r.get(CUMULATIVE_SCORE.SCORE);
-          playerScoreMap.put(PlayerId.of(playerId), score != null ? score : 0);
-        });
-    return playerScoreMap;
+      .fetch().forEach(r -> {
+        updatedScores.put(r.get(PLAYER.USERNAME), r.get(CUMULATIVE_SCORE.SCORE) != null ? r.get(CUMULATIVE_SCORE.SCORE) : 0);
+      });
+    return updatedScores;
   }
 
-  public Map<PlayerId, Integer> updatePlayerScores(RoomId roomId, Map<PlayerId, Integer> prevRoundScoreMap) {
+  public void updatePlayerScores(RoomId roomId, Map<PlayerId, Integer> prevRoundScoreMap) {
     List<Query> queries = new ArrayList<>();
     for (Map.Entry<PlayerId, Integer> entry : prevRoundScoreMap.entrySet()) {
       queries.add(
         db.update(CUMULATIVE_SCORE)
           .set(CUMULATIVE_SCORE.SCORE, CUMULATIVE_SCORE.SCORE.plus(entry.getValue()))
-          .where(CUMULATIVE_SCORE.PLAYER_ID.eq(entry.getKey().getId().toString())) // Filter strictly by player PK
+          .where(CUMULATIVE_SCORE.PLAYER_ID.eq(entry.getKey().getId().toString()))
       );
     }
     db.batch(queries).execute();
-    return prevRoundScoreMap;
   }
+
 }

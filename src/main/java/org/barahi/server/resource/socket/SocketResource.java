@@ -227,20 +227,20 @@ public class SocketResource {
 
             case END_ROUND: {
                 EndRoundEvent endRoundEvent = (EndRoundEvent) event;
-                EndRoundPayloadJson incomingJson = endRoundEvent.getPayload();
+                int currRound = gameCoordinator.getCurrentRoundNumber(roomId);
 
-                Map<PlayerId, Integer> playerScores = gameCoordinator.updatePlayerScores(roomId, incomingJson.getRoundNumber());
+                Map<String, Integer> playerScores = gameCoordinator.updatePlayerScores(roomId, currRound);
 
-                RoundResultsPayloadJson serializedJson = playerScoresPayloadEventSerializer.toJson(playerScores);
+                RoundResultsPayloadJson serializedJson = playerScoresPayloadEventSerializer.toJson(currRound, playerScores);
                 RoundResultsEvent outgoingEvent = new RoundResultsEvent(serializedJson);
 
                 broadcastEventToRoom(roomId, outgoingEvent);
-                gameCoordinator.endRound(roomId, incomingJson.getRoundNumber());
+                gameCoordinator.endRound(roomId, currRound);
                 break;
             }
 
             case END_GAME: {
-                Map<PlayerId, Integer> scores = gameCoordinator.endGame(roomId);
+                Map<String, Integer> scores = gameCoordinator.endGame(roomId);
                 EndGamePayloadJson serializedJson = endGamePayloadEventSerializer.toJson(scores);
                 EndGameEvent outgoingEvent = new EndGameEvent(serializedJson);
                 broadcastEventToRoom(roomId, outgoingEvent);
