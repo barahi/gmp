@@ -62,10 +62,11 @@ public class RoundLogicServiceImpl implements RoundLogicService {
   public void storeAnswers(RoomId roomId, int round, PlayerId playerId, Map<String, String> roundAnswers) {
     gameStateStore.changeGamePhase(roomId, RoundPhase.SUBMIT);
     GameSettingsId gameSettingsId = gameSettingsStore.getGameSettingsId(roomId);
-    Map<CategoryId,String> categoryIdStringMap = new HashMap<>();
+    Map<CategoryId, String> categoryIdStringMap = new HashMap<>();
     roundAnswers.forEach((categoryStr, answer) -> {
       CategoryId categoryId = gameSettingsStore.getCategoryIdFromName(categoryStr, gameSettingsId);
-      categoryIdStringMap.put(categoryId, answer);
+      String cleanedAnswer = answer.toLowerCase().trim();
+      categoryIdStringMap.put(categoryId, cleanedAnswer);
     });
     playerAnswerStore.storeAnswers(gameSettingsId, round, playerId, categoryIdStringMap);
   }
@@ -82,7 +83,6 @@ public class RoundLogicServiceImpl implements RoundLogicService {
     List<PlayerId> playerIds = roomService.getPlayerIdsInRoom(roomId);
     char currentLetter = gameStateStore.getLetterForCurrentRound(roomId, roundNumber);
     Map<String, Map<PlayerId, String>> categoryToPlayerAnswers = playerAnswerStore.getAnswersForRound(playerIds, roundNumber);
-
     Map<String, Map<String, PlayerAnswer>> roundScores = new HashMap<>();
 
     categoryToPlayerAnswers.forEach((category, playerAnswer) -> {
@@ -143,14 +143,15 @@ public class RoundLogicServiceImpl implements RoundLogicService {
 
   @Override
   public VoteRoundResults getVoteRoundResults(RoomId roomId, String category, int roundNumber, String targetPlayer){
-    return playerVoteStore.getVoteRoundResults(roomId, category, roundNumber, playerService.getIdFromUsername(targetPlayer), targetPlayer);
+    CategoryId categoryId = gameSettingsStore.getCategoryIdFromName(category, gameSettingsStore.getGameSettingsId(roomId));
+    return playerVoteStore.getVoteRoundResults(roomId, categoryId, category, roundNumber, playerService.getIdFromUsername(targetPlayer), targetPlayer);
   }
 
   @Override
-    public void invalidatePlayerAnswer(RoomId roomId, String targetPlayer, String category, int roundNum) {
+    public void invalidatePlayerAnswer(RoomId roomId, String category, String answer, int roundNum) {
     GameSettingsId gameSettingsId = gameSettingsStore.getGameSettingsId(roomId);
     CategoryId categoryId = gameSettingsStore.getCategoryIdFromName(category, gameSettingsId);
-    playerAnswerStore.updateScoreForAnswer(playerService.getIdFromUsername(targetPlayer), categoryId, roundNum, -1);
+    playerAnswerStore.invalidateRoundAnswer(gameSettingsId, categoryId, answer, roundNum, 0);
   }
 
   @Override

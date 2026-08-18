@@ -91,6 +91,16 @@ public class PlayerAnswerStore {
     db.batchInsert(records).execute();
   }
 
+  public void invalidateRoundAnswer(GameSettingsId gameSettingsId, CategoryId categoryId, String answer, int roundNum, int newScore){
+    db.update(PLAYER_ANSWER)
+      .set(PLAYER_ANSWER.SCORE, newScore)
+      .where(PLAYER_ANSWER.GAME_SETTINGS_ID.eq(gameSettingsId.getId().toString()))
+      .and(PLAYER_ANSWER.CATEGORY_ID.eq(categoryId.getId().toString()))
+      .and(PLAYER_ANSWER.ROUND.eq(roundNum))
+      .and(PLAYER_ANSWER.ANSWER.eq(answer))
+      .execute();
+  }
+
 
   public void updateScoreForAnswer(PlayerId playerId, CategoryId categoryId, int roundNum, int newScore){
     db.update(PLAYER_ANSWER)

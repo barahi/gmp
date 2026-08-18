@@ -10,6 +10,9 @@ public class EndVoteRoundPayloadJson implements EventPayload {
   @JsonProperty
   private String targetPlayer;
 
+  @JsonProperty
+  private String answer;
+
   public String getCategory() {
     return category;
   }
@@ -24,5 +27,13 @@ public class EndVoteRoundPayloadJson implements EventPayload {
 
   public void setTargetPlayer(String targetPlayer) {
     this.targetPlayer = targetPlayer;
+  }
+
+  public String getAnswer() {
+    return answer;
+  }
+
+  public void setAnswer(String answer) {
+    this.answer = answer;
   }
 }

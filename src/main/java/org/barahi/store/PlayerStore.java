@@ -62,7 +62,6 @@ public void deletePlayer(List<Player.PlayerId> ids) {
         String roomId = db.selectFrom(ROOM_PLAYER)
           .where(ROOM_PLAYER.PLAYER_ID.eq(playerId.getId().toString()))
           .fetchOne(ROOM_PLAYER.ROOM_ID);
-        System.out.println("Got roomId: " + roomId);
         return RoomId.of(roomId);
     }
 

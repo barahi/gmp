@@ -47,15 +47,10 @@ public class PlayerVoteStore {
       .execute();
   }
 
-  public VoteRoundResults getVoteRoundResults(RoomId roomId, String category, int roundNumber, PlayerId targetPlayerId, String targetPlayer){
-    String categoryId = db.select(CATEGORIES.ID)
-      .from(CATEGORIES)
-      .where(CATEGORIES.CATEGORY.eq(category))
-      .fetchOne(CATEGORIES.ID);
-
+  public VoteRoundResults getVoteRoundResults(RoomId roomId, CategoryId categoryId, String category, int roundNumber, PlayerId targetPlayerId, String targetPlayer){
     String playerAnswerId = db.select(PLAYER_ANSWER.ID)
       .from(PLAYER_ANSWER)
-      .where(PLAYER_ANSWER.CATEGORY_ID.eq(categoryId))
+      .where(PLAYER_ANSWER.CATEGORY_ID.eq(categoryId.getId().toString()))
       .and(PLAYER_ANSWER.ROUND.eq(roundNumber))
       .and(PLAYER_ANSWER.PLAYER_ID.eq(targetPlayerId.getId().toString()))
       .fetchOne(PLAYER_ANSWER.ID);

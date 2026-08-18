@@ -20,7 +20,7 @@ public interface GameCoordinator {
  void cancelVotingRoundTimer(RoomId roomId);
  void submitVote(RoomId roomId, String category, int roundNumber, String targetPlayer, String voterPlayer, boolean vote);
  VoteRoundResults getVoteResults(RoomId roomId, String category, int roundNumber, String targetPlayer);
- void finalizeVotePhase(RoomId roomId, String category, int roundNumber, String targetPlayer);
+ void finalizeVotePhase(RoomId roomId, String category, String answer, int roundNumber, String targetPlayer);
  Map<String, Integer> updatePlayerScores(RoomId roomId, int currRound);
  void endRound(RoomId roomId, int roundNumber);
  void startNextRound(RoomId roomId, int roundNumber);

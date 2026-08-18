@@ -12,7 +12,6 @@ public class  SubmitVotePayloadJson implements EventPayload {
 
   @JsonProperty
   String voterPlayer;
-
   @JsonProperty
   boolean vote;
 

@@ -18,7 +18,7 @@ public interface RoundLogicService {
     FlaggedAnswer beginVotePhase(RoomId roomId, String targetedPlayer, String triggeredByPlayer, String category, int roundNumber, String answer);
     void submitVote(RoomId roomId,  String category, int roundNumber, String targetPlayer, String voterPlayer, boolean vote);
     VoteRoundResults getVoteRoundResults(RoomId roomId, String category, int roundNumber, String targetPlayer);
-    void invalidatePlayerAnswer(RoomId roomId, String targetPlayer, String category, int roundNum);
+    void invalidatePlayerAnswer(RoomId roomId, String category, String answer, int roundNum);
     Map<PlayerId, Integer> finalizeRoundScores(RoomId roomId, int roundNumber);
     void endRound(RoomId roomId);
 }

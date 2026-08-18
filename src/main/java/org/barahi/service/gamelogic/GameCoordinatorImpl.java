@@ -78,12 +78,13 @@ public class GameCoordinatorImpl implements GameCoordinator {
 
 
   @Override
-  public void finalizeVotePhase(RoomId roomId, String category, int roundNumber, String targetPlayer){
+  public void finalizeVotePhase(RoomId roomId, String category, String answer, int roundNumber, String targetPlayer){
     VoteRoundResults results  = roundLogicService.getVoteRoundResults(roomId, category, roundNumber, targetPlayer);
     int totalVotes = results.getValidAnswerVotes() + results.getInvalidAnswerVotes();
-    boolean verdict = results.getValidAnswerVotes() >= (totalVotes-1)/2.0;
-    if (!verdict){
-      roundLogicService.invalidatePlayerAnswer(roomId, targetPlayer, category, roundNumber);
+    int cutOff = Math.ceilDiv(totalVotes, 2);
+    boolean verdict = results.getInvalidAnswerVotes() >= cutOff;
+    if (verdict){
+      roundLogicService.invalidatePlayerAnswer(roomId, category, answer, roundNumber);
     }
   }
 
