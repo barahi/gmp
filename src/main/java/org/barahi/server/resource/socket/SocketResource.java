@@ -155,6 +155,7 @@ public class SocketResource {
         EventType eventType = EventType.valueOf(event.getType());
         switch (eventType) {
             case START_ROUND: {
+                System.out.println("starting new round");
                 int currRound = gameCoordinator.getCurrentRoundNumber(roomId);
                 if (currRound < 2){
                     gameCoordinator.startNewGame(roomId);
@@ -163,9 +164,12 @@ public class SocketResource {
                 char letterForRound = gameCoordinator.startRound(roomId, currRound, () -> {
                     broadcastEventToRoom(playersToAlert, new TimeUpEvent());
                 });
+                System.out.println("got new char " + letterForRound);
+                System.out.println("got round " + currRound);
                 StartRoundEventPayload payload = new StartRoundEventPayload(letterForRound, currRound);
                 StartRoundEvent startRoundEvent = new StartRoundEvent(payload);
                 broadcastEventToRoom(roomId, startRoundEvent);
+                System.out.println("propagated the start round event");
                 break;
             }
 
@@ -228,7 +232,6 @@ public class SocketResource {
             }
 
             case END_ROUND: {
-                EndRoundEvent endRoundEvent = (EndRoundEvent) event;
                 int currRound = gameCoordinator.getCurrentRoundNumber(roomId);
                 Map<String, Integer> playerScores = gameCoordinator.updatePlayerScores(roomId, currRound);
 

@@ -9,6 +9,7 @@ public class EndGameEvent implements Event<EndGamePayloadJson> {
   @JsonProperty("payload")
   private EndGamePayloadJson endGamePayloadJson;
 
+  public EndGameEvent(){}
   public EndGameEvent(EndGamePayloadJson endGamePayloadJson) {
     this.endGamePayloadJson = endGamePayloadJson;
   }
