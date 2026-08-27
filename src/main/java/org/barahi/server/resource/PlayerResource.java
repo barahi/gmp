@@ -4,6 +4,7 @@ import java.util.UUID;
 
 import jakarta.ws.rs.*;
 import org.barahi.infra.exceptions.ObjectNotFoundException;
+import org.barahi.infra.exceptions.UsernameAlreadyTakenException;
 import org.barahi.server.json.PlayerJson;
 import org.barahi.server.serializer.PlayerSerializer;
 import org.barahi.serviceapi.player.Player;
@@ -54,7 +55,7 @@ public class PlayerResource {
     }
 
     @POST
-    public PlayerJson createPlayer(PlayerJson playerJson) {
+    public PlayerJson createPlayer(PlayerJson playerJson) throws UsernameAlreadyTakenException {
         Player unsavedPlayer = playerSerializer.fromJson(playerJson);
         Player player = playerService.storePlayer(unsavedPlayer);
         return playerSerializer.toJson(player);

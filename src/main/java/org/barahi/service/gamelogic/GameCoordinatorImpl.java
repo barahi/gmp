@@ -7,6 +7,7 @@ import org.barahi.service.gamelogic.Dto.VoteRoundResults;
 import org.barahi.serviceapi.player.Player.PlayerId;
 import org.barahi.serviceapi.room.Room.RoomId;
 
+import java.util.List;
 import java.util.Map;
 
 public class GameCoordinatorImpl implements GameCoordinator {
@@ -111,7 +112,7 @@ public class GameCoordinatorImpl implements GameCoordinator {
     }
   }
   @Override
-  public Map<String, Integer> endGame(RoomId roomId) {
+  public List<String> endGame(RoomId roomId) {
     return gameLogicService.endGame(roomId);
   }
-  }
+}

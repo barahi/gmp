@@ -6,6 +6,7 @@ import org.barahi.service.gamelogic.Dto.VoteRoundResults;
 import org.barahi.serviceapi.player.Player.PlayerId;
 import org.barahi.serviceapi.room.Room.RoomId;
 
+import java.util.List;
 import java.util.Map;
 
 public interface GameCoordinator {
@@ -24,5 +25,5 @@ public interface GameCoordinator {
  Map<String, Integer> updatePlayerScores(RoomId roomId, int currRound);
  void endRound(RoomId roomId, int roundNumber);
  void startNextRound(RoomId roomId, int roundNumber);
- Map<String, Integer> endGame(RoomId roomId);
+ List<String> endGame(RoomId roomId);
 }

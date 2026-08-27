@@ -4,6 +4,7 @@ import jakarta.inject.Inject;
 import org.barahi.generated.tables.records.RoomPlayerRecord;
 import org.barahi.infra.DSLContextProvider;
 import org.barahi.infra.exceptions.ObjectNotFoundException;
+import org.barahi.infra.exceptions.UsernameAlreadyTakenException;
 import org.barahi.serviceapi.player.Player;
 import org.barahi.serviceapi.player.Player.PlayerId;
 import org.barahi.serviceapi.player.PlayerImpl;
@@ -12,6 +13,7 @@ import org.jooq.DSLContext;
 import org.barahi.generated.tables.records.PlayerRecord;
 import org.jooq.Record;
 import org.jooq.Result;
+import org.jooq.exception.IntegrityConstraintViolationException;
 
 import java.util.Arrays;
 import java.util.List;
@@ -39,9 +41,14 @@ public class PlayerStore {
 
     public void createPlayer(Player player) {
         PlayerRecord record = toRecord(player);
-        db.insertInto(PLAYER)
-          .set(record)
-          .execute();
+        try {
+            db.insertInto(PLAYER)
+              .set(record)
+              .execute();
+        } catch (IntegrityConstraintViolationException e){
+            throw new UsernameAlreadyTakenException("username already taken");
+        }
+
     }
 
 public void deletePlayer(List<Player.PlayerId> ids) {

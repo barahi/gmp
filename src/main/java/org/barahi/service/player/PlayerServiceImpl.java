@@ -2,11 +2,13 @@ package org.barahi.service.player;
 
 import jakarta.inject.Inject;
 import org.barahi.infra.exceptions.ObjectNotFoundException;
+import org.barahi.infra.exceptions.UsernameAlreadyTakenException;
 import org.barahi.serviceapi.player.Player;
 import org.barahi.serviceapi.player.Player.PlayerId;
 import org.barahi.serviceapi.player.PlayerImpl;
 import org.barahi.serviceapi.player.PlayerService;
 import org.barahi.store.PlayerStore;
+import org.jooq.User;
 
 import java.util.List;
 import java.util.UUID;

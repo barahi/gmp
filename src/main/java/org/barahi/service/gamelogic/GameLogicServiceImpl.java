@@ -7,9 +7,9 @@ import org.barahi.serviceapi.room.RoomService;
 import org.barahi.store.GameSettingsStore;
 import org.barahi.store.gamelogic.CumulativeScoreStore;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 public class GameLogicServiceImpl implements GameLogicService{
 
@@ -46,7 +46,22 @@ public class GameLogicServiceImpl implements GameLogicService{
   }
 
   @Override
-  public Map<String, Integer> endGame(RoomId roomId) {
-    return cumulativeScoreStore.getPlayerScores(roomId);
+  public List<String> endGame(RoomId roomId) {
+    Map<String, Integer> scores = cumulativeScoreStore.getPlayerScores(roomId);
+    int max = 0;
+    List<String> winners = new ArrayList<>();
+
+    for (int score: scores.values()){
+      if (score > max){
+        max = score;
+      }
+    }
+
+    for (Map.Entry<String, Integer> entry: scores.entrySet()){
+      if (entry.getValue() == max){
+        winners.add(entry.getKey());
+      }
+    }
+    return winners;
   }
 }

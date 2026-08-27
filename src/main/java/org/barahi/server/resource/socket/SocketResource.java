@@ -13,7 +13,6 @@ import org.barahi.server.resource.GuiceWebSocketConfigurator;
 import org.barahi.server.resource.socket.events.beginvote.BeginVotePhaseEvent;
 import org.barahi.server.resource.socket.events.beginvote.BeginVotePhasePayload;
 import org.barahi.server.resource.socket.events.endgame.EndGameEvent;
-import org.barahi.server.resource.socket.events.endround.EndRoundEvent;
 import org.barahi.server.resource.socket.events.endround.RoundResultsEvent;
 import org.barahi.server.resource.socket.events.flaggedanswer.FlaggedAnswerEvent;
 import org.barahi.server.resource.socket.events.noop.NoopEvent;
@@ -244,7 +243,7 @@ public class SocketResource {
             }
 
             case END_GAME: {
-                Map<String, Integer> scores = gameCoordinator.endGame(roomId);
+                List<String> scores = gameCoordinator.endGame(roomId);
                 EndGamePayloadJson serializedJson = endGamePayloadEventSerializer.toJson(scores);
                 EndGameEvent outgoingEvent = new EndGameEvent(serializedJson);
                 broadcastEventToRoom(roomId, outgoingEvent);
