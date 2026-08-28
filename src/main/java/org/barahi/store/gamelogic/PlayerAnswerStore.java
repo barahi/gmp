@@ -87,7 +87,6 @@ public class PlayerAnswerStore {
       pa ->
         new PlayerAnswerRecord(UUID.randomUUID().toString(), playerId.getId().toString(), pa.getKey().getId().toString(), gameSettingsId.getId().toString(), round, pa.getValue(), 100)
     ).toList();
-    System.out.println(records);
     db.batchInsert(records).execute();
   }
 

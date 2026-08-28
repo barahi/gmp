@@ -12,6 +12,7 @@ import org.barahi.server.json.*;
 import org.barahi.server.resource.GuiceWebSocketConfigurator;
 import org.barahi.server.resource.socket.events.beginvote.BeginVotePhaseEvent;
 import org.barahi.server.resource.socket.events.beginvote.BeginVotePhasePayload;
+import org.barahi.server.resource.socket.events.earlystop.EarlyStopEvent;
 import org.barahi.server.resource.socket.events.endgame.EndGameEvent;
 import org.barahi.server.resource.socket.events.endround.RoundResultsEvent;
 import org.barahi.server.resource.socket.events.flaggedanswer.FlaggedAnswerEvent;
@@ -27,6 +28,7 @@ import org.barahi.server.resource.socket.events.submitanswers.SubmitAnswersEvent
 import org.barahi.server.resource.socket.events.submitvote.SubmitVoteEvent;
 import org.barahi.server.resource.socket.events.submitvote.SubmitVoteEventPayload;
 import org.barahi.server.resource.socket.events.timeupevent.TimeUpEvent;
+import org.barahi.server.resource.socket.events.triggerstop.TriggerStopEvent;
 import org.barahi.server.resource.socket.events.voteresult.EndVoteRoundEvent;
 import org.barahi.server.resource.socket.events.voteresult.VoteResultsEvent;
 import org.barahi.server.serializer.*;
@@ -154,7 +156,6 @@ public class SocketResource {
         EventType eventType = EventType.valueOf(event.getType());
         switch (eventType) {
             case START_ROUND: {
-                System.out.println("starting new round");
                 int currRound = gameCoordinator.getCurrentRoundNumber(roomId);
                 if (currRound < 2){
                     gameCoordinator.startNewGame(roomId);
@@ -163,12 +164,21 @@ public class SocketResource {
                 char letterForRound = gameCoordinator.startRound(roomId, currRound, () -> {
                     broadcastEventToRoom(playersToAlert, new TimeUpEvent());
                 });
-                System.out.println("got new char " + letterForRound);
-                System.out.println("got round " + currRound);
                 StartRoundEventPayload payload = new StartRoundEventPayload(letterForRound, currRound);
                 StartRoundEvent startRoundEvent = new StartRoundEvent(payload);
                 broadcastEventToRoom(roomId, startRoundEvent);
-                System.out.println("propagated the start round event");
+                break;
+            }
+
+            case TRIGGER_STOP: {
+                TriggerStopEvent triggerStopEvent = (TriggerStopEvent) event;
+                String triggeredBy = triggerStopEvent.getPayload().getTriggeredBy();
+                gameCoordinator.cancelTimer(roomId);
+
+                EarlyStopPayloadJson outgoingJson = new EarlyStopPayloadJson();
+                outgoingJson.setTriggeredBy(triggeredBy);
+                EarlyStopEvent earlyStopEvent = new EarlyStopEvent(outgoingJson);
+                broadcastEventToRoom(roomId, earlyStopEvent);
                 break;
             }
 
@@ -275,7 +285,6 @@ public class SocketResource {
         List<Player> dbPlayers = roomService.getPlayersInRoom(roomId);
         List<Player> activePlayers = new ArrayList<>();
         dbPlayers.forEach(p -> {
-            System.out.println("player: " + p.getUsername());
             Session s = PLAYER_SESSIONS.get(p.getId());
             if (s!=null && s.isOpen()) {
                 activePlayers.add(p);

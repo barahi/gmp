@@ -58,12 +58,12 @@ public class GameCoordinatorImpl implements GameCoordinator {
   }
 
   @Override
-  public void startVotingRoundTimer(RoomId roomId, int time, Runnable onTimeout){
+  public void startTimer(RoomId roomId, int time, Runnable onTimeout){
     gameScheduler.startRoundTimer(roomId, time, onTimeout);
   }
 
   @Override
-  public void cancelVotingRoundTimer(RoomId roomId) {
+  public void cancelTimer(RoomId roomId) {
     gameScheduler.cancelTimer(roomId);
   }
 

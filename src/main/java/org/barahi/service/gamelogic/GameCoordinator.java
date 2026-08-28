@@ -17,8 +17,8 @@ public interface GameCoordinator {
  Integer getNumberOfSubmittedAnswersInRound(int roundNumber, RoomId roomId);
  Map<String, Map<String, PlayerAnswer>>  calculatePlayerScoreForRound(RoomId roomId, int roundNumber);
  FlaggedAnswer beginVotePhase(RoomId roomId, String targetedPlayer, String triggeredByPlayer, String category, int roundNumber, String answer);
- void startVotingRoundTimer(RoomId roomId, int time, Runnable onTimeout);
- void cancelVotingRoundTimer(RoomId roomId);
+ void startTimer(RoomId roomId, int time, Runnable onTimeout);
+ void cancelTimer(RoomId roomId);
  void submitVote(RoomId roomId, String category, int roundNumber, String targetPlayer, String voterPlayer, boolean vote);
  VoteRoundResults getVoteResults(RoomId roomId, String category, int roundNumber, String targetPlayer);
  void finalizeVotePhase(RoomId roomId, String category, String answer, int roundNumber, String targetPlayer);

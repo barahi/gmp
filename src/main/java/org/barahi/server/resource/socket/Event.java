@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import org.barahi.server.resource.socket.events.beginvote.BeginVotePhaseEvent;
+import org.barahi.server.resource.socket.events.earlystop.EarlyStopEvent;
 import org.barahi.server.resource.socket.events.endgame.EndGameEvent;
 import org.barahi.server.resource.socket.events.endround.EndRoundEvent;
 import org.barahi.server.resource.socket.events.endround.RoundResultsEvent;
@@ -16,6 +17,7 @@ import org.barahi.server.resource.socket.events.startround.StartRoundEvent;
 import org.barahi.server.resource.socket.events.submitanswers.SubmitAnswersEvent;
 import org.barahi.server.resource.socket.events.submitvote.SubmitVoteEvent;
 import org.barahi.server.resource.socket.events.timeupevent.TimeUpEvent;
+import org.barahi.server.resource.socket.events.triggerstop.TriggerStopEvent;
 import org.barahi.server.resource.socket.events.voteresult.EndVoteRoundEvent;
 import org.barahi.server.resource.socket.events.voteresult.VoteResultsEvent;
 import org.barahi.service.gamelogic.Dto.FlaggedAnswer;
@@ -27,6 +29,8 @@ import org.barahi.service.gamelogic.Dto.FlaggedAnswer;
         @JsonSubTypes.Type(value = ErrorMessageEvent.class, name="ERROR_MESSAGE"),
         @JsonSubTypes.Type(value = StartRoundEvent.class, name = "START_ROUND"),
         @JsonSubTypes.Type(value = SubmitAnswersEvent.class, name = "SUBMIT_ANSWERS"),
+        @JsonSubTypes.Type(value = TriggerStopEvent.class, name = "TRIGGER_STOP"),
+        @JsonSubTypes.Type(value = EarlyStopEvent.class, name = "EARLY_STOP"),
         @JsonSubTypes.Type(value = TimeUpEvent.class, name="TIME_UP"),
         @JsonSubTypes.Type(value = RoundScoreEvent.class, name = "ROUND_SCORES"),
         @JsonSubTypes.Type(value = BeginVotePhaseEvent.class, name = "BEGIN_VOTE_PHASE"),

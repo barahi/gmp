@@ -116,7 +116,6 @@ public class RoomServiceImpl implements RoomService {
         try {
             room = roomStore.getRoomWithId(roomUUID);
             player = playerService.getPlayer(playerId);
-            System.out.println("got player: " + player);
         } catch (ObjectNotFoundException e){
             throw new NotFoundException("Could not find player with id: " + playerId);
         } catch (IllegalAccessException e) {
@@ -136,7 +135,6 @@ public class RoomServiceImpl implements RoomService {
         }
         boolean checkPlayer = isPlayerInRoom(roomUUID, playerId);
         if (checkPlayer ){
-            System.out.println("player in room already");
             return;
         }
 

@@ -7,6 +7,8 @@ public enum EventType {
     START_ROUND(true, true),
     TIME_UP(false, true),
     SUBMIT_ANSWERS(true, false),
+    TRIGGER_STOP(false, true),
+    EARLY_STOP(true, false),
     ROUND_SCORES(false, true),
     BEGIN_VOTE_PHASE(true, false),
     FLAGGED_ANSWER(false, true),
